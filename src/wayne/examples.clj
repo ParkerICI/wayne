@@ -6,8 +6,7 @@
 (defn data
   [query]
   (->> (bq/query "pici-internal" query)
-  ;; TODO cleaup values
-      (map (fn [x] (update x :feature_value (fn [v] (if (= v "NA") nil (u/coerce-numeric v))))))))
+       (map (fn [x] (update x :feature_value (fn [v] (if (= v "NA") nil (u/coerce-numeric v))))))))
 
 (def q1 "SELECT ROI, feature_value FROM `pici-internal.bruce_external.feature_table` 
 where 
@@ -16,14 +15,39 @@ and final_diagnosis = 'GBM'
 and feature_type = 'intensity' 
 and cell_meta_cluster_final = 'Myeloid_CD14'
 and feature_variable = 'CD86' 
+and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
+")
+
+(def q1-variables
+   "SELECT distinct feature_variable FROM `pici-internal.bruce_external.feature_table` 
+where 
+site = 'Stanford' 
+and final_diagnosis = 'GBM' 
+and feature_type = 'intensity' 
+and cell_meta_cluster_final = 'Myeloid_CD14'
 and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')")
+
+(defn q1-p
+  [feature]
+  (format "SELECT ROI, feature_value FROM `pici-internal.bruce_external.feature_table` 
+where 
+site = 'Stanford' 
+and final_diagnosis = 'GBM' 
+and feature_type = 'intensity' 
+and cell_meta_cluster_final = 'Myeloid_CD14'
+and feature_variable = '%s' 
+and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
+" feature))
 
 (defonce ex1-data (data q1))
 
+;;; Not necessary
+#_
 (def ex1-data-filtered (filter :feature_value ex1-data))
 
+;;; TODO rotate to vertical, 
 (def violin
-  `{"width" 500,
+  `{"width" 700,
     "config" {"axisBand" {"bandPosition" 1, "tickExtra" true, "tickOffset" 0}},
     "padding" 5,
     "marks"
@@ -47,6 +71,20 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')")
          {"x" {"scale" "xscale", "field" "value"},
           "yc" {"signal" "plotWidth / 2"},
           "height" {"scale" "hscale", "field" "density"}}}}
+       {"type" "symbol"
+        "from" {"data" "source"}
+        "encode"
+        {"enter" {"fill" "black" "y" {"value" 0}},
+         "update"
+         {"x" {"scale" "xscale", "field" "feature_value"},
+          "yc" {"signal" "plotWidth / 2 + 80*(random() - 0.5)"}, ;should scale with fatness
+          "size" {"value" 25},
+          "shape" {"value" "circle"},
+          "strokeWidth" {"value" 1},
+          "stroke" {"value" "#000000"}
+          "fill" {"value" "#000000"}
+          }}
+        }
        {"type" "rect",
         "from" {"data" "summary"},
         "encode"
@@ -84,14 +122,14 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')")
     [{"orient" "bottom", "scale" "xscale", "zindex" 1}
      {"orient" "left", "scale" "layout", "tickCount" 5, "zindex" 1}],
     "signals"
-    [{"name" "plotWidth", "value" 60}
+    [{"name" "plotWidth", "value" 160}  ;controls fatness of violins
      {"name" "height", "update" "(plotWidth + 10) * 3"}
      {"name" "trim", "value" true, "bind" {"input" "checkbox"}}
      {"name" "bandwidth", "value" 0, "bind" {"input" "range", "min" 0, "max" 0.00002, "step" 0.000001}}], ;Note: very sensitive, was hard to find these values
     "$schema" "https://vega.github.io/schema/vega/v5.json",
     "data"
     [{"name" "source",
-      "values" ~ex1-data-filtered}
+      "values" ~ex1-data}
      {"name" "density",
       "source" "source",
       "transform"
@@ -99,7 +137,7 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')")
         "field" "feature_value",
         "groupby" ["ROI"],
         "bandwidth" {"signal" "bandwidth"}
-        "extent" {"signal" "trim ? null : [2000, 6500]"}
+        "extent" {"signal" "trim ? null : [0.0003, 0.0005]"} ;TODO not sure what this does or how to adjust it propery
         }]} 
      {"name" "stats",
       "source" "source",
