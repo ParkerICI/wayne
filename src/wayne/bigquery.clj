@@ -108,7 +108,7 @@
 
 (defn dataset-named
   [project n]
-
+  (u/some-thing #(= (dataset-name %) n) (datasets project)))
 
 
 ;;; Do a query
