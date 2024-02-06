@@ -18,6 +18,22 @@ and feature_variable = 'CD86'
 and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
 ")
 
+(def q2 "SELECT ROI, feature_value FROM `pici-internal.bruce_external.feature_table` 
+where 
+site = 'Stanford' 
+and final_diagnosis = 'GBM' 
+and feature_type = 'immune_cell_ratios' 
+and feature_variable = 'Tcell_CD4_over_Macrophage_CD163_plus_Tcell_CD4_prop' 
+and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
+")
+
+(def q3 "SELECT immunotherapy, feature_value FROM `pici-internal.bruce_external.feature_table` 
+where 
+site = 'UCSF' 
+and feature_type = 'immune_cell_ratios' 
+and feature_variable = 'Myeloid_CD11b_over_Myeloid_CD11b_plus_B7H3_func_prop'
+")
+
 (def q1-variables
    "SELECT distinct feature_variable FROM `pici-internal.bruce_external.feature_table` 
 where 
@@ -39,6 +55,17 @@ and feature_variable = '%s'
 and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
 " feature))
 
+
+(defn q2-p
+  [feature]
+  (format "SELECT ROI, feature_value FROM `pici-internal.bruce_external.feature_table` 
+where 
+site = 'Stanford' 
+and final_diagnosis = 'GBM' 
+and feature_variable = '%s' 
+and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
+" feature))
+
 (defonce ex1-data (data q1))
 
 ;;; Not necessary
@@ -46,27 +73,29 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
 (def ex1-data-filtered (filter :feature_value ex1-data))
 
 ;;; TODO rotate to vertical, 
-(def violin
+;;; dimension: ROI, immunotherapy...
+(defn violin
+  [data dim]                            ;TODO dim → better
   `{"width" 700,
     "config" {"axisBand" {"bandPosition" 1, "tickExtra" true, "tickOffset" 0}},
     "padding" 5,
     "marks"
     [{"type" "group",
-      "from" {"facet" {"data" "density", "name" "violin", "groupby" "ROI"}},
+      "from" {"facet" {"data" "density", "name" "violin", "groupby" ~dim}},
       "encode"
       {"enter"
-       {"yc" {"scale" "layout", "field" "ROI", "band" 0.5},
+       {"yc" {"scale" "layout", "field" ~dim, "band" 0.5},
         "height" {"signal" "plotWidth"},
         "width" {"signal" "width"}}},
       "data"
       [{"name" "summary",
         "source" "stats",
-        "transform" [{"type" "filter", "expr" "datum.ROI === parent.ROI"}]}],
+        "transform" [{"type" "filter", "expr" ~(format "datum.%s === parent.%s" dim dim)}]}],
       "marks"
       [{"type" "area",
         "from" {"data" "violin"},
         "encode"
-        {"enter" {"fill" {"scale" "color", "field" {"parent" "ROI"}}},
+        {"enter" {"fill" {"scale" "color", "field" {"parent" ~dim}}},
          "update"
          {"x" {"scale" "xscale", "field" "value"},
           "yc" {"signal" "plotWidth / 2"},
@@ -102,7 +131,7 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
     [{"name" "layout",
       "type" "band",
       "range" "height",
-      "domain" {"data" "source", "field" "ROI"}}
+      "domain" {"data" "source", "field" ~dim}}
      {"name" "xscale",
       "type" "linear",
       "range" "width",
@@ -116,7 +145,7 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
       "domain" {"data" "density", "field" "density"}}
      {"name" "color",
       "type" "ordinal",
-      "domain" {"data" "source", "field" "ROI"},
+      "domain" {"data" "source", "field" ~dim},
       "range" "category"}],
     "axes"
     [{"orient" "bottom", "scale" "xscale", "zindex" 1}
@@ -129,13 +158,13 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
     "$schema" "https://vega.github.io/schema/vega/v5.json",
     "data"
     [{"name" "source",
-      "values" ~ex1-data}
+      "values" ~data}
      {"name" "density",
       "source" "source",
       "transform"
       [{"type" "kde",
         "field" "feature_value",
-        "groupby" ["ROI"],
+        "groupby" [~dim],
         "bandwidth" {"signal" "bandwidth"}
         "extent" {"signal" "trim ? null : [0.0003, 0.0005]"} ;TODO not sure what this does or how to adjust it propery
         }]} 
@@ -143,7 +172,7 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
       "source" "source",
       "transform"
       [{"type" "aggregate",
-        "groupby" ["ROI"],
+        "groupby" [~dim],
         "fields" ["feature_value" "feature_value" "feature_value"], ;??? do not understand why we need to repeat this three times, but it is important
         "ops" ["q1" "median" "q3"],
         "as" ["q1" "median" "q3"]}]}],
@@ -154,8 +183,22 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
 ;;; YES actually got this to output a violin plot, albeit not a very good one
 (defn ex1
   []
-  (oz/view! violin :port 1801 :mode :vega))
+  (oz/view! (violin ex1-data) :port 1801 :mode :vega))
+
+;;; TODO doesn't really work, the scales need adjusting
+(defn ex1p
+  [feature]
+  (oz/view! (violin (data (q1-p feature))) :port 1801 :mode :vega))
      
+(defn ex2
+  []
+  (oz/view! (violin (data q2)) :port 1801 :mode :vega))
+
+
+(defn show-violin
+  [data dim]                            ;TODO dim could be inferred
+  (oz/view! (violin data dim) :port 1801 :mode :vega))
+
 
 (def box
   `{
