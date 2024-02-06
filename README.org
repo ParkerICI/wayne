@@ -1,0 +1,8 @@
+Prototyping for BRUCE website
+
+Mostly focusing on db related stuff here.
+
+* Specs
+
+https://mail.google.com/mail/u/1/#inbox/FMfcgzGwJvmLgmVhwRShGHrGDTkzlwph
+
