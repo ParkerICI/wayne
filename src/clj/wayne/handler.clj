@@ -152,6 +152,8 @@
   (context "/api/v2" []
     (GET "/data0" req
       (content-response (data/data0 (:params req))))
+    (GET "/patients" []
+      (content-response (data/patient-table)))
     (GET "/error" req                   ;For testing error reporting
       (content-response (/ 0 0)))
     (POST "/error" req                   ;For testing error reporting
