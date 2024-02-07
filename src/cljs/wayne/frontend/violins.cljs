@@ -123,7 +123,9 @@
           "strokeWidth" {"value" 1},
           "stroke" {"value" "#000000"}
           "fill" {"value" "#000000"}
-          }}
+          "opacity" {"value" "0.3"}
+          }
+         }
         }
        {"type" "rect",
         "from" {"data" "summary"},
@@ -205,7 +207,7 @@
 (rf/reg-event-db
  :loaded
  (fn [db [_ data]]
-   (do-vega (violin data "ROI"))        ;TODO generalize dim
+   (do-vega (violin data "ROI"))        ;TODO generalize dim, can be "immunotherapy" (but needs label)
    (assoc db :loading? false)))
 
 (rf/reg-event-db
