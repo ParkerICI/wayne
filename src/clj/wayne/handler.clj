@@ -8,6 +8,7 @@
             [org.candelbio.multitool.cljcore :as ju]
             [wayne.views.html :as html]
             [wayne.views.admin :as admin]
+            [wayne.data :as data]
             [ring.logger :as logger]
             [ring.middleware.session.memory :as ring-memory]
             [ring.middleware.resource :as resource]
@@ -149,7 +150,8 @@
 
 (defroutes api-routes  
   (context "/api/v2" []
-
+    (GET "/data0" req
+      (content-response (data/data0 (:params req))))
     (GET "/error" req                   ;For testing error reporting
       (content-response (/ 0 0)))
     (POST "/error" req                   ;For testing error reporting

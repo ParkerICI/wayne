@@ -7,6 +7,7 @@
    [wayne.frontend.app :as app]   
    [wayne.frontend.flash :as flash]
    [wayne.frontend.modal :as modal]
+   [wayne.frontend.violins :as violins]
    [org.candelbio.multitool.core :as u]
    [clojure.string :as str]
    [org.candelbio.multitool.browser :as browser]
@@ -29,7 +30,8 @@
    #_
    (case @(rf/subscribe [:page])        ;NOTE: this is useless and confused, flush or replace with real nav
      )
-   [app/minimal]
+   #_ [app/minimal]
+   [violins/violins]
 
    #_ [footer]
    ])

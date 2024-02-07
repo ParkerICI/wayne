@@ -20,8 +20,6 @@
      ]]
    ])
 
-(def data-url "https://gist.githubusercontent.com/mtravers/ab8e57a71cd5e9f5766e1e66679451a3/raw/92da78c66d537ba66b020a41a158c61df458d469/boppop.csv")
-
 (defn minimal
   []
   [:div
