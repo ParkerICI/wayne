@@ -26,9 +26,11 @@
    [modal/modal]
    [app/header]
    [flash/flash]
+   #_
    (case @(rf/subscribe [:page])        ;NOTE: this is useless and confused, flush or replace with real nav
-     
      )
+   [app/minimal]
+
    #_ [footer]
    ])
 

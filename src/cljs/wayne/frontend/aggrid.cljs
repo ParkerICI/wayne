@@ -17,7 +17,6 @@
 
 ;;; For header interactivty, see https://ag-grid.com/react-data-grid/component-header/
 
-
 (def ag-adapter (reagent/adapt-react-class agr/AgGridReact))
 
 (comment
@@ -32,7 +31,6 @@
 (defmulti ag-col-def (fn [col-spec op]
                         (get op :display)))
                           
-
 (defn vecify
   [v]
   (if (vector? v)
