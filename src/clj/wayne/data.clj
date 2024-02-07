@@ -1,5 +1,6 @@
 (ns wayne.data
   (:require [wayne.bigquery :as bq]
+            [taoensso.timbre :as log]
             [org.candelbio.multitool.core :as u]))
 
 (defn query
@@ -94,7 +95,44 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
    :progression 1}
   )
 
+;;; Simple
+#_
 (defn patient-table
   []
   ;; final_diagnosis and who_grade can have multiple values, so leaving out the former
+  ;; TODO add samples
   (query "select distinct patient_id, site, `group`, cohort, immunotherapy, who_grade, recurrence, progression from `pici-internal.bruce_external.feature_table`"))
+
+
+;;; includes samples and aggregates into vector when necessary
+;;; Note: this is a big fucking pain, might want to generate it from a schema
+(defn patient-table
+  []
+  (query "select patient_id, ANY_VALUE(site) as site, ANY_VALUE(`group`) as `group`, ANY_VALUE(cohort) as cohort, ANY_VALUE(immunotherapy) as immunotherapy, array_agg(distinct(who_grade)) as who_grade, array_agg(distinct(final_diagnosis)) as final_diagnosis, ANY_VALUE(recurrence) as recurrence, ANY_VALUE(progression) as progression, array_agg(distinct(sample_id)) as samples from `pici-internal.bruce_external.feature_table` group by patient_id"))
+
+
+;;; Sites
+
+(defn site-table
+  []
+  (query "select site, count(distinct(patient_id)) as patients, count(distinct(sample_id)) as samples from `pici-internal.bruce_external.feature_table` group by site"))
+
+
+;;; Cohorts
+
+(query "select cohort, count(distinct(patient_id)) as patients, count(distinct(sample_id)) as samples from `pici-internal.bruce_external.feature_table` group by cohort")
+
+
+;;;; Samples
+(defn sample-table
+  []
+  (query "select sample_id, any_value(patient_id) as patient_id, count(1) as values, count(distinct(feature_variable)) as features from `pici-internal.bruce_external.feature_table` group by sample_id"))
+
+
+(defn data
+  [dataset]
+  (log/info :data dataset)
+  (case dataset
+    "patients" (patient-table)
+    "sites" (site-table)
+    "samples" (sample-table)))

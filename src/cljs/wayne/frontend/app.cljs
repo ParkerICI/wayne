@@ -11,9 +11,7 @@
    [:h1 "BRUCE features"]
    [:nav.navbar.navbar-expand-lg
     [:ul.navbar-nav.mr-auto
-     [:li.nav-item
-      [:a {:href "/about"} "About"]
-      ]
+     ;; Note: no real items here, its all in tabs
      [:li.navbar-nav
       (when @(rf/subscribe [:loading?])
         (wu/spinner 2))

@@ -152,8 +152,12 @@
   (context "/api/v2" []
     (GET "/data0" req
       (content-response (data/data0 (:params req))))
-    (GET "/patients" []
+    (GET "/patients" []                 ;TODO fold
       (content-response (data/patient-table)))
+
+    ;; WAY for following
+    (GET "/data" [data-id]
+      (content-response (data/data data-id)))    
     (GET "/error" req                   ;For testing error reporting
       (content-response (/ 0 0)))
     (POST "/error" req                   ;For testing error reporting

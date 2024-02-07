@@ -9,8 +9,13 @@
    [wayne.frontend.app :as app]   
    [wayne.frontend.flash :as flash]
    [wayne.frontend.modal :as modal]
+
+   ;; TODO belongs in app probably oh well
    [wayne.frontend.violins :as violins]
    [wayne.frontend.patients :as patients]
+   [wayne.frontend.sites :as sites]
+   [wayne.frontend.samples :as samples]
+
    [org.candelbio.multitool.core :as u]
    [clojure.string :as str]
    [org.candelbio.multitool.browser :as browser]
@@ -37,7 +42,9 @@
     :tab
     {:home about
      :violin violins/violins
-     :patients patients/patients}]
+     :sites sites/sites
+     :patients patients/patients
+     :samples samples/samples}]
    #_ [footer]
    ])
 

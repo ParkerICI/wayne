@@ -5,6 +5,7 @@
             [org.candelbio.multitool.core :as u]
             [wayne.frontend.web-utils :as wu]
             [wayne.frontend.api :as api]
+            [wayne.way.tabs :as tab]
             [reagent.dom]
             [clojure.string :as str]
             )
@@ -205,16 +206,16 @@
   (js/module$node_modules$vega_embed$build$vega_embed.embed "#vis" (clj->js spec)))
 
 (rf/reg-event-db
- :loaded
+ ::loaded
  (fn [db [_ data]]
    (do-vega (violin data "ROI"))        ;TODO generalize dim, can be "immunotherapy" (but needs label)
    (assoc db :loading? false)))
 
 (rf/reg-event-db
- :fetch
+ ::fetch
  (fn [db _]
    (api/ajax-get "/api/v2/data0" {:params (:params db)
-                                  :handler #(rf/dispatch [:loaded %])
+                                  :handler #(rf/dispatch [::loaded %])
                                   })
    (assoc db :loading? true)))
    
@@ -222,7 +223,7 @@
  :set-param
  (fn [db [_ param value]]
    (prn :set-param param value db)
-   (rf/dispatch [:fetch])
+   (rf/dispatch [::fetch])
    (assoc-in db [:params param] value)))
 
 (defn violins
@@ -247,3 +248,7 @@
       "Feature")]]]
    (vega-div)
    ])
+
+(defmethod tab/set-tab [:tab :violin]
+  [db]
+  (rf/dispatch [::fetch]))
