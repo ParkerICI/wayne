@@ -4,10 +4,13 @@
    [goog.dom :as gdom]
    [reagent.core :as r]
    [re-frame.core :as rf]
+   [wayne.way.tabs :as tabs]
+
    [wayne.frontend.app :as app]   
    [wayne.frontend.flash :as flash]
    [wayne.frontend.modal :as modal]
    [wayne.frontend.violins :as violins]
+   [wayne.frontend.patients :as patients]
    [org.candelbio.multitool.core :as u]
    [clojure.string :as str]
    [org.candelbio.multitool.browser :as browser]
@@ -16,37 +19,9 @@
 (def debug?
   ^boolean goog.DEBUG)
 
-(rf/reg-sub
- :page
- (fn [db _]
-   (:page db)))
-
-;;; For wu
-(defn tabs
-  [id tabs]
-  (let [active (or @(rf/subscribe [:active-tab id]) "About")]
-    (prn :foo id tabs active)
-    [:div
-     [:ul.nav.nav-tabs
-      (for [[name view] tabs]
-        ^{:key name}
-        [:li.nav-item
-         (if name
-           [:a.nav-link {:class (when (= name active) "active")
-                         :on-click #(rf/dispatch [:choose-tab id name])}
-            name]
-           [:a.nav-link.disabled.vtitle view])])]
-     ((tabs active))]))
-
-(rf/reg-sub
- :active-tab
- (fn [db [_ id]]
-   (get-in db [:active-tab id])))
-
-(rf/reg-event-db
- :choose-tab
- (fn [db [_ id tab]]
-   (assoc-in db [:active-tab id] tab)))
+(defn about
+  []
+  [:div "Explanatory drivel"])
 
 (defn app-ui
   []
@@ -58,12 +33,11 @@
    (case @(rf/subscribe [:page])        ;NOTE: this is useless and confused, flush or replace with real nav
      )
    #_ [app/minimal]
-   [tabs
+   [tabs/tabs
     :tab
-    {nil "Bruce"
-     "About" violins/violins
-     "Violin" violins/violins
-     "Patients" #_ patients/patients [:h2 "Patients"]}]
+    {:home about
+     :violin violins/violins
+     :patients patients/patients}]
    #_ [footer]
    ])
 

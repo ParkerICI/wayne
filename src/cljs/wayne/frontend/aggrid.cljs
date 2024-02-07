@@ -6,7 +6,6 @@
             ["ag-grid-react" :as agr]
             [org.candelbio.multitool.core :as u]
             [wayne.frontend.web-utils :as wu]
-            [wayne.ops-def :as ops]
             [reagent.dom]
             [clojure.string :as str]
             )
@@ -27,97 +26,6 @@
   (.setLicenseKey age/LicenseManager license-key)))
 
 
-;;; TODO next realer design: have coldefs that include display type, smarter dispatch...
-(defmulti ag-col-def (fn [col-spec op]
-                        (get op :display)))
-                          
-(defn vecify
-  [v]
-  (if (vector? v)
-    v
-    (vector v)))
-
-(def header-template
-  "<div class=\"ag-cell-label-container\" role=\"presentation\" style='background:lightskyblue;'>
-<span ref=\"eMenu\" class=\"ag-header-icon ag-header-cell-menu-button\"></span>
-<div ref=\"eLabel\" class=\"ag-header-cell-label\" role=\"presentation\">
-<span ref=\"eSortOrder\" class=\"ag-header-icon ag-sort-order\" ></span>
-    <span ref=\"eSortAsc\" class=\"ag-header-icon ag-sort-ascending-icon\" ></span>
-    <span ref=\"eSortDesc\" class=\"ag-header-icon ag-sort-descending-icon\" ></span>
-    <span ref=\"eSortNone\" class=\"ag-header-icon ag-sort-none-icon\" ></span>
-    <span ref=\"eText\" class=\"ag-header-cell-text\" role=\"columnheader\"></span>
-    <span ref=\"eFilter\" class=\"ag-header-icon ag-filter-icon\"></span>
- </div>
-  </div>")
-
-
-(defmethod ag-col-def :default [col-def op]
-  (let [url-template (:url-template op)]
-    {:headerName (:label col-def)
-     :field (:id col-def)
-     :cellRenderer (fn [params]
-                     (let [raw (get (js->clj (.-data params) :keywordize-keys true) (:id col-def))
-                           value (vecify raw)
-                           link (when url-template (str url-template raw)) ; TODO need better templateing, this works for now
-                           render (if link
-                                    (fn [v] [:a.ent {:href link :target "_ext"} (js/decodeURIComponent (str v))])
-                                    (fn [v] [:span (str v)]))]
-                       (reagent.dom/render ;TODO this is not approved for React 18, but I couldn't figure a better way.
-                         [:span.ag-cell-wrap-text   ;; .ag-cell-auto-height doesn't work, unfortunately.
-                          (when (and (vector? raw) (> (count raw) 1))
-                            [:span.count (count raw)])
-                          (for [elt (butlast value)]
-                            [:span (render elt) ", "])
-                          (render (last value))]
-                         (.-eGridCell params))))
-     ;; TODO really want to highlight the whole column, this is OK for now I guess
-     :headerComponentParams
-     {:template (when (= (name (:id col-def)) @(rf/subscribe [:col-select]))
-                  header-template)
-      }}))
-
-(defmethod ag-col-def :sparkline [col op]
-  {:headerName (:label col)
-   :field (:id col) 
-   :cellRenderer "agSparklineCellRenderer"
-   :cellRendererParams
-   {:sparklineOptions
-    {:type "line"
-     :line
-     {:stroke "rgb(0, 0, 178)"
-      :strokeWidth 2}
-     :marker
-     {:size 3,
-      :shape "diamond",
-      :fill "green",
-      :stroke "green",
-      :strokeWidth 2
-    },
-     :xKey "period"
-     :yKey "value"
-     }
-    }
-   }
-  )
-
-(defmethod ag-col-def :image [col op]
-  {:headerName (:label col)
-   :field (:id col) 
-   :cellRenderer (fn [params]
-                   (let [url (get (js->clj (.-data params) :keywordize-keys true) (:id col))]
-                     (reagent.dom/render
-                       [:img {:src url :height 30}]   ;; .ag-cell-auto-height doesn't work, unfortunately.
-                       (.-eGridCell params))))
-   }
-  )
-
-
-
-(defn wrap-brackets
-  [s]
-  (str "[" s "]"))
-
-
 ;;; Keep pointers to API objects for various purposes. This maps a keyword id to the appropriate API object.
 ;;; Note: this doesn't survive a figwheel reload. Maybe store in the re-frame db instead?
 (def ag-apis (atom {}))
@@ -126,19 +34,13 @@
   [x]
   (into {} (for [k (.keys js/Object x)] [(keyword k) (aget x k)])))
 
-(rf/reg-event-db
- :col-select
- (fn [db [_ col]]
-   (assoc db :column-selected col)))
-
-(rf/reg-sub
- :col-select
- (fn [db _]
-   (:column-selected db)))
-
-(defn ag-col-def1
-  [col-spec]
-  (ag-col-def col-spec (get ops/ops-indexed (:op col-spec))))
+;;; To be complected I'm sure
+(defn ag-col-def
+  [col]
+  {:headerName (name col)
+   :field col
+   }
+  )
 
 (defn ag-table
   "id: a keyword to identify this table
@@ -152,14 +54,7 @@
   [id columns data ag-grid-options & {:keys [checkboxes? class] :or {checkboxes? true}}]
   (if (empty? columns)
     (wu/spinner)
-    (let [column-defs (mapv ag-col-def1 columns)
-          column-defs (if checkboxes?
-                        (-> column-defs
-                            (assoc-in [0 :checkboxSelection] true)
-                            (assoc-in [0 :headerCheckboxSelection] true)
-                            (assoc-in [0 :headerCheckboxSelectionFilteredOnly] true))
-                        column-defs)
-          ]
+    (let [column-defs (mapv ag-col-def columns)          ]
       [:div.ag-container {:class class}
        [:div {:className "ag-theme-balham"}
         (let [grid-options

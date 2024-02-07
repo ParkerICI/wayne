@@ -3,6 +3,7 @@
             [re-frame.core :as rf]
             [wayne.frontend.aggrid :as ag]
             [org.candelbio.multitool.core :as u]
+            [wayne.way.tabs :as tab]
             [wayne.frontend.web-utils :as wu]
             [wayne.frontend.api :as api]
             [reagent.dom]
@@ -11,28 +12,40 @@
   )
 
 (rf/reg-event-db
- :loaded
+ ::loaded
  (fn [db [_ data]]
-   (do-vega (violin data "ROI"))        ;TODO generalize dim, can be "immunotherapy" (but needs label)
-   (assoc db :loading? false)))
+   #_ (do-vega (violin data "ROI"))        ;TODO generalize dim, can be "immunotherapy" (but needs label)
+   (assoc db
+          :patients data
+          :loading? false
+          )))
 
 (rf/reg-event-db
- :fetch
+ ::fetch
  (fn [db _]
-   (api/ajax-get "/api/v2/data0" {:params (:params db)
-                                  :handler #(rf/dispatch [:loaded %])
-                                  })
+   (api/ajax-get "/api/v2/patients" {:params (:params db)
+                                     :handler #(rf/dispatch [::loaded %])
+                                     })
    (assoc db :loading? true)))
 
+(rf/reg-sub
+ :patients
+ (fn [db _]
+   (:patients db)))
 
 (defn patients
   []
   [:div
-   [:h3 (:name @(rf/subscribe [::patients]))]
-   [ag/ag-table 
-    :sheet
-    @(rf/subscribe [::columns]) 
-    @(rf/subscribe [::rows])
-    {}
-    :checkboxes? false                 ;TODO They are there when we ready for them
-    ]])
+   [:h3 "Patients"]
+   (let [patients @(rf/subscribe [:patients])]
+     [ag/ag-table 
+      :patients
+      (keys (first patients))
+      patients
+      {}
+      ])])
+
+(defmethod tab/set-tab [:tab :patients]
+  [db]
+  (when-not (:patients db)
+    (rf/dispatch [::fetch])))
