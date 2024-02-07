@@ -10,6 +10,63 @@
             )
   )
 
+(def features
+  ["Olig2"
+   "CD133"
+   "EphA2"
+   "CD31"
+   "CD47"
+   "CD38"
+   "HLADR"
+   "CD45"
+   "CD4"
+   "CD8"
+   "CD86"
+   "PD1"
+   "CD14"
+   "Ki67"
+   "NG2"
+   "H3K27me3"
+   "ICOS"
+   "CD3"
+   "H3K27M"
+   "LAG3"
+   "B7H3"
+   "CD11b"
+   "GFAP"
+   "NeuN"
+   "IDO1"
+   "IDH1_R132H"
+   "TIM3"
+   "GM2_GD2"
+   "TMEM119"
+   "CD70"
+   "CD40"
+   "Tox"
+   "CD141"
+   "CD209"
+   "EGFR"
+   "CD206"
+   "FOXP3"
+   "Calprotectin"
+   "HLA1"
+   "EGFRvIII"
+   "ApoE"
+   "CD123"
+   "GLUT1"
+   "CD163"
+   "Chym_Tryp"
+   "GPC2"
+   "CD20"
+   "CD208"
+   "FoxP3"
+   "HER2"
+   "VISTA"
+   "CD68"
+   "PDL1"])
+
+(def sites '("CoH" "CHOP" "UCLA" "UCSF" "Stanford"))
+
 ;;; → Multitool
 (defn intercalate [l1 l2]
   (cond (empty? l1) l2
@@ -17,6 +74,7 @@
         :else (cons (first l1) (cons (first l2) (intercalate (rest l1) (rest l2))))))
 
 
+;;; Format for cljs
 ;;; → Multitool
 ;;; Not quite right eg if %s is at start or end
 (defn js-format
@@ -148,19 +206,42 @@
  :loaded
  (fn [db [_ data]]
    (do-vega (violin data "ROI"))        ;TODO generalize dim
-   db))
+   (assoc db :loading? false)))
 
 (rf/reg-event-db
  :fetch
- (fn [db [_ params]]
-   (api/ajax-get "/api/v2/data0" {:params params
-                      :handler #(rf/dispatch [:loaded %])
-                      })))
+ (fn [db _]
+   (api/ajax-get "/api/v2/data0" {:params (:params db)
+                                  :handler #(rf/dispatch [:loaded %])
+                                  })
+   (assoc db :loading? true)))
    
+(rf/reg-event-db
+ :set-param
+ (fn [db [_ param value]]
+   (prn :set-param param value db)
+   (rf/dispatch [:fetch])
+   (assoc-in db [:params param] value)))
+
 (defn violins
   []
   [:div
-   [:h2 "Sax and Violins"]
-   [:button {:on-click #(rf/dispatch [:fetch {:site "Stanford" :feature "CD86"}])} "Fetch"]
+   #_ [:h2 "Cue the Violins"]
+   [:nav.navbar.navbar-expand-lg
+    [:ul.navbar-nav.mr-auto
+    [:li.nav-item
+     (wu/select-widget
+      :site
+      nil                                 ;todo value
+      #(rf/dispatch [:set-param :site %])
+      sites
+      "Site")]
+    [:li.nav-item
+     (wu/select-widget
+      :feature
+      nil                                 ;todo value
+      #(rf/dispatch [:set-param :feature %])
+      features
+      "Feature")]]]
    (vega-div)
    ])

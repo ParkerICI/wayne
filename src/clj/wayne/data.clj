@@ -12,6 +12,27 @@ and feature_variable = '%s'
 and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
 " site feature))
 
+(defn sites
+  []
+  (map :site (bq/query "pici-internal" "select distinct site from `pici-internal.bruce_external.feature_table` ")))
+
+(defn feature-types
+  []
+  (map :feature_type (bq/query "pici-internal" "select distinct feature_type from `pici-internal.bruce_external.feature_table` ")))
+
+(def sites '("CoH" "CHOP" "UCLA" "UCSF" "Stanford"))
+
+;;; 14K features! Kind of useless
+(defn features
+  [site type]
+  (map :feature_variable
+       (bq/query "pici-internal"
+                 (format "select distinct feature_variable from `pici-internal.bruce_external.feature_table` where site = '%s' and feature_type = '%s'" site type))))
+
+(defn features+
+  [site]
+  (bq/query "pici-internal" (format  "select distinct feature_variable, feature_type  from `pici-internal.bruce_external.feature_table` where site = '%s'" site))))
+
 (defn clean-data
   [d]
   (map (fn [x] (update x :feature_value (fn [v] (if (= v "NA") nil (u/coerce-numeric v)))))

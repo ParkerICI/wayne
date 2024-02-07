@@ -8,17 +8,22 @@
 (defn header
   []
   [:div.header
-   [:h1 [:a.ent {:href "/"} "Wayne's World"]]
+   [:h1 "BRUCE features"]
    [:nav.navbar.navbar-expand-lg
-    [:li.nav-item
-     [:a {:href "/about"} "About"]
-     ]
     [:ul.navbar-nav.mr-auto
-     #_
-     (when @(rf/subscribe [:loading?])
-       (wu/spinner 2))
-     ]]
-   ])
+     [:li.nav-item
+      [:a {:href "/about"} "About"]
+      ]
+     [:li.navbar-nav
+      (when @(rf/subscribe [:loading?])
+        (wu/spinner 2))
+      ]]]])
+
+;;; WAY
+(rf/reg-sub
+ :loading?
+ (fn [db _]
+   (:loading? db)))
 
 (defn minimal
   []
