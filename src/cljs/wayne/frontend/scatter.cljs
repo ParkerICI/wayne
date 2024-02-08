@@ -1,7 +1,10 @@
 (ns wayne.frontend.scatter
-  (:require ["vega-embed" :as ve]
+  (:require [re-frame.core :as rf]
+            ["vega-embed" :as ve]
             [wayne.frontend.data :as data] ;temp
             [wayne.way.tabs :as tab]
+            [wayne.way.api :as api]
+            [wayne.way.web-utils :as wu]
             [reagent.dom]
             [clojure.string :as str]
             )
@@ -12,14 +15,22 @@
 
 (defn clean-zeros
   [data]
-  (map (fn [row] (update row :feature_value #(if (= % "0") nil %))) data))
+  (map (fn [row] (update row :feature_value #(if (or (= % 0) (= % "0")) nil %))) data))
 
 (defn spec
-  []
-  {:mark {:type "point", :tooltip {:content "data"}, :clip true},
-   :data {:values (clean-zeros data/cd4)}
+  [data]
+  {:mark {:type "point", :tooltip {:content "data"}, :clip true :filled true},
+   :data {:values (clean-zeros data)}
+   :params [{:name "sample",
+             :select {:type :point :fields ["sample_id"] :on "pointerdown"},
+             :bind "legend"
+
+             }],
    :encoding
    {"color" {:field "sample_id", :type "nominal"},
+    #_ :opacity #_  {:condition {:param "sample" :value 1} :value 0.1}
+    :size  {:condition {:param "sample" :value 100} :value 20}
+    :shape {:field "ROI" :type "nominal"}
     "y" {:field "cell_meta_cluster_final", :type "nominal"},
     "x"  {:field "feature_value"
           :type "quantitative"
@@ -27,38 +38,52 @@
                    ; :domainMax "10e-05"
                   },
           }},
-   :heightkig 700, 
+   :height 700, 
    :width 700, 
    })
 
 (defn do-vega
   [spec]
-  #_(js/vegaEmbed "#vis" (clj->js a-spec))
-  (js/module$node_modules$vega_embed$build$vega_embed.embed "#vis" (clj->js spec)))
+  (js/module$node_modules$vega_embed$build$vega_embed.embed "#vis1" (clj->js spec)))
+
+(rf/reg-event-db
+ :loaded
+ (fn [db [_ data]]
+   (do-vega (spec data))
+   (assoc db :loading? false)))
+
+(rf/reg-event-db
+ :fetch-scatter
+ (fn [db _]
+   (api/ajax-get "/api/v2/data0" {:params (:params db)
+                                  :handler #(rf/dispatch [:loaded %])
+                                  })
+   (assoc db :loading? true)))
 
 (defn plot
   []
   [:div
-   [:button {:on-click #(do-vega (spec))} "Fill"]
-   #_ [:nav.navbar.navbar-expand-lg
+   #_ [:button {:on-click #(do-vega (spec))} "Fill"]
+   [:nav.navbar.navbar-expand-lg
        [:ul.navbar-nav.mr-auto
         [:li.nav-item
          (wu/select-widget
           :site
           nil                                 ;todo value
           #(rf/dispatch [:set-param :site %])
-          sites
+          data/sites
           "Site")]
         [:li.nav-item
          (wu/select-widget
           :feature
           nil                                 ;todo value
           #(rf/dispatch [:set-param :feature %])
-          features
+          data/features
           "Feature")]]]
-   [:div#vis]
+   [:div#vis1]
    ])
 
 (defmethod tab/set-tab [:tab :scatter]
   [db]
-  (do-vega (spec)))
+  #_(do-vega (spec data)))
+

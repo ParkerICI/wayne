@@ -1,7 +1,8 @@
 (ns wayne.data
   (:require [wayne.bigquery :as bq]
             [taoensso.timbre :as log]
-            [org.candelbio.multitool.core :as u]))
+            [org.candelbio.multitool.core :as u]
+            [clojure.string :as str]))
 
 (defn query
   [q]
@@ -140,6 +141,7 @@ group by sample_id"))
   (map (fn [x] (update x :feature_value (fn [v] (if (= v "NA") nil (u/coerce-numeric v)))))
        d))
 
+#_
 (defn query0
   [{:keys [site feature]}]
   (select "ROI, immunotherapy, feature_value {from} 
@@ -149,6 +151,25 @@ and final_diagnosis = 'GBM'
 and feature_variable = '{feature}' 
 and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
 " :site site :feature feature))
+
+(defn sql-lit-list
+  [l]
+  (str "("
+       (str/join ", " (map #(str "'" % "'") l))
+       ")"))
+
+;;; This currently handles data for both Violin and Scatter panes
+(defn query0
+  [{:keys [site feature rois]}]
+  (select "ROI, immunotherapy, feature_value, patient_id, sample_id, cell_meta_cluster_final, fov, feature_variable {from} 
+where 
+site = '{site}' 
+and feature_variable = '{feature}' 
+{rois}
+"
+          :site site
+          :feature feature
+          :rois (if rois (str "and ROI IN " (sql-lit-list rois)) "")))
 
 (defn data0
   [params]

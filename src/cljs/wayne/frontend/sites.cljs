@@ -1,6 +1,6 @@
 (ns wayne.frontend.sites
   (:require [re-frame.core :as rf]
-            [wayne.frontend.aggrid :as ag]
+            [wayne.way.aggrid :as ag]
             [wayne.way.tabs :as tab]
             wayne.way.data
             [reagent.dom]

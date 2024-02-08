@@ -7,8 +7,8 @@
    [wayne.way.tabs :as tabs]
 
    [wayne.frontend.app :as app]   
-   [wayne.frontend.flash :as flash]
-   [wayne.frontend.modal :as modal]
+   [wayne.way.flash :as flash]
+   [wayne.way.modal :as modal]
 
    ;; TODO belongs in app probably oh well
    [wayne.frontend.violins :as violins]
