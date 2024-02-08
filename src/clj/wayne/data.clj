@@ -131,7 +131,9 @@ group by patient_id"))
 
 ;;; Cohorts
 
-(query "select cohort, count(distinct(patient_id)) as patients, count(distinct(sample_id)) as samples from `pici-internal.bruce_external.feature_table` group by cohort")
+(comment 
+  (query "select cohort, count(distinct(patient_id)) as patients, count(distinct(sample_id)) as samples from `pici-internal.bruce_external.feature_table` group by cohort")
+  )
 
 
 ;;;; Samples

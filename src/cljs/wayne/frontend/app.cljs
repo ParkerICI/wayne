@@ -8,7 +8,7 @@
 (defn header
   []
   [:div.header
-   [:h1 "Sketches for BRUCE Data Portal"]
+   [:h1 "Sketches for BRUCE Data Portal..."]
    [:nav.navbar.navbar-expand-lg
     [:ul.navbar-nav.mr-auto
      ;; Note: no real items here, its all in tabs

@@ -6,3 +6,17 @@ Mostly focusing on db related stuff here.
 
 https://mail.google.com/mail/u/1/#inbox/FMfcgzGwJvmLgmVhwRShGHrGDTkzlwph
 
+* Deploy
+
+Heroku, =bin/deploy.sh=
+
+Credentials are supplied through env vars:
+=GOOGLE_APPLICATION_CREDENTIALS: google-credentials.json=
+=GOOGLE_CREDENTIALS:             <json string>=
+
+On Heroku, the creds are written to the file =google-credentials.json= on startup.
+
+
+
+
+
