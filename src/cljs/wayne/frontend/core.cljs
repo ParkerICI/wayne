@@ -26,7 +26,10 @@
 
 (defn about
   []
-  [:div "Explanatory drivel"])
+  [:div.p-3 "Experiments towards a BRUCE Data Portal."
+   [:ul
+    [:li [:a {:href "https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit?usp=sharing"} "Design document"]]
+    ]])
 
 (defn app-ui
   []
@@ -34,17 +37,14 @@
    [modal/modal]
    [app/header]
    [flash/flash]
-   #_
-   (case @(rf/subscribe [:page])        ;NOTE: this is useless and confused, flush or replace with real nav
-     )
-   #_ [app/minimal]
    [tabs/tabs
     :tab
     {:home about
-     :violin violins/violins
      :sites sites/sites
      :patients patients/patients
-     :samples samples/samples}]
+     :samples samples/samples
+     :violin violins/violins
+     }]
    #_ [footer]
    ])
 
@@ -52,7 +52,6 @@
  ::initialize-db
  (fn [_ _]
    {:app "wayne"
-    :page :home
     }))
 
 (defn ^:dev/after-load mount-root

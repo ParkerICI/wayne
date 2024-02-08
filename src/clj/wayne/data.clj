@@ -108,8 +108,19 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
 ;;; Note: this is a big fucking pain, might want to generate it from a schema
 (defn patient-table
   []
-  (query "select patient_id, ANY_VALUE(site) as site, ANY_VALUE(`group`) as `group`, ANY_VALUE(cohort) as cohort, ANY_VALUE(immunotherapy) as immunotherapy, array_agg(distinct(who_grade)) as who_grade, array_agg(distinct(final_diagnosis)) as final_diagnosis, ANY_VALUE(recurrence) as recurrence, ANY_VALUE(progression) as progression, array_agg(distinct(sample_id)) as samples from `pici-internal.bruce_external.feature_table` group by patient_id"))
-
+  (query "select patient_id,
+ANY_VALUE(site) as site, 
+ANY_VALUE(`group`) as `group`, 
+ANY_VALUE(cohort) as cohort, 
+ANY_VALUE(immunotherapy) as immunotherapy, 
+array_agg(distinct(who_grade)) as who_grade, 
+array_agg(distinct(final_diagnosis)) as final_diagnosis, 
+ANY_VALUE(recurrence) as recurrence, 
+ANY_VALUE(progression) as progression, 
+array_agg(distinct(sample_id)) as samples,
+array_agg(distinct(fov)) as fovs
+from `pici-internal.bruce_external.feature_table` 
+group by patient_id"))
 
 ;;; Sites
 
@@ -126,7 +137,13 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
 ;;;; Samples
 (defn sample-table
   []
-  (query "select sample_id, any_value(patient_id) as patient_id, count(1) as values, count(distinct(feature_variable)) as features from `pici-internal.bruce_external.feature_table` group by sample_id"))
+  (query "select sample_id, 
+any_value(patient_id) as patient_id, 
+any_value(fov) as fov, 
+count(1) as values, 
+count(distinct(feature_variable)) as features
+from `pici-internal.bruce_external.feature_table` 
+group by sample_id"))
 
 
 (defn data

@@ -40,6 +40,10 @@
 
 (defmulti set-tab (fn [id tab db] [id tab]))
 
+(defmethod set-tab :default
+  [id tab db]
+  (prn "no set-tab for" [id tab]))      ;Not an error, this might be very normal
+
 (rf/reg-event-db
  :choose-tab
  (fn [db [_ id tab]]
