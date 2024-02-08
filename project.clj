@@ -9,6 +9,8 @@
                  [org.clojure/data.json "2.5.0"]
                  [environ "1.2.0"]
                  [com.taoensso/timbre "6.3.1"]
+                 ;; This breaks gcs interface for some dependency shit, need to resolve
+                 #_ [me.raynes/fs "1.4.6"]
                  ;; TODO alzabo
 
                  ;; Backend
@@ -35,26 +37,17 @@
                  [cljs-ajax "0.8.0"]
                  [day8.re-frame/tracing "0.6.2"]      ;TODO dev only
                  [day8.re-frame/re-frame-10x "1.9.3"] ;TODO dev only
+                 #_ [metasoarous/oz "1.6.0-alpha36"]
                  ;; in package.json
                  ;; ag-grid
                  ;; vega
                  ;; highlight? (Not sure if needed)
 
-
-
                  ;;; Wayne specific
 
-                 ;; This breaks gcs interface for some dependency shit, need to resolve
-                 #_ [voracious "0.1.3"]
-                 #_ [me.raynes/fs "1.4.6"]
                  [com.google.cloud/google-cloud-bigquery "2.27.0"]
                  [com.google.cloud/google-cloud-datastore "2.14.7"]
                  [com.google.cloud/google-cloud-storage "2.22.3"]
-                 ;; Might need exclusions, see rawsugar
-                 [com.google.cloud/google-cloud-storage "1.75.0"]
-                 #_ [com.google.auth/google-auth-library-oauth2-http "0.18.0"]
-                 [metasoarous/oz "1.6.0-alpha36"]
-                 #_ [gg4clj "0.1.0"]
 
                  ]
   :main ^:skip-aot wayne.core

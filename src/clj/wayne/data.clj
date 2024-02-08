@@ -7,23 +7,23 @@
   [q]
   (bq/query "pici-internal" q))
 
-(defn query0
-  [{:keys [site feature]}]
-  (format "SELECT ROI, immunotherapy, feature_value FROM `pici-internal.bruce_external.feature_table` 
-where 
-site = '%s' 
-and final_diagnosis = 'GBM' 
-and feature_variable = '%s' 
-and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
-" site feature))
+;;; Not only for DRY purposes, reduces impact of SQL injection attacks
+(defn select
+  [q & {:keys [] :as args}]
+  (bq/query "pici-internal"
+            (u/expand-template
+             (str "select " q)
+             (merge args
+                    {:from " FROM `pici-internal.bruce_external.feature_table` "})
+             :key-fn keyword)))
 
 (defn sites
   []
-  (map :site (query "select distinct site from `pici-internal.bruce_external.feature_table` ")))
+  (map :site (select "distinct site {from} ")))
 
 (defn feature-types
   []
-  (map :feature_type (query "select distinct feature_type from `pici-internal.bruce_external.feature_table` ")))
+  (map :feature_type (select "distinct feature_type {from} ")))
 
 (def sites '("CoH" "CHOP" "UCLA" "UCSF" "Stanford"))
 
@@ -31,29 +31,20 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
 (defn features
   [site type]
   (map :feature_variable
-       (query
-        (format "select distinct feature_variable from `pici-internal.bruce_external.feature_table` where site = '%s' and feature_type = '%s'" site type))))
+       (select
+        "distinct feature_variable {from} where site = '{site}' and feature_type = '{type}'" :site site :type  type)))
 
 (defn features+
   [site]
-  (query (format  "select distinct feature_variable, feature_type  from `pici-internal.bruce_external.feature_table` where site = '%s'" site)))
+  (select "distinct feature_variable, feature_type {from} where site = '{site}'"  :site site))
 
 (defn feature-count
   []
-  (query
-   "select site, feature_type, count(distinct(feature_variable)) from `pici-internal.bruce_external.feature_table` group by site, feature_type"))
+  (select "site, feature_type, count(distinct(feature_variable)) {from} group by site, feature_type"))
 
-(defn clean-data
-  [d]
-  (map (fn [x] (update x :feature_value (fn [v] (if (= v "NA") nil (u/coerce-numeric v)))))
-       d))
 
-(defn data0
-  [params]
-  (let [q (query0 params)]
-    (prn :data params q)
-    (->> (query q)
-         clean-data)))
+
+
 
 #_(api {:site "Stanford" :feature "CD86"})
 
@@ -62,16 +53,12 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
 
 ;;; Patient and sample
 
-(defn patients
-  []
-  (query "select distinct patient_id, site from `pici-internal.bruce_external.feature_table`"))
-
-(defn samples-per-patient
-  []
-  (query "select patient_id, count(distinct(sample_id)) from `pici-internal.bruce_external.feature_table` group by patient_id"))
-
 
 (comment
+  (defn samples-per-patient
+    []
+    (select "patient_id, count(distinct(sample_id)) {from} group by patient_id"))
+
   (def p0 (query "select * from `pici-internal.bruce_external.feature_table` where patient_id = '49178'"))
 
   (zipmap (keys (first p0)) (map #(count (distinct (map (fn [row] (get row %)) p0))) (keys (first p0))))
@@ -95,20 +82,11 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
    :progression 1}
   )
 
-;;; Simple
-#_
-(defn patient-table
-  []
-  ;; final_diagnosis and who_grade can have multiple values, so leaving out the former
-  ;; TODO add samples
-  (query "select distinct patient_id, site, `group`, cohort, immunotherapy, who_grade, recurrence, progression from `pici-internal.bruce_external.feature_table`"))
-
-
 ;;; includes samples and aggregates into vector when necessary
-;;; Note: this is a big fucking pain, might want to generate it from a schema
+;;; Note: this is a big pain, might want to generate it from a schema
 (defn patient-table
   []
-  (query "select patient_id,
+  (select "patient_id,
 ANY_VALUE(site) as site, 
 ANY_VALUE(`group`) as `group`, 
 ANY_VALUE(cohort) as cohort, 
@@ -119,14 +97,14 @@ ANY_VALUE(recurrence) as recurrence,
 ANY_VALUE(progression) as progression, 
 array_agg(distinct(sample_id)) as samples,
 array_agg(distinct(fov)) as fovs
-from `pici-internal.bruce_external.feature_table` 
+{from}
 group by patient_id"))
 
 ;;; Sites
 
 (defn site-table
   []
-  (query "select site, count(distinct(patient_id)) as patients, count(distinct(sample_id)) as samples from `pici-internal.bruce_external.feature_table` group by site"))
+  (select "site, count(distinct(patient_id)) as patients, count(distinct(sample_id)) as samples {from} group by site"))
 
 
 ;;; Cohorts
@@ -135,16 +113,15 @@ group by patient_id"))
   (query "select cohort, count(distinct(patient_id)) as patients, count(distinct(sample_id)) as samples from `pici-internal.bruce_external.feature_table` group by cohort")
   )
 
-
 ;;;; Samples
 (defn sample-table
   []
-  (query "select sample_id, 
+  (select "sample_id, 
 any_value(patient_id) as patient_id, 
 any_value(fov) as fov, 
 count(1) as values, 
 count(distinct(feature_variable)) as features
-from `pici-internal.bruce_external.feature_table` 
+{from}
 group by sample_id"))
 
 
@@ -155,3 +132,25 @@ group by sample_id"))
     "patients" (patient-table)
     "sites" (site-table)
     "samples" (sample-table)))
+
+;;; For violins
+
+(defn clean-data
+  [d]
+  (map (fn [x] (update x :feature_value (fn [v] (if (= v "NA") nil (u/coerce-numeric v)))))
+       d))
+
+(defn query0
+  [{:keys [site feature]}]
+  (select "ROI, immunotherapy, feature_value {from} 
+where 
+site = '{site}' 
+and final_diagnosis = 'GBM' 
+and feature_variable = '{feature}' 
+and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
+" :site site :feature feature))
+
+(defn data0
+  [params]
+  (-> (query0 params)
+      clean-data))
