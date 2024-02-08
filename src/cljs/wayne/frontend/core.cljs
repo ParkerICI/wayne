@@ -15,6 +15,7 @@
    [wayne.frontend.patients :as patients]
    [wayne.frontend.sites :as sites]
    [wayne.frontend.samples :as samples]
+   [wayne.frontend.scatter :as scatter]
 
    [org.candelbio.multitool.core :as u]
    [clojure.string :as str]
@@ -44,6 +45,7 @@
      :patients patients/patients
      :samples samples/samples
      :violin violins/violins
+     :scatter scatter/plot
      }]
    #_ [footer]
    ])

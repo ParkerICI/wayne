@@ -17,6 +17,7 @@ Credentials are supplied through env vars:
 On Heroku, the creds are written to the file =google-credentials.json= on startup.
 
 
+https://nameless-plains-89326-4086253ce8be.herokuapp.com/
 
-
+Credentials: PICI/Broooce
 

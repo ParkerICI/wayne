@@ -229,7 +229,6 @@
 (defn violins
   []
   [:div
-   #_ [:h2 "Cue the Violins"]
    [:nav.navbar.navbar-expand-lg
     [:ul.navbar-nav.mr-auto
     [:li.nav-item
