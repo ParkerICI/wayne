@@ -1,7 +1,7 @@
-(ns wayne.frontend.modal
+(ns wayne.way.modal
   (:require
    [re-frame.core :as rf]
-    [wayne.frontend.web-utils :as wu]))
+    [wayne.way.web-utils :as wu]))
 
 (rf/reg-event-db
  :modal

@@ -1,9 +1,7 @@
 (ns wayne.way.data
   (:require [re-frame.core :as rf]
-            [org.candelbio.multitool.core :as u]
-            [wayne.frontend.api :as api]
+            [wayne.way.api :as api]
             [reagent.dom]
-            [clojure.string :as str]
             )
   )
 

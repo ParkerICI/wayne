@@ -1,8 +1,6 @@
 (ns wayne.frontend.app
   (:require [re-frame.core :as rf]
-            [reagent.core :as reagent]
-            [org.candelbio.multitool.core :as u]
-            [wayne.frontend.web-utils :as wu]
+            [wayne.way.web-utils :as wu]
             ))
 
 (defn header

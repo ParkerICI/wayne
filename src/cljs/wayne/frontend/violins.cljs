@@ -1,10 +1,8 @@
 (ns wayne.frontend.violins
-  (:require [reagent.core :as reagent]
-            [re-frame.core :as rf]
+  (:require [re-frame.core :as rf]
             ["vega-embed" :as ve]
-            [org.candelbio.multitool.core :as u]
-            [wayne.frontend.web-utils :as wu]
-            [wayne.frontend.api :as api]
+            [wayne.way.web-utils :as wu]
+            [wayne.way.api :as api]
             [wayne.way.tabs :as tab]
             [reagent.dom]
             [clojure.string :as str]

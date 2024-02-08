@@ -1,10 +1,5 @@
 (ns wayne.frontend.scatter
-  (:require [reagent.core :as reagent]
-            [re-frame.core :as rf]
-            ["vega-embed" :as ve]
-            [org.candelbio.multitool.core :as u]
-            [wayne.frontend.web-utils :as wu]
-            [wayne.frontend.api :as api]
+  (:require ["vega-embed" :as ve]
             [wayne.frontend.data :as data] ;temp
             [wayne.way.tabs :as tab]
             [reagent.dom]

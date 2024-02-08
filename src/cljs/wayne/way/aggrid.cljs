@@ -1,11 +1,11 @@
-(ns wayne.frontend.aggrid
+(ns wayne.way.aggrid
   (:require [reagent.core :as reagent]
             [re-frame.core :as rf]
             ["ag-grid-community" :as ag]
             ["ag-grid-enterprise" :as age]
             ["ag-grid-react" :as agr]
             [org.candelbio.multitool.core :as u]
-            [wayne.frontend.web-utils :as wu]
+            [wayne.way.web-utils :as wu]
             [reagent.dom]
             [clojure.string :as str]
             )

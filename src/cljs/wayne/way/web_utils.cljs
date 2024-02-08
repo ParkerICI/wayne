@@ -1,4 +1,4 @@
-(ns wayne.frontend.web-utils
+(ns wayne.way.web-utils
   (:require [clojure.string :as str]
             [re-frame.core :as rf]
             [re-frame.db :as rf-db]
