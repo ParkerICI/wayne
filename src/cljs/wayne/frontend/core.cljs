@@ -45,7 +45,8 @@
      :patients patients/patients
      :samples samples/samples
      :violin violins/violins
-     :scatter scatter/plot
+     :dotplot scatter/plot              ;yes these are the same, the vega spec gets switched out with a kludge
+     :barchart scatter/plot
      }]
    #_ [footer]
    ])

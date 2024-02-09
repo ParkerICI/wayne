@@ -17,7 +17,9 @@
   [data]
   (map (fn [row] (update row :feature_value #(if (or (= % 0) (= % "0")) nil %))) data))
 
-(defn spec
+
+;;; Dotplot
+(defn dot-spec
   [data]
   {:mark {:type "point", :tooltip {:content "data"}, :clip true :filled true},
    :data {:values (clean-zeros data)}
@@ -42,6 +44,21 @@
    :width 700, 
    })
 
+
+;;; Stacked bars from Enjun
+(defn bar-spec
+  [data]
+  {:mark {:type "bar", :tooltip {:content "data"}},
+   :data {:values (clean-zeros data)}
+   :encoding
+   {"y" {:field "sample_id", :type "nominal"},
+    "x" {:aggregate "count"
+         :type "quantitative"}
+    "color" {:field "cell_meta_cluster_final", :type "nominal"}
+    }
+   :width 700, 
+   })
+
 (defn do-vega
   [spec]
   (js/module$node_modules$vega_embed$build$vega_embed.embed "#vis1" (clj->js spec)))
@@ -49,8 +66,11 @@
 (rf/reg-event-db
  :loaded
  (fn [db [_ data]]
-   (do-vega (spec data))
-   (assoc db :loading? false)))
+   (let [spec (case (get-in db [:active-tab :tab])
+                :dotplot dot-spec
+                :barchart bar-spec)]
+     (do-vega (spec data))
+     (assoc db :loading? false))))
 
 (rf/reg-event-db
  :fetch-scatter
@@ -83,7 +103,14 @@
    [:div#vis1]
    ])
 
-(defmethod tab/set-tab [:tab :scatter]
+(defmethod tab/set-tab [:tab :dotplot]
   [db]
-  #_(do-vega (spec data)))
+  (do-vega {}))
+
+(defmethod tab/set-tab [:tab :barchart]
+  [db]
+  (do-vega {}))
+
+
+                                        ;Since we are multiplexing, clear on tab switch
 
