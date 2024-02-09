@@ -6,8 +6,8 @@
             [ring.middleware.basic-authentication :refer [wrap-basic-authentication]]
             [org.candelbio.multitool.core :as u]
             [org.candelbio.multitool.cljcore :as ju]
-            [wayne.views.html :as html]
-            [wayne.views.admin :as admin]
+            [way.views.html :as html]
+            [way.views.admin :as admin]
             [wayne.data :as data]
             [ring.logger :as logger]
             [ring.middleware.session.memory :as ring-memory]
@@ -20,6 +20,8 @@
             )
   (:use [hiccup.core])
   )
+
+;;; TODO split into generic (way) part and app speecific
 
 ;;; TEMP obviously, to be replaced with actual authentication and user state
 (def basic-auth-creds ["PICI" "Broooce"])

@@ -1,6 +1,7 @@
 (ns wayne.core
   (:gen-class)
-  (:require [wayne.server :as server]
+  (:require [way.server :as server]
+            [wayne.handler :as handler]
             [org.candelbio.multitool.cljcore :as ju]
             [taoensso.timbre :as log]
             [environ.core :as env]))
@@ -17,7 +18,7 @@
   (let [port (env/env :port)]
     (log/info "Starting server on port" port)
     (heroku-deploy-hack)
-    (server/start (Integer. port))
+    (server/start (Integer. port) handler/app)
     ;; Smart enough to be a no-op on server
     (ju/open-url (format "http://localhost:%s" port))
     ))

@@ -1,6 +1,6 @@
-(ns wayne.views.admin
+(ns way.views.admin
   (:require [environ.core :as env]
-            [wayne.views.html :as html]
+            [way.views.html :as html]
             [hiccup.util :as hu]
             )
   )

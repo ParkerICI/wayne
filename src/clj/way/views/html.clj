@@ -1,4 +1,4 @@
-(ns wayne.views.html
+(ns way.views.html
   (:require [clojure.string :as str]
             [environ.core :as env]
             )
@@ -30,7 +30,7 @@
     ]])
 
 (defn home-link []
-  [:a {:href "/"} "Wayne"])
+  [:a {:href "/"} "Home"])              ;TODO should be customizable
 
 (defn html-frame
   [{:keys [page project]} title contents]
@@ -38,7 +38,7 @@
   (html
    [:html
     [:head
-     [:title (str "Wayne: " (html-flatten title))]
+     [:title (html-flatten title)]
      [:meta {:charset "UTF-16"}]
      [:link {:href "https://fonts.googleapis.com/icon?family=Material+Icons"
              :rel "stylesheet"}]
@@ -47,7 +47,7 @@
              :integrity "sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
              :crossorigin "anonymous"}]
      [:link {:rel "stylesheet"
-             :href "/css/wayne.css"}]
+             :href "/css/wayne.css"}]   ;TODO
      [:link {:href "https://fonts.googleapis.com/css2?family=Roboto&display=swap"
              :rel"stylesheet"}]
      [:link {:href "https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -105,7 +105,7 @@
   (html
    [:html
     [:head
-     [:title "Wayne"]
+     [:title "Wayne"]                   ;TODO
      [:meta {:charset "UTF-16"}]
      [:link {:href "https://fonts.googleapis.com/icon?family=Material+Icons"
              :rel "stylesheet"}]
@@ -113,7 +113,7 @@
              :href "https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" 
              :integrity "sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
              :crossorigin "anonymous"}]
-     [:link {:rel "stylesheet" :href "/css/wayne.css"}]
+     [:link {:rel "stylesheet" :href "/css/wayne.css"}] ;TODO
      [:link {:rel "stylesheet" :href "/css/re-com.css"}]
      ;; Seems to not work with bootstrap?
      [:link {:href "https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -130,7 +130,7 @@
      [:script {:src "https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
                :integrity "sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
                :crossorigin "anonymous"}]
-     [:script "window.onload = function() { wayne.frontend.core.init('user'); }"]
+     [:script "window.onload = function() { wayne.frontend.core.init('user'); }"] ;TODO
      ]]))
 
 
