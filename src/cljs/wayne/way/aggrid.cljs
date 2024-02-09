@@ -70,8 +70,8 @@
               :columnDefs column-defs
               ;; :suppressFieldDotNotation true
               :rowData data
-              :suppressRowHoverHighlight true ;Be column-centric
-              :columnHoverHighlight true
+              ;; :suppressRowHoverHighlight true ;Be column-centric
+              ;; :columnHoverHighlight true
               ;; :rowSelection "multiple"  ; no, this is fugly, use checkboxes if we need to do this
               ;; :rowMultiSelectWithClick true
               ;; :rowDeselection true
