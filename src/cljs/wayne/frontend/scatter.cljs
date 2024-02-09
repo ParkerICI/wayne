@@ -2,9 +2,9 @@
   (:require [re-frame.core :as rf]
             ["vega-embed" :as ve]
             [wayne.frontend.data :as data] ;temp
-            [wayne.way.tabs :as tab]
-            [wayne.way.api :as api]
-            [wayne.way.web-utils :as wu]
+            [way.tabs :as tab]
+            [way.api :as api]
+            [way.web-utils :as wu]
             [reagent.dom]
             [clojure.string :as str]
             )

@@ -1,4 +1,4 @@
-(ns wayne.way.api
+(ns way.api
   (:require [re-frame.core :as rf]
             [ajax.core :as ajax]
             ))

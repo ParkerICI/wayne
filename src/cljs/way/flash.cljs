@@ -1,4 +1,4 @@
-(ns wayne.way.flash
+(ns way.flash
   (:require
    [re-frame.core :as rf]))
 

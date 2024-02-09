@@ -1,6 +1,6 @@
-(ns wayne.way.data
+(ns way.data
   (:require [re-frame.core :as rf]
-            [wayne.way.api :as api]
+            [way.api :as api]
             [reagent.dom]
             )
   )

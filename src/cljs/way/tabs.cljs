@@ -1,4 +1,4 @@
-(ns wayne.way.tabs
+(ns way.tabs
   (:require
    ["react-dom/client" :refer [createRoot]]
    [goog.dom :as gdom]

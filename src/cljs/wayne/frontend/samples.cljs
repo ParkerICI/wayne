@@ -1,8 +1,8 @@
 (ns wayne.frontend.samples
   (:require [re-frame.core :as rf]
-            [wayne.way.aggrid :as ag]
-            [wayne.way.tabs :as tab]
-            wayne.way.data
+            [way.aggrid :as ag]
+            [way.tabs :as tab]
+            way.data
             [reagent.dom]
             )
   )
