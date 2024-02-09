@@ -1,7 +1,6 @@
 (ns wayne.bigquery
   (:require [org.candelbio.multitool.core :as u]
             [clojure.data.json :as json]
-            #_ [catamite.utils :as cu]
             )
   (:import [com.google.cloud.bigquery BigQuery BigQueryOptions
             TableId
@@ -14,7 +13,7 @@
             BigQuery$TableOption
             BigQuery$JobOption
             QueryJobConfiguration
-])
+            ])
   )
 
 ;;; Authentication is via ~/.config/gcloud/application_default_credentials.json , set by gcloud cli:
@@ -59,10 +58,6 @@
                 (.iterateAll)
                 (.iterator)
                 iterator-seq))
-
-#_
-(def ds (.getDataset service dataset-id (make-array BigQuery$DatasetOption 0)))
-
 
 (defn table-schema
   [t]
@@ -151,18 +146,6 @@
         ]
     results))
   
-(comment
-  (query project-id "select trim(fuckme, \" []'\"), flow_id, flow_run_id  from ganymede_dev.__FLOW_METADATA, unnest(split(inputs, ',')) as fuckme where inputs LIKE '%sample_2.csv%' limit 10")
-
-  (query project-id "select parsed, inputs, flow_id, flow_run_id from ganymede_dev.__FLOW_METADATA, unnest(json_extract_array(inputs)) as parsed  limit 100")
-
-  (query project-id "ganymede-dev-core" "select *  from ganymede_dev.__FLOW_METADATA where inputs LIKE '%gs:%'")
-
-  )
-
-;;; Think this is wrong. inputs_dict is real JSON, inputs is an array of single-quoted garbage.
-
-
 (defn parse-json
   [s]
   (when s
@@ -174,56 +157,10 @@
         (prn :bad-json s e)
         nil))))
 
-(defn parse-jank
-  [s]
-  (map second (re-seq #"'(.*?)'" s)))
-
-(defn flow-metadata
-  [env]
-  (map (fn [row]
-         (-> row
-             (assoc :inputs_raw (:inputs row))
-             (update :inputs parse-jank) ;This might be entirely redundant with the dict
-             (update :inputs_dict #(if (empty? %) nil (json/read-str %)))))
-       (query "ganymede-core" (format "select * from %s.__FLOW_METADATA" env))))
-
-(defn output-metadata
-  [env]
-  (map (fn [row]
-         (-> row
-             ))
-       (query "ganymede-core" (format "select * from %s.__OUTPUT_METADATA" env))))
-
-(defn table-metadata
-  [env]
-  (map (fn [row]
-         (-> row
-             (update :table_columns parse-json)
-             ))
-       (query "ganymede-core" (format "select * from %s.__TABLE_METADATA" env))))
-
-;;; __DATA_METADATA doesn't seem to actually be used
-
-(defn flow-row-files
-  [{:keys [inputs_dict inputs] :as flow-row}]
-    (filter #(and (string? %) (re-find #"/" %))
-            (if inputs_dict
-              (flatten (vals inputs_dict))
-              (flatten inputs))))
-
-;;; TODO other table?
-(defn metadata-files
-  [env]
-  (->> env
-       flow-metadata
-       (mapcat flow-row-files)
-       distinct))
-
 (def lookup-type
   {"STRING" StandardSQLTypeName/STRING})
 
 ;;; Schema is [[name0 type0]...]
-
 
 (defn create-table
   [project dataset-name table schema]
@@ -238,7 +175,7 @@
         table-info (.build (TableInfo/newBuilder table-id table-def))]
     (.create (service project) table-info (make-array BigQuery$TableOption 0))))
 
-;;; Ex: (add-row "ganymede-core-dev" (table-named (dataset-named "ganymede-core-dev" "ganymede_dev") "mt_timestamp_test") {"name" "foo" "time" "2023-07-10"})
+;;; Ex: (add-row "project" (table-named (dataset-named "project" "dataset") "table") {"name" "foo" "time" "2023-07-10"})
 (defn add-row
   [project table row]
   (.insertAll
@@ -262,28 +199,7 @@
        (.addRow builder (str (gensym "row")) (clean-row row)))
      (.build builder))))  
 
-(comment
-  (def foo (query project-id
-                  "select trim(split, \" []'\") as inputx, flow_run_id, flow_id, initiator, initiator_type  from ganymede_dev.__FLOW_METADATA, unnest(split(inputs, ',')) as split limit 100"))
-  )
 
-
-
-(comment
-(defn dev-tables
-  [project-id dataset-id]
-  (bq/tables (dataset-named project-id dataset-id)))
-
-(defn dev-table
-  [named]
-  (table-named (dataset-named project-id dataset-id) named))
-
-;;; Find me a table with a boolean column
-  (doseq [t (dev-tables)]
-    (doseq [f (table-schema-max project-id t)]
-      (when (= "BOOLEAN" (str (:type f)))
-        (prn :hey t f))))
-  )
 
 
 
