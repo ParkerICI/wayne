@@ -52,64 +52,62 @@
   checkboxes?: control whether checkboxes appear, defaults true
   class: css class to use for grid"
   [id columns data ag-grid-options & {:keys [checkboxes? class] :or {checkboxes? true}}]
-  (if (empty? columns)
-    (wu/spinner)
-    (let [column-defs (mapv ag-col-def columns)          ]
-      [:div.ag-container {:class class}
-       [:div {:className "ag-theme-balham"}
-        (let [grid-options
-              (merge                     ;merges grid options, optional detail grid options, and user supplied options
-               {:defaultColDef {:sortable true
-                                :filter "agTextColumnFilter" ; TODO have type-specific filters, see https://www.ag-grid.com/javascript-grid-filtering/#configuring-filters-to-columns
-                                :resizable true
-                                :minWidth 55 ;TODO(ag-grid) autoSize doesn't seem to respect this, it should
-                                }
-                :onGridReady (fn [params]
-                               (swap! ag-apis assoc id (.-api params)))
-                :onFirstDataRendered (fn [params]
-                                       (let [column-api (.-columnApi params)] 
-                                         (.autoSizeColumns column-api (apply array (map :field column-defs)))))
-                :columnDefs column-defs
-                ;; :suppressFieldDotNotation true
-                :rowData data
-                :suppressRowHoverHighlight true ;Be column-centric
-                :columnHoverHighlight true
-                ;; :rowSelection "multiple"  ; no, this is fugly, use checkboxes if we need to do this
-                ;; :rowMultiSelectWithClick true
-                ;; :rowDeselection true
-                :onColumnHeaderClicked (fn [params]
-                                         (let [col (jsx->clj (.-column params))]
-                                           (rf/dispatch [:col-select (:colId col)])))
-                :pagination true
-                :paginationAutoPageSize true
-                :sideBar {:hiddenByDefault false ; visible but closed
-                          :toolPanels [{:id "columns"
-                                        :labelDefault "Columns"
-                                        :labelKey "columns"
-                                        :iconKey "columns"
-                                        :toolPanel "agColumnsToolPanel"
-                                        ;; Turning these off for now, might want to revisit in the future. Possibly incompatible with the master/detail feature?
-                                        :toolPanelParams {:suppressRowGroups true
-                                                          :suppressValues true
-                                                          :suppressPivots true 
-                                                          :suppressPivotMode true}
-                                        }
-                                       {:id "filters"
-                                        :labelDefault "Filters"
-                                        :labelKey "filters"
-                                        :iconKey "filter"
-                                        :toolPanel "agFiltersToolPanel"
-                                        }]
-                          }
-                :animateRows true
-                :statusBar {:statusPanels [{:statusPanel "agTotalAndFilteredRowCountComponent"
-                                            :align "left"}]}
-                }
-               ag-grid-options)]
-          ;; debug tool, for reporting config to ag-grid.com
-          ;;         (print (.stringify js/JSON (clj->js grid-options)))
-          [ag-adapter grid-options])
-        ]])))
+  (let [column-defs (mapv ag-col-def columns)          ]
+    [:div.ag-container {:class class}
+     [:div {:className "ag-theme-balham"}
+      (let [grid-options
+            (merge                     ;merges grid options, optional detail grid options, and user supplied options
+             {:defaultColDef {:sortable true
+                              :filter "agTextColumnFilter" ; TODO have type-specific filters, see https://www.ag-grid.com/javascript-grid-filtering/#configuring-filters-to-columns
+                              :resizable true
+                              :minWidth 55 ;TODO(ag-grid) autoSize doesn't seem to respect this, it should
+                              }
+              :onGridReady (fn [params]
+                             (swap! ag-apis assoc id (.-api params)))
+              :onFirstDataRendered (fn [params]
+                                     (let [column-api (.-columnApi params)] 
+                                       (.autoSizeColumns column-api (apply array (map :field column-defs)))))
+              :columnDefs column-defs
+              ;; :suppressFieldDotNotation true
+              :rowData data
+              :suppressRowHoverHighlight true ;Be column-centric
+              :columnHoverHighlight true
+              ;; :rowSelection "multiple"  ; no, this is fugly, use checkboxes if we need to do this
+              ;; :rowMultiSelectWithClick true
+              ;; :rowDeselection true
+              :onColumnHeaderClicked (fn [params]
+                                       (let [col (jsx->clj (.-column params))]
+                                         (rf/dispatch [:col-select (:colId col)])))
+              :pagination true
+              :paginationAutoPageSize true
+              :sideBar {:hiddenByDefault false ; visible but closed
+                        :toolPanels [{:id "columns"
+                                      :labelDefault "Columns"
+                                      :labelKey "columns"
+                                      :iconKey "columns"
+                                      :toolPanel "agColumnsToolPanel"
+                                      ;; Turning these off for now, might want to revisit in the future. Possibly incompatible with the master/detail feature?
+                                      :toolPanelParams {:suppressRowGroups true
+                                                        :suppressValues true
+                                                        :suppressPivots true 
+                                                        :suppressPivotMode true}
+                                      }
+                                     {:id "filters"
+                                      :labelDefault "Filters"
+                                      :labelKey "filters"
+                                      :iconKey "filter"
+                                      :toolPanel "agFiltersToolPanel"
+                                      }]
+                        }
+              :animateRows true
+              :statusBar {:statusPanels [{:statusPanel "agTotalAndFilteredRowCountComponent"
+                                          :align "left"}]}
+              }
+             ag-grid-options)]
+        ;; debug tool, for reporting config to ag-grid.com
+        ;;         (print (.stringify js/JSON (clj->js grid-options)))
+        [ag-adapter grid-options])
+      ]]))
 
 
 ;;; See https://ag-grid.com/react-data-grid/view-refresh/#redraw-rows

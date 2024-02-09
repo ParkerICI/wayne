@@ -247,12 +247,12 @@ setter #(let [value @(rf/subscribe [::edited-value key])]
   "Make a spinner. Size 10 is big, size 1 or 2 is good"
   [& [size]]
   (let [size (or size 10)]
-    [:div.text-center
-     [:div.spinner-border.pici-purple {:role "status"
-                                       :style {:width (str size "em")
-                                               :height (str size "em")
-                                               :border-width (str (/ size 10.0) "em")}}
-      ]]))
+    ;; [:div.text-center
+    [:div.spinner-border.pici-purple {:role "status"
+                                      :style {:width (str size "em")
+                                              :height (str size "em")
+                                              :border-width (str (/ size 10.0) "em")}}
+     ]))
 
 ;;; For ops form, here because its used in both project and batch pages.
 (defn form-row

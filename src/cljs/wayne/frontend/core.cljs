@@ -28,6 +28,7 @@
 (defn about
   []
   [:div.p-3 "Experiments towards a BRUCE Data Portal."
+   #_
    [:ul
     [:li [:a {:href "https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit?usp=sharing"} "Design document"]]
     ]])
