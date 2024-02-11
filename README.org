@@ -1,10 +1,8 @@
 Prototyping for BRUCE website
 
-Mostly focusing on db related stuff here.
-
 * Specs
 
-https://mail.google.com/mail/u/1/#inbox/FMfcgzGwJvmLgmVhwRShGHrGDTkzlwph
+See https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit#h
 
 * Deploy
 
@@ -15,7 +13,6 @@ Credentials are supplied through env vars:
 =GOOGLE_CREDENTIALS:             <json string>=
 
 On Heroku, the creds are written to the file =google-credentials.json= on startup.
-
 
 https://nameless-plains-89326-4086253ce8be.herokuapp.com/
 

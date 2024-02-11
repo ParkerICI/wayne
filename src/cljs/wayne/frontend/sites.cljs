@@ -2,8 +2,6 @@
   (:require [re-frame.core :as rf]
             [way.aggrid :as ag]
             [way.tabs :as tab]
-            way.data
-            [reagent.dom]
             )
   )
 

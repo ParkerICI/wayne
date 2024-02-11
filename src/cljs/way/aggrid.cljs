@@ -16,6 +16,9 @@
 
 ;;; For header interactivty, see https://ag-grid.com/react-data-grid/component-header/
 
+;;; For export: mouse-right context menu works. To make more prominent affordance, see https://www.ag-grid.com/javascript-data-grid/csv-export/#reference-export-exportDataAsCsv
+
+
 (def ag-adapter (reagent/adapt-react-class agr/AgGridReact))
 
 (comment
@@ -34,25 +37,52 @@
   [x]
   (into {} (for [k (.keys js/Object x)] [(keyword k) (aget x k)])))
 
-;;; To be complected I'm sure
-(defn ag-col-def
-  [col]
+
+;;; TODO methods not actually used yet
+(defmulti ag-col-def (fn [col col-defs]
+                        col
+                        ))
+
+(defmethod ag-col-def :default
+  [col {:keys [url-template] :as col-def}]
   {:headerName (name col)
    :field col
+   :cellRenderer (fn [params]
+                   (let [value (get (js->clj (.-data params) :keywordize-keys true) col)
+                         render (if url-template
+                                  (fn [v] [:a.ent {:href (wu/js-format url-template v) :target "_ext"} (js/decodeURIComponent (str v))])
+                                  (fn [v] [:span (str v)]))]
+                     (prn :x col value url-template)
+                     (reagent.dom/render ;TODO this is not approved for React 18, but I couldn't figure a better way.
+                       [:span.ag-cell-wrap-text   ;; .ag-cell-auto-height doesn't work, unfortunately.
+                        (if (vector? value)
+                          [:span
+                           (when (> (count value) 1)
+                             [:span.count (count value)])
+                           (for [elt (butlast value)]
+                             [:span (render elt) ", "])
+                           (render (last value))]
+                          (render value))]
+                       (.-eGridCell params))))
    }
   )
 
 (defn ag-table
   "id: a keyword to identify this table
-  columns: seq of columns, which can be a keyword or a map (TODO)
-     :editable? : boolean to control editability
-     :formatter : a fn on values to produce their display form
+  columns: seq of column ids
   data: a seq of maps
-  ag-grid-options: a map of values passed to ag-grid
+  ag-grid-options: a map of values passed directly to ag-grid
   checkboxes?: control whether checkboxes appear, defaults true
-  class: css class to use for grid"
-  [id columns data ag-grid-options & {:keys [checkboxes? class] :or {checkboxes? true}}]
-  (let [column-defs (mapv ag-col-def columns)          ]
+  class: css class to use for grid
+  col-defs: a map of col ids to maps. Fields:
+     :editable? : boolean to control editability (TODO)
+     :formatter : a fn on values to produce their display form (TODO)
+     :ag-def : supply col def to ag-grid (TODO)
+     :url-template : a format string from values to URL links
+"
+  [id columns data ag-grid-options & {:keys [checkboxes? class col-defs] :or {checkboxes? true}}]
+  (let [column-defs (mapv #(ag-col-def % (get col-defs %)) columns)]
+    (prn :foo columns col-defs)
     [:div.ag-container {:class class}
      [:div {:className "ag-theme-balham"}
       (let [grid-options

@@ -11,23 +11,6 @@
   )
 
 
-;;; → Multitool
-(defn intercalate [l1 l2]
-  (cond (empty? l1) l2
-        (empty? l2) l1
-        :else (cons (first l1) (cons (first l2) (intercalate (rest l1) (rest l2))))))
-
-
-;;; Format for cljs
-;;; → Multitool
-;;; Not quite right eg if %s is at start or end
-(defn js-format
-  [s & args]
-  (apply str
-         (intercalate (str/split s #"%s")
-                      args)))
-
-
 
 (defn violin
   [data dim]                            ;TODO dim → better
@@ -45,7 +28,7 @@
       "data"
       [{"name" "summary",
         "source" "stats",
-        "transform" [{"type" "filter", "expr" ~(js-format "datum.%s === parent.%s" dim dim)}]}],
+        "transform" [{"type" "filter", "expr" ~(wu/js-format "datum.%s === parent.%s" dim dim)}]}],
       "marks"
       [{"type" "area",
         "from" {"data" "violin"},

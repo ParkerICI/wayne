@@ -1,8 +1,8 @@
 (ns wayne.frontend.patients
   (:require [re-frame.core :as rf]
+            [wayne.frontend.data :as data]
             [way.aggrid :as ag]
             [way.tabs :as tab]
-            way.data
             [reagent.dom]
             )
   )
@@ -18,6 +18,7 @@
       (keys (first patients))
       patients
       {}
+      :col-defs data/col-defs
       ])])
 
 (defmethod tab/set-tab [:tab :patients]
