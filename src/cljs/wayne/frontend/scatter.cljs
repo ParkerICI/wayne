@@ -70,7 +70,13 @@
                 :dotplot dot-spec
                 :barchart bar-spec)]
      (do-vega (spec data))
-     (assoc db :loading? false))))
+     (assoc db
+            :loading? false
+            :data data))))
+
+(rf/reg-sub
+ :data
+ (fn [db _] (:data db)))
 
 (rf/reg-event-db
  :fetch-scatter
@@ -80,26 +86,34 @@
                                   })
    (assoc db :loading? true)))
 
+(defn download
+  []
+  (when-not (empty? @(rf/subscribe [:data])) ;TODO disable is better
+    [:button {:on-click #(wu/download-data-as-tsv @(rf/subscribe [:data]) "wayne-export.tsv")} "Download"]))
+
 (defn plot
   []
   [:div
    #_ [:button {:on-click #(do-vega (spec))} "Fill"]
    [:nav.navbar.navbar-expand-lg
-       [:ul.navbar-nav.mr-auto
-        [:li.nav-item
-         (wu/select-widget
-          :site
-          nil                                 ;todo value
-          #(rf/dispatch [:set-param :site %])
-          data/sites
-          "Site")]
-        [:li.nav-item
-         (wu/select-widget
-          :feature
-          nil                                 ;todo value
-          #(rf/dispatch [:set-param :feature %])
-          data/features
-          "Feature")]]]
+    [:ul.navbar-nav.mr-auto
+     [:li.nav-item
+      (wu/select-widget
+       :site
+       nil                                 ;todo value
+       #(rf/dispatch [:set-param :site %])
+       data/sites
+       "Site")]
+     [:li.nav-item
+      (wu/select-widget
+       :feature
+       nil                                 ;todo value
+       #(rf/dispatch [:set-param :feature %])
+       data/features
+       "Feature")]
+     [:li.nav-item
+      (download)
+      ]]]
    [:div#vis1]
    ])
 

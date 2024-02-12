@@ -284,4 +284,26 @@ setter #(let [value @(rf/subscribe [::edited-value key])]
          (intercalate (str/split s #"%s")
                       args)))
 
+;;; ⦿⦾⦿ download tsv ⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿
 
+;;; This lets you "download" directly from client data, no server ca;l required
+
+;;; Rows is a seq of maps
+(defn data->tsv
+  [rows]
+  (let [cols (keys (first rows))]
+    (str/join
+     "\n" 
+     (map (partial str/join \tab)
+          (cons (map name cols)
+                (map (fn [row] (map (fn [col] (get row col)) cols))
+                     rows))))))
+
+(defn download-data-as-tsv [data export-name]
+  (let [data-blob (js/Blob. (clj->js [(data->tsv data)]) #js {:type "application/tsv"})
+        link (.createElement js/document "a")]
+    (set! (.-href link) (.createObjectURL js/URL data-blob))
+    (.setAttribute link "download" export-name)
+    (.appendChild (.-body js/document) link)
+    (.click link)
+    (.removeChild (.-body js/document) link)))
