@@ -52,7 +52,6 @@
                          render (if url-template
                                   (fn [v] [:a.ent {:href (wu/js-format url-template v) :target "_ext"} (js/decodeURIComponent (str v))])
                                   (fn [v] [:span (str v)]))]
-                     (prn :x col value url-template)
                      (reagent.dom/render ;TODO this is not approved for React 18, but I couldn't figure a better way.
                        [:span.ag-cell-wrap-text   ;; .ag-cell-auto-height doesn't work, unfortunately.
                         (if (vector? value)
@@ -82,7 +81,6 @@
 "
   [id columns data ag-grid-options & {:keys [checkboxes? class col-defs] :or {checkboxes? true}}]
   (let [column-defs (mapv #(ag-col-def % (get col-defs %)) columns)]
-    (prn :foo columns col-defs)
     [:div.ag-container {:class class}
      [:div {:className "ag-theme-balham"}
       (let [grid-options

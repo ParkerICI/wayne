@@ -22,5 +22,5 @@
       ])])
 
 (defmethod tab/set-tab [:tab :patients]
-  [db]
+  [id tab db]
   (rf/dispatch [:fetch-once :patients]))

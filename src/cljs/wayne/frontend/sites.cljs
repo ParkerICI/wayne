@@ -18,5 +18,5 @@
       ])])
 
 (defmethod tab/set-tab [:tab :sites]
-  [db]
+  [id tab db]
   (rf/dispatch [:fetch-once :sites]))

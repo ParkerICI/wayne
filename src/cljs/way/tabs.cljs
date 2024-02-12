@@ -15,11 +15,9 @@
  (fn [db _]
    (:page db)))
 
-;;; For wu
 (defn tabs
   [id tabs]
   (let [active @(rf/subscribe [:active-tab id])]
-    (prn :tabs id active)
     [:div
      [:ul.nav.nav-tabs
       (for [[name view] tabs]
@@ -38,6 +36,8 @@
  (fn [db [_ id]]
    (get-in db [:active-tab id])))
 
+;;; Multimethod to handle tab initialization
+;;; Can return an upddated db or nil
 (defmulti set-tab (fn [id tab db] [id tab]))
 
 (defmethod set-tab :default
@@ -47,5 +47,5 @@
 (rf/reg-event-db
  :choose-tab
  (fn [db [_ id tab]]
-   (set-tab id tab db)
-   (assoc-in db [:active-tab id] tab)))
+   (let [ndb (set-tab id tab db)]
+     (assoc-in (or ndb db) [:active-tab id] tab))))

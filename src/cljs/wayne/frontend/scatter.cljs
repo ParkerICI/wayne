@@ -72,11 +72,11 @@
      (do-vega (spec data))
      (assoc db
             :loading? false
-            :data data))))
+            :datax data))))             ;TODO temp? Use way data machinery
 
 (rf/reg-sub
- :data
- (fn [db _] (:data db)))
+ :datax
+ (fn [db _] (:datax db)))
 
 (rf/reg-event-db
  :fetch-scatter
@@ -86,44 +86,44 @@
                                   })
    (assoc db :loading? true)))
 
-(defn download
-  []
-  (when-not (empty? @(rf/subscribe [:data])) ;TODO disable is better
-    [:button {:on-click #(wu/download-data-as-tsv @(rf/subscribe [:data]) "wayne-export.tsv")} "Download"]))
-
 (defn plot
   []
   [:div
    #_ [:button {:on-click #(do-vega (spec))} "Fill"]
-   [:nav.navbar.navbar-expand-lg
-    [:ul.navbar-nav.mr-auto
-     [:li.nav-item
-      (wu/select-widget
-       :site
-       nil                                 ;todo value
-       #(rf/dispatch [:set-param :site %])
-       data/sites
-       "Site")]
-     [:li.nav-item
-      (wu/select-widget
-       :feature
-       nil                                 ;todo value
-       #(rf/dispatch [:set-param :feature %])
-       data/features
-       "Feature")]
-     [:li.nav-item
-      (download)
-      ]]]
+   [:nav.navbar.navbar-expand-sm
+    [:div.container-fluid
+     [:div.collapse.navbar-collapse
+      [:ul.navbar-nav
+       [:li.nav-item.mx-2
+        (wu/select-widget
+         :site
+         nil                                 ;todo value
+         #(rf/dispatch [:set-param :site %])
+         data/sites
+         "Site")]
+       [:li.nav-item.mx-2
+        (wu/select-widget
+         :feature
+         nil                                 ;todo value
+         #(rf/dispatch [:set-param :feature %])
+         data/features
+         "Feature")]
+       [:li.nav-item.mx-2
+        [:form
+         (wu/download-button @(rf/subscribe [:datax]) "wayne-export.tsv")
+         ]]]]]]
    [:div#vis1]
    ])
 
 (defmethod tab/set-tab [:tab :dotplot]
-  [db]
-  (do-vega {}))
+  [id tab db]
+  #_ (do-vega {})
+  nil)
 
 (defmethod tab/set-tab [:tab :barchart]
-  [db]
-  (do-vega {}))
+  [id tab db]
+  #_ (do-vega {})
+  nil)
 
 
                                         ;Since we are multiplexing, clear on tab switch

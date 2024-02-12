@@ -20,5 +20,5 @@
       ])])
 
 (defmethod tab/set-tab [:tab :samples]
-  [db]
+  [id tab db]
   (rf/dispatch [:fetch-once :samples]))

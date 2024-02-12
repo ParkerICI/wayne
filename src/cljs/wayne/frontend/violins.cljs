@@ -135,7 +135,9 @@
  ::loaded
  (fn [db [_ data]]
    (do-vega (violin data "ROI"))        ;TODO generalize dim, can be "immunotherapy" (but needs label)
-   (assoc db :loading? false)))
+   (-> db
+       (assoc :loading? false)
+       (assoc-in [:data :violin] data))))
 
 (rf/reg-event-db
  ::fetch
@@ -159,22 +161,30 @@
    [:nav.navbar.navbar-expand-lg
     [:ul.navbar-nav.mr-auto
     [:li.nav-item
+     #_                                 ;Only stanford has data so don't bother
      (wu/select-widget
       :site
       nil                                 ;todo value
       #(rf/dispatch [:set-param :site %])
       data/sites
-      "Site")]
+      "Site")
+     [:span.form-control.border-0 "Stanford"]]
     [:li.nav-item
      (wu/select-widget
       :feature
       nil                                 ;todo value
       #(rf/dispatch [:set-param :feature %])
       data/features
-      "Feature")]]]
+      "Feature")]
+       [:li.nav-item.mx-2
+        [:form
+         (wu/download-button @(rf/subscribe [:data :violin]) "wayne-export.tsv")
+         ]]
+     ]]
    (vega-div)
    ])
 
 (defmethod tab/set-tab [:tab :violin]
-  [db]
-  (rf/dispatch [::fetch]))
+  [id tab db]
+  #_ (rf/dispatch [::fetch])
+  (assoc-in db [:params :site] "Stanford"))

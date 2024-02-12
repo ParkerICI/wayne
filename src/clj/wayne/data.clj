@@ -161,17 +161,22 @@ and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
 ;;; This currently handles data for both Violin and Scatter panes
 (defn query0
   [{:keys [site feature rois]}]
-  (select "ROI, immunotherapy, feature_value, patient_id, sample_id, cell_meta_cluster_final, fov, feature_variable {from} 
+  (select "site, ROI, immunotherapy, feature_value, patient_id, sample_id, cell_meta_cluster_final, fov, feature_variable {from} 
 where 
-site = '{site}' 
-and feature_variable = '{feature}' 
+1 = 1
+{site}
+{feature}
 {rois}
 "
-          :site site
-          :feature feature
-          :rois (if rois (str "and ROI IN " (sql-lit-list rois)) "")))
+          :site (when site (format "and site = '%s'" site))
+          :feature (when feature (format "and feature_variable = '%s' " feature))
+          :rois (when rois (str "and ROI IN " (sql-lit-list rois)))))
 
 (defn data0
   [params]
   (-> (query0 params)
       clean-data))
+
+(defn select-pop-query0
+  [{:keys [site feature rois]}]
+  )
