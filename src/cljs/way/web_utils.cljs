@@ -306,10 +306,15 @@ setter #(let [value @(rf/subscribe [::edited-value key])]
     (.setAttribute link "download" export-name)
     (.appendChild (.-body js/document) link)
     (.click link)
-    (.removeChild (.-body js/document) link)))
+    (.removeChild (.-body js/document) link)
+    nil))
 
 (defn download-button
   [data-sub filename]
   (when-not (empty? data-sub) ;TODO disable is better
-    [:button.btn.btn-outline-primary {:on-click #(download-data-as-tsv data-sub filename)} "Download"]))
+    [:button.btn.btn-outline-primary
+     {:on-click #(do
+                   (.preventDefault %)
+                   (download-data-as-tsv data-sub filename))}
+     "Download"]))
 
