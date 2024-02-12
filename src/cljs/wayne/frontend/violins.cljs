@@ -147,13 +147,7 @@
                                   })
    (assoc db :loading? true)))
    
-(rf/reg-event-db
- :set-param
- (fn [db [_ param value]]
-   (if (contains? #{:dotplot :barchart} (get-in db [:active-tab :tab]))
-     (rf/dispatch [:fetch-scatter])     ;HACK
-     (rf/dispatch [::fetch]))
-   (assoc-in db [:params param] value)))
+
 
 (defn violins
   []

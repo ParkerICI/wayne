@@ -5,18 +5,20 @@
             )
   )
 
+;;; TODO should be separated by data-id probably
 (rf/reg-event-db
- ::loaded
- (fn [db [_ data-id data]]
-   #_ (do-vega (violin data "ROI"))        ;TODO generalize dim, can be "immunotherapy" (but needs label)
-   (-> db
-       (assoc-in [:data data-id] data)
-       (assoc :loading? false))))
+ :set-param
+ (fn [db [_ data-id param value]]		
+   ;;(if (contains? #{:dotplot :barchart} (get-in db [:active-tab :tab]))
+   ;;(rf/dispatch [:fetch-scatter])     ;HACK
+   (rf/dispatch [:fetch data-id])
+   (assoc-in db [:params data-id param] value)))
 
 (rf/reg-event-db
  :fetch
  (fn [db [_ data-id]]
-   (api/ajax-get "/api/v2/data" {:params {:data-id data-id}
+   (api/ajax-get "/api/v2/data" {:params (assoc (get-in db [:params data-id])
+                                                :data-id data-id)
                                  :handler #(rf/dispatch [::loaded data-id %])
                                  })
    (assoc db :loading? true)))
@@ -31,3 +33,17 @@
  :data
  (fn [db [_ data-id]]
    (get-in db [:data data-id])))
+
+(defmulti loaded (fn [id data db] id))
+
+(defmethod loaded :default
+  [id data db]
+  (prn "no loaded for" id))
+
+(rf/reg-event-db
+ ::loaded
+ (fn [db [_ data-id data]]
+   (loaded data-id data db)
+   (-> db
+       (assoc-in [:data data-id] data)
+       (assoc :loading? false))))

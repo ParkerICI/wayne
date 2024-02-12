@@ -1,8 +1,9 @@
 (ns wayne.frontend.scatter
   (:require [re-frame.core :as rf]
-            ["vega-embed" :as ve]
             [wayne.frontend.data :as data] ;temp
             [way.tabs :as tab]
+            [way.data :as wdata]
+            [way.vega :as v]
             [way.api :as api]
             [way.web-utils :as wu]
             [reagent.dom]
@@ -16,7 +17,6 @@
 (defn clean-zeros
   [data]
   (map (fn [row] (update row :feature_value #(if (or (= % 0) (= % "0")) nil %))) data))
-
 
 ;;; Dotplot
 (defn dot-spec
@@ -59,24 +59,6 @@
    :width 700, 
    })
 
-(defn do-vega
-  [spec]
-  (js/module$node_modules$vega_embed$build$vega_embed.embed "#vis1" (clj->js spec)))
-
-(rf/reg-event-db
- :loaded
- (fn [db [_ data]]
-   (let [spec (case (get-in db [:active-tab :tab])
-                :dotplot dot-spec
-                :barchart bar-spec)]
-     (do-vega (spec data))
-     (assoc db
-            :loading? false
-            :datax data))))             ;TODO temp? Use way data machinery
-
-(rf/reg-sub
- :datax
- (fn [db _] (:datax db)))
 
 (rf/reg-event-db
  :fetch-scatter
@@ -98,19 +80,19 @@
         (wu/select-widget
          :site
          nil                                 ;todo value
-         #(rf/dispatch [:set-param :site %])
+         #(rf/dispatch [:set-param :dotplot :site %])
          data/sites
          "Site")]
        [:li.nav-item.mx-2
         (wu/select-widget
          :feature
          nil                                 ;todo value
-         #(rf/dispatch [:set-param :feature %])
+         #(rf/dispatch [:set-param :dotplot :feature %])
          data/features
          "Feature")]
        [:li.nav-item.mx-2
         [:form
-         (wu/download-button @(rf/subscribe [:datax]) "wayne-export.tsv")
+         #_ (wu/download-button @(rf/subscribe [:data :dotplot]) "wayne-export.tsv") ; TODO probably broken
          ]]]]]]
    [:div#vis1]
    ])
@@ -125,6 +107,9 @@
   #_ (do-vega {})
   nil)
 
+(defmethod wdata/loaded :dotplot
+  [id data db]
+  (v/do-vega (dot-spec data) "#vis1"))
 
-                                        ;Since we are multiplexing, clear on tab switch
+   
 

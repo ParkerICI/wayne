@@ -127,12 +127,13 @@ group by sample_id"))
 
 
 (defn data
-  [dataset]
-  (log/info :data dataset)
-  (case dataset
+  [{:keys [data-id] :as params}]
+  (log/info :data params)
+  (case data-id
     "patients" (patient-table)
     "sites" (site-table)
-    "samples" (sample-table)))
+    "samples" (sample-table)
+    "dotplot" (data0 params)))
 
 ;;; For violins
 

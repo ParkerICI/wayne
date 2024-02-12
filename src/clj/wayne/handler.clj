@@ -152,14 +152,15 @@
 
 (defroutes api-routes  
   (context "/api/v2" []
+    #_   ;; obso
     (GET "/data0" req
       (content-response (data/data0 (:params req))))
     (GET "/patients" []                 ;TODO fold
       (content-response (data/patient-table)))
 
     ;; WAY for following
-    (GET "/data" [data-id]
-      (content-response (data/data data-id)))    
+    (GET "/data" req                    ;params include data-id and other
+      (content-response (data/data (:params req))))
     (GET "/error" req                   ;For testing error reporting
       (content-response (/ 0 0)))
     (POST "/error" req                   ;For testing error reporting

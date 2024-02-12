@@ -49,3 +49,4 @@
  (fn [db [_ id tab]]
    (let [ndb (set-tab id tab db)]
      (assoc-in (or ndb db) [:active-tab id] tab))))
+
