@@ -15,7 +15,8 @@
    [wayne.frontend.patients :as patients]
    [wayne.frontend.sites :as sites]
    [wayne.frontend.samples :as samples]
-   [wayne.frontend.scatter :as scatter]
+   [wayne.frontend.dotplot :as dotplot]
+   [wayne.frontend.barchart :as barchart]
 
    [org.candelbio.multitool.core :as u]
    [clojure.string :as str]
@@ -46,8 +47,8 @@
      :patients patients/patients
      :samples samples/samples
      :violin violins/violins
-     :dotplot scatter/plot              ;yes these are the same, the vega spec gets switched out with a kludge
-     :barchart scatter/plot
+     :dotplot dotplot/plot              ;yes these are the same, the vega spec gets switched out with a kludge
+     :barchart barchart/plot
      }]
    #_ [footer]
    ])

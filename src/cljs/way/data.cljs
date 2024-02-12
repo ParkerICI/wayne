@@ -5,12 +5,9 @@
             )
   )
 
-;;; TODO should be separated by data-id probably
 (rf/reg-event-db
  :set-param
  (fn [db [_ data-id param value]]		
-   ;;(if (contains? #{:dotplot :barchart} (get-in db [:active-tab :tab]))
-   ;;(rf/dispatch [:fetch-scatter])     ;HACK
    (rf/dispatch [:fetch data-id])
    (assoc-in db [:params data-id param] value)))
 

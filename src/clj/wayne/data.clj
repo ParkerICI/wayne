@@ -133,7 +133,8 @@ group by sample_id"))
     "patients" (patient-table)
     "sites" (site-table)
     "samples" (sample-table)
-    "dotplot" (data0 params)))
+    "dotplot" (data0 params)
+    "barchart" (data0 params)))
 
 ;;; For violins
 
