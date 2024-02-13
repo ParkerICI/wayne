@@ -1,15 +1,12 @@
 (ns wayne.frontend.data
   )
 
-;;; TODO  Links not actually working yet, but here's how to add them when/if. NOTE might have to complicate this a bit, sometiemes :samples is a count
-(def col-defs {})
-
-#_
+;;; Global col-defs, might make more sense to do these per-view
 (def col-defs
   {:sample_id {:url-template "sample/%s"}
    :samples {:url-template "sample/%s"}
-   :site {:url-template "site/%s"}
-   :patient_id {:patient_id "patient/%s"}
+   ; :site {:url-template "site/%s"}
+   ; :patient_id {:patient_id "patient/%s"}
    })
 
 ;;; Temp hack, these should be 

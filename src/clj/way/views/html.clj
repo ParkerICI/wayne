@@ -33,7 +33,7 @@
   [:a {:href "/"} "Home"])              ;TODO should be customizable
 
 (defn html-frame
-  [{:keys [page project]} title contents]
+  [{:keys [page]} title contents]
   ;; should be a template I suppose but this was faster
   (html
    [:html
@@ -65,13 +65,6 @@
         [:nav.navbar.navbar-expand-lg.bg-dark.navbar-dark
          [:ul.navbar-nav.mr-auto
           (nav-item :home)
-          ;; out-of-spa link, shoot me
-          (old-nav-item "history" (str "/history" (if project (str "?project=" project) "")) (= page :history))
-          
-          ;; experimental out-of-spa link, shoot me
-          ;; TODO match CSS
-          ;; TODO nav menu for server pages
-                                        ;       (old-nav-item "history" (str "/history?project=" project) false) ;TODO make this active for history
           ]])
       ]
      [:div.container.main

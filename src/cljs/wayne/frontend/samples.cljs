@@ -2,8 +2,8 @@
   (:require [re-frame.core :as rf]
             [way.aggrid :as ag]
             [way.tabs :as tab]
-            way.data
             [reagent.dom]
+            [wayne.frontend.data :as data]
             )
   )
 
@@ -17,6 +17,7 @@
       (keys (first samples))
       samples
       {}
+      :col-defs data/col-defs
       ])])
 
 (defmethod tab/set-tab [:tab :samples]
