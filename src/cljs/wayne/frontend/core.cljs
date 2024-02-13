@@ -67,7 +67,8 @@
   (rf/clear-subscription-cache!)
   (let [root (createRoot (gdom/getElement "app"))]
     (.render root (r/as-element [app-ui]))
-    ))
+    )
+  )
 
 (defn ^:export init
   [& user]
