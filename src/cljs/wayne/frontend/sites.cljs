@@ -33,7 +33,7 @@
    #_ [:button {:on-click #(v/do-vega (pie-spec @(rf/subscribe [:data :sites])) "#viz2")} "Redraw"]
    (let [sites @(rf/subscribe [:data :sites])]
      [:div
-      [:div#viz2]
+      [v/vega-lite-view (pie-spec sites) sites]
       [ag/ag-table 
        :sites
        (keys (first sites))
@@ -48,4 +48,4 @@
 
 (defmethod data/loaded :sites
   [id data db]
-  (v/do-vega (pie-spec data) "#viz2"))
+  )
