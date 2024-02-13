@@ -45,7 +45,6 @@
   []
   (let [data @(rf/subscribe [:data :dotplot])]
     [:div
-     #_ [:button {:on-click #(do-vega (spec))} "Fill"]
      [:nav.navbar.navbar-expand-sm
       [:div.container-fluid
        [:div.collapse.navbar-collapse

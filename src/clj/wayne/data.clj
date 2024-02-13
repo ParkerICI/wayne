@@ -134,7 +134,9 @@ group by sample_id"))
     "sites" (site-table)
     "samples" (sample-table)
     "dotplot" (data0 params)
-    "barchart" (data0 params)))
+    "barchart" (data0 params)
+    "violin" (data0 params)
+    ))
 
 ;;; For violins
 

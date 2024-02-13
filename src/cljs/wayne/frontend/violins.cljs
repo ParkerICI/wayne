@@ -3,14 +3,11 @@
             ["vega-embed" :as ve]
             [wayne.frontend.data :as data]
             [way.web-utils :as wu]
-            [way.api :as api]
+            [way.vega :as v]
             [way.tabs :as tab]
             [reagent.dom]
-            [clojure.string :as str]
             )
   )
-
-
 
 (defn violin
   [data dim]                            ;TODO dim → better
@@ -119,66 +116,40 @@
     "description" "A violin plot example showing distributions for pengiun body mass."}
   )
 
-;;; WAY
-(defn vega-div
-  []
-  [:div#vis])
-
-;;; WAY
-;;; TODO generalize for multiple vega divs
-(defn do-vega
-  [spec]
-  #_(js/vegaEmbed "#vis" (clj->js a-spec))
-  (js/module$node_modules$vega_embed$build$vega_embed.embed "#vis" (clj->js spec)))
-
-(rf/reg-event-db
- ::loaded
- (fn [db [_ data]]
-   (do-vega (violin data "ROI"))        ;TODO generalize dim, can be "immunotherapy" (but needs label)
-   (-> db
-       (assoc :loading? false)
-       (assoc-in [:data :violin] data))))
-
-(rf/reg-event-db
- ::fetch
- (fn [db _]
-   (api/ajax-get "/api/v2/data0" {:params (assoc (:params db) :rois ["INFILTRATING_TUMOR" "SOLID_TUMOR"])
-                                  :handler #(rf/dispatch [::loaded %])
-                                  })
-   (assoc db :loading? true)))
-   
-
-
 (defn violins
   []
-  [:div
-   [:nav.navbar.navbar-expand-lg
-    [:ul.navbar-nav.mr-auto
-    [:li.nav-item
-     #_                                 ;Only stanford has data so don't bother
-     (wu/select-widget
-      :site
-      nil                                 ;todo value
-      #(rf/dispatch [:set-param :site %])
-      data/sites
-      "Site")
-     [:span.form-control.border-0 "Stanford"]]
-    [:li.nav-item
-     (wu/select-widget
-      :feature
-      nil                                 ;todo value
-      #(rf/dispatch [:set-param :feature %])
-      data/features
-      "Feature")]
+  (let [data @(rf/subscribe [:data :violin])] 
+    [:div
+     [:nav.navbar.navbar-expand-lg
+      [:ul.navbar-nav.mr-auto
+       [:li.nav-item
+        #_                                 ;Only stanford has data so don't bother
+        (wu/select-widget
+         :site
+         nil                                 ;todo value
+         #(rf/dispatch [:set-param :site %])
+         data/sites
+         "Site")
+        [:span.form-control.border-0 "Stanford"]]
+       [:li.nav-item
+        (wu/select-widget
+         :feature
+         nil                                 ;todo value
+         #(rf/dispatch [:set-param :violin :feature %])
+         data/features
+         "Feature")]
        [:li.nav-item.mx-2
         [:form
          (wu/download-button @(rf/subscribe [:data :violin]) "wayne-export.tsv")
          ]]
-     ]]
-   (vega-div)
-   ])
+       ]]
+     [v/vega-view (violin data "ROI") data]
+     ]))
 
 (defmethod tab/set-tab [:tab :violin]
   [id tab db]
-  #_ (rf/dispatch [::fetch])
-  (assoc-in db [:params :site] "Stanford"))
+  (-> db
+      (assoc-in [:params :violin :site] "Stanford")
+      (assoc-in [:params :violin :rois] ["INFILTRATING_TUMOR" "SOLID_TUMOR"])
+      ))
+                

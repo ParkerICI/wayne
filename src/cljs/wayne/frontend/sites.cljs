@@ -34,7 +34,6 @@
   [:div
    [:h3 "Sites"]
    ;; Debug
-   #_ [:button {:on-click #(v/do-vega (pie-spec @(rf/subscribe [:data :sites])) "#viz2")} "Redraw"]
    (let [sites @(rf/subscribe [:data :sites])]
      [:div
       [v/vega-lite-view (pie-spec sites) sites]
