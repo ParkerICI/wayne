@@ -9,19 +9,20 @@
 
 (defn pie-spec
   [data]
-  {:mark {:type "arc", :tooltip {:content "data"}, :clip true :filled true},
-   :data {:values data}
+  {:data {:values data}
    :transform [{:calculate "'/site/' + datum.site", ;TODO make this work or leave it out
                 :as "url"
                 }],
-   :title "Patients"
-   :encoding
-   {:color {:field "site", :type "nominal"},
-    :theta {:field "patients" :type "quantitative"}
-    :tooltip {:field "site"}
-    :label {:field "patients" :type "quantitative"}
-    :href {:field "url"}
-    }
+   :repeat ["patients", "samples"]
+   :spec {:title {:text {:repeat "repeat"}} ;TODO argh, can't figure out how to do this simple task. My guess: you can do it with expressions, somehow.
+          :mark {:type "arc", :tooltip {:content "data"}, :clip true :filled true},
+          :encoding
+          {:color {:field "site", :type "nominal"},
+           :theta {:field {:repeat "repeat"} :type "quantitative"}
+           :tooltip {:field {:repeat "repeat"}}     ;TODO should show site: number
+           :href {:field "url"}
+           }
+          }
    })
 
 (defn sites
@@ -29,8 +30,7 @@
   [:div
    [:h3 "Sites"]
    ;; Debug
-   [:button {:on-click #(v/do-vega (pie-spec @(rf/subscribe [:data :sites])) "#viz2")} "Redraw"]
-
+   #_ [:button {:on-click #(v/do-vega (pie-spec @(rf/subscribe [:data :sites])) "#viz2")} "Redraw"]
    (let [sites @(rf/subscribe [:data :sites])]
      [:div
       [:div#viz2]
