@@ -34,42 +34,36 @@
 
 (defn plot
   []
-  [:div
-   #_ [:button {:on-click #(do-vega (spec))} "Fill"]
-   [:nav.navbar.navbar-expand-sm
-    [:div.container-fluid
-     [:div.collapse.navbar-collapse
-      [:ul.navbar-nav
-       [:li.nav-item.mx-2
-        (wu/select-widget
-         :site
-         nil                                 ;todo value
-         #(rf/dispatch [:set-param :barchart :site %])
-         data/sites
-         "Site")]
-       [:li.nav-item.mx-2
-        (wu/select-widget
-         :feature
-         nil                                 ;todo value
-         #(rf/dispatch [:set-param :barchart :feature %])
-         data/features
-         "Feature")]
-       [:li.nav-item.mx-2
-        [:form
-         (wu/download-button @(rf/subscribe [:data :barchart]) "wayne-export.tsv") ; TODO probably broken
-         ]]]]]]
-   [:div#vis1]
-   ])
+  (let [data @(rf/subscribe [:data :barchart])]
+    [:div
+     #_ [:button {:on-click #(do-vega (spec))} "Fill"]
+     [:nav.navbar.navbar-expand-sm
+      [:div.container-fluid
+       [:div.collapse.navbar-collapse
+        [:ul.navbar-nav
+         [:li.nav-item.mx-2
+          (wu/select-widget
+           :site
+           nil                                 ;todo value
+           #(rf/dispatch [:set-param :barchart :site %])
+           data/sites
+           "Site")]
+         [:li.nav-item.mx-2
+          (wu/select-widget
+           :feature
+           nil                                 ;todo value
+           #(rf/dispatch [:set-param :barchart :feature %])
+           data/features
+           "Feature")]
+         [:li.nav-item.mx-2
+          [:form
+           (wu/download-button @(rf/subscribe [:data :barchart]) "wayne-export.tsv") ; TODO probably broken
+           ]]]]]]
+     [v/vega-lite-view (bar-spec data) data]   
+     ]))
 
 
-(defmethod tab/set-tab [:tab :barchart]
-  [id tab db]
-  #_ (do-vega {})
-  nil)
 
-(defmethod wdata/loaded :barchart
-  [id data db]
-  (v/do-vega (bar-spec data) "#vis1"))
 
    
 

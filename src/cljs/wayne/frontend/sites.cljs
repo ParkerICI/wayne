@@ -7,6 +7,9 @@
             )
   )
 
+;;; Color schemes
+;;; https://vega.github.io/vega/docs/schemes/
+
 (defn pie-spec
   [data]
   {:data {:values data}
@@ -15,9 +18,10 @@
                 }],
    :repeat ["patients", "samples"]
    :spec {:title {:text {:repeat "repeat"}} ;TODO argh, can't figure out how to do this simple task. My guess: you can do it with expressions, somehow.
-          :mark {:type "arc", :tooltip {:content "data"}, :clip true :filled true},
+          :mark {:type "arc", :tooltip {:content "data"} },
           :encoding
-          {:color {:field "site", :type "nominal"},
+          {:color {:field "site", :type "nominal"
+                   :scale {:scheme "tableau20"}},
            :theta {:field {:repeat "repeat"} :type "quantitative"}
            :tooltip {:field {:repeat "repeat"}}     ;TODO should show site: number
            :href {:field "url"}
