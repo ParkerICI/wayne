@@ -78,16 +78,12 @@
      ]]))
 
 (defn app-url []
-  (format "/cljs-out/%s-main.js" (:tier env/env)))
-
-(defn app
-  []
-  [:script {:src (app-url)}])
-
-(defn app-url []
   (format "/cljs-out/%s-main.js"
           "dev" ; TODO tier
           ))
+(defn app
+  []
+  [:script {:src (app-url)}])
 
 (defn app-html
   []

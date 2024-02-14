@@ -58,13 +58,14 @@
    (content-response
     (html/html-frame
      {} (str "Sample " id)
-     [:h3 "Imagine a Vitesse view of " id " here."]
+     [:h3 "Imagine a Vitessce view of " id " here."]
      ))
    "text/html"))
 
 (defroutes site-routes
   (GET "/" [] (spa))                    ;index handled by spa
-  (GET "/admin" req (admin/view req))
+  ;; For dev only, currently is a security hole
+  #_ (GET "/admin" req (admin/view req))
   (GET "/sample/:id" [id] (sample-view id) )
   (GET "*" [] (spa))                    ;default is handled by spa
   (route/not-found "Not found")         ;TODO this  will never be reached? But spa should do something reasonable with bad URLs

@@ -6,6 +6,7 @@
   )
 
 ;;; TODO gaping security hole, not really acceptable. At least it is behind basic-auth
+;;; Maybe automatically redact items with "crendential" or other privacy relevant strings
 
 
 ;;; TODO git commit information, etc. Can't run git on server, somehow need to sneak it into an uberjar. Hm you could just
