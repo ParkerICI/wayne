@@ -65,7 +65,7 @@
            "Feature")]
          [:li.nav-item.mx-2
           [:form
-           (wu/download-button data "wayne-export.tsv") ; TODO probably broken
+           (wu/download-button data "wayne-export.tsv")
            ]]]]]]
      [v/vega-lite-view (dot-spec data) data]
      ]))

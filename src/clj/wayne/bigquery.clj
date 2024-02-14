@@ -164,13 +164,11 @@
 
 (defn create-table
   [project dataset-name table schema]
-  (prn :y schema)
   (let [schema (Schema/of (mapv (fn [{:keys [name type]}]
                                   ;; TODO type
                                   (Field/of name (lookup-type type) (make-array Field 0)))
                                 schema))
         table-def (StandardTableDefinition/of schema)
-        _ (prn :a table-def)
         table-id (TableId/of dataset-name table)
         table-info (.build (TableInfo/newBuilder table-id table-def))]
     (.create (service project) table-info (make-array BigQuery$TableOption 0))))

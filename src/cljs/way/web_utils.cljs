@@ -286,7 +286,7 @@ setter #(let [value @(rf/subscribe [::edited-value key])]
 
 ;;; ⦿⦾⦿ download tsv ⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿
 
-;;; This lets you "download" directly from client data, no server ca;l required
+;;; This lets you "download" directly from client data, no server call required
 
 ;;; Rows is a seq of maps
 (defn data->tsv

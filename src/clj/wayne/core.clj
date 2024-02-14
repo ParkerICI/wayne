@@ -10,7 +10,6 @@
   []
   (when-let [creds (env/env :google-credentials)]
     (spit "google-credentials.json" creds)
-    (prn :did-it-work (slurp  "google-credentials.json"))
     ))
 
 (defn -main

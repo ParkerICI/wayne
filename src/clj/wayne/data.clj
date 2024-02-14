@@ -18,15 +18,9 @@
                     {:from " FROM `pici-internal.bruce_external.feature_table` "})
              :key-fn keyword)))
 
-(defn sites
-  []
-  (map :site (select "distinct site {from} ")))
-
 (defn feature-types
   []
   (map :feature_type (select "distinct feature_type {from} ")))
-
-(def sites '("CoH" "CHOP" "UCLA" "UCSF" "Stanford"))
 
 ;;; 14K features! Kind of useless
 (defn features
@@ -105,7 +99,11 @@ group by patient_id"))
 
 (defn site-table
   []
-  (select "site, count(distinct(patient_id)) as patients, count(distinct(sample_id)) as samples {from} group by site"))
+  (select "site,
+count(distinct(patient_id)) as patients,
+count(distinct(sample_id)) as samples,
+count(distinct(feature_variable)) as features
+{from} group by site"))
 
 
 ;;; Cohorts

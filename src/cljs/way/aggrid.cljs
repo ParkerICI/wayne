@@ -40,8 +40,7 @@
 
 ;;; TODO methods not actually used yet
 (defmulti ag-col-def (fn [col col-defs]
-                        col
-                        ))
+                        col))
 
 (defmethod ag-col-def :default
   [col {:keys [url-template] :as col-def}]

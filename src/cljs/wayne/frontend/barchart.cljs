@@ -56,7 +56,7 @@
            "Feature")]
          [:li.nav-item.mx-2
           [:form
-           (wu/download-button @(rf/subscribe [:data :barchart]) "wayne-export.tsv") ; TODO probably broken
+           (wu/download-button @(rf/subscribe [:data :barchart]) "wayne-export.tsv")
            ]]]]]]
      [v/vega-lite-view (bar-spec data) data]   
      ]))
