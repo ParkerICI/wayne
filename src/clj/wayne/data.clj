@@ -124,17 +124,7 @@ count(distinct(feature_variable)) as features
 group by sample_id"))
 
 
-(defn data
-  [{:keys [data-id] :as params}]
-  (log/info :data params)
-  (case data-id
-    "patients" (patient-table)
-    "sites" (site-table)
-    "samples" (sample-table)
-    "dotplot" (data0 params)
-    "barchart" (data0 params)
-    "violin" (data0 params)
-    ))
+
 
 ;;; For violins
 
@@ -182,3 +172,15 @@ where
 (defn select-pop-query0
   [{:keys [site feature rois]}]
   )
+
+(defn data
+  [{:keys [data-id] :as params}]
+  (log/info :data params)
+  (case data-id
+    "patients" (patient-table)
+    "sites" (site-table)
+    "samples" (sample-table)
+    "dotplot" (data0 params)
+    "barchart" (data0 params)
+    "violin" (data0 params)
+    ))
