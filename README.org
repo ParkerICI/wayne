@@ -1,5 +1,10 @@
 Prototyping for BRUCE website
 
+* Run locally
+
+    shadow-cljs watch app
+    lein run [<port>]
+
 * Specs
 
 See https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit#h

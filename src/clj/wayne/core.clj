@@ -14,7 +14,7 @@
 
 (defn -main
   [& args]
-  (let [port (or (env/env :port) (first args))]
+  (let [port (or (first args) (env/env :port) )]
     (log/info "Starting server on port" port)
     (heroku-deploy-hack)
     (server/start (Integer. port) handler/app)

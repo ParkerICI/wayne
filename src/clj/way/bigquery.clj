@@ -1,4 +1,4 @@
-(ns wayne.bigquery
+(ns way.bigquery
   (:require [org.candelbio.multitool.core :as u]
             [clojure.data.json :as json]
             )
@@ -15,6 +15,8 @@
             QueryJobConfiguration
             ])
   )
+
+;;; TODO decide if this really wants to be in Way or not. Right thing is to have modules.
 
 ;;; Authentication is via ~/.config/gcloud/application_default_credentials.json , set by gcloud cli:
 ;;;   gcloud auth application-default login
@@ -37,7 +39,8 @@
 
 (defn datasets
   [project]
-  (unpage (.listDatasets (service project)  (make-array BigQuery$DatasetListOption 0))))
+  (unpage (.listDatasets (service project)
+                         (make-array BigQuery$DatasetListOption 0))))
 
 ;;; Not sure how general these are across GCS...maybe elevate
 
@@ -88,13 +91,11 @@
       .getDatasetId
       .getDataset))
 
-
 (defn list-matching
   [str]
   (filter #(re-matches (re-pattern str)
                        (table-name %))
           tables))
-
 
 ;;; prob better way to do this
 (defn table-named
@@ -145,27 +146,15 @@
         results (.query (service project) config (make-array BigQuery$JobOption 0))
         ]
     results))
-  
-(defn parse-json
-  [s]
-  (when s
-    (try
-      (-> s
-          (clojure.string/replace \' \")    ;Is JSON really so ill-defined? NO
-          json/read-str)
-      (catch Throwable e
-        (prn :bad-json s e)
-        nil))))
 
+;;; TODO fill this out
 (def lookup-type
   {"STRING" StandardSQLTypeName/STRING})
 
 ;;; Schema is [[name0 type0]...]
-
 (defn create-table
   [project dataset-name table schema]
   (let [schema (Schema/of (mapv (fn [{:keys [name type]}]
-                                  ;; TODO type
                                   (Field/of name (lookup-type type) (make-array Field 0)))
                                 schema))
         table-def (StandardTableDefinition/of schema)

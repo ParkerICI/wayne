@@ -1,5 +1,6 @@
 (ns wayne.data
-  (:require [wayne.bigquery :as bq]
+  (:require [way.bigquery :as bq]
+            [way.utils :as wu]
             [taoensso.timbre :as log]
             [org.candelbio.multitool.core :as u]
             [clojure.string :as str]))
@@ -8,7 +9,6 @@
   [q]
   (bq/query "pici-internal" q))
 
-;;; Not only for DRY purposes, reduces impact of SQL injection attacks
 (defn select
   [q & {:keys [] :as args}]
   (bq/query "pici-internal"
@@ -18,64 +18,7 @@
                     {:from " FROM `pici-internal.bruce_external.feature_table` "})
              :key-fn keyword)))
 
-(defn feature-types
-  []
-  (map :feature_type (select "distinct feature_type {from} ")))
 
-;;; 14K features! Kind of useless
-(defn features
-  [site type]
-  (map :feature_variable
-       (select
-        "distinct feature_variable {from} where site = '{site}' and feature_type = '{type}'" :site site :type  type)))
-
-(defn features+
-  [site]
-  (select "distinct feature_variable, feature_type {from} where site = '{site}'"  :site site))
-
-(defn feature-count
-  []
-  (select "site, feature_type, count(distinct(feature_variable)) {from} group by site, feature_type"))
-
-
-
-
-
-#_(api {:site "Stanford" :feature "CD86"})
-
-;;; curl "http://localhost:1088/api/v2/data0?site=Stanford&feature=CD86"
-
-
-;;; Patient and sample
-
-
-(comment
-  (defn samples-per-patient
-    []
-    (select "patient_id, count(distinct(sample_id)) {from} group by patient_id"))
-
-  (def p0 (query "select * from `pici-internal.bruce_external.feature_table` where patient_id = '49178'"))
-
-  (zipmap (keys (first p0)) (map #(count (distinct (map (fn [row] (get row %)) p0))) (keys (first p0))))
-  {:patient_id 1,
-   :group 1,
-   :ROI 2,
-   :site 1,
-   :immunotherapy 1,
-   :feature_type 8,
-   :feature_value 3011,
-   :cell_meta_cluster_final 22,
-   :who_grade 1,
-   :fov 3,
-   :sample_id 3,
-   :int64_field_0 16551,
-   :feature_source 2,
-   :recurrence 1,
-   :cohort 1,
-   :final_diagnosis 1,
-   :feature_variable 4488,
-   :progression 1}
-  )
 
 ;;; includes samples and aggregates into vector when necessary
 ;;; Note: this is a big pain, might want to generate it from a schema
@@ -124,10 +67,6 @@ count(distinct(feature_variable)) as features
 group by sample_id"))
 
 
-
-
-;;; For violins
-
 (defn clean-data
   [d]
   (map (fn [x] (update x :feature_value (fn [v] (if (= v "NA") nil (u/coerce-numeric v)))))
@@ -144,13 +83,9 @@ and feature_variable = '{feature}'
 and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
 " :site site :feature feature))
 
-(defn sql-lit-list
-  [l]
-  (str "("
-       (str/join ", " (map #(str "'" % "'") l))
-       ")"))
 
 ;;; This currently handles data for both Violin and Scatter panes
+
 (defn query0
   [{:keys [site feature rois]}]
   (select "site, ROI, immunotherapy, feature_value, patient_id, sample_id, cell_meta_cluster_final, fov, feature_variable {from} 
@@ -162,16 +97,12 @@ where
 "
           :site (when site (format "and site = '%s'" site))
           :feature (when feature (format "and feature_variable = '%s' " feature))
-          :rois (when rois (str "and ROI IN " (sql-lit-list rois)))))
+          :rois (when rois (str "and ROI IN " (wu/sql-lit-list rois)))))
 
 (defn data0
   [params]
   (-> (query0 params)
       clean-data))
-
-(defn select-pop-query0
-  [{:keys [site feature rois]}]
-  )
 
 (defn data
   [{:keys [data-id] :as params}]

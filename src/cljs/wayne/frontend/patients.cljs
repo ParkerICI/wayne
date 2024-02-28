@@ -7,7 +7,6 @@
             )
   )
 
-
 (defn patients
   []
   [:div
