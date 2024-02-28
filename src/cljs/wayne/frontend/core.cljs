@@ -28,10 +28,17 @@
 
 (defn about
   []
-  [:div.p-3 "Experiments towards a BRUCE Data Portal."
+  [:div.p-3
+   [:p
+    "Experiments towards a BRUCE Data Portal."]
+   [:p
+    [:a {:href "https://github.com/mtravers/wayne"} "Source"]]
+   [:p
+    [:a {:href "https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit?usp=sharing"} "Design document"]
+    ]
    #_
    [:ul
-    [:li [:a {:href "https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit?usp=sharing"} "Design document"]]
+    [:li ]
     ]])
 
 (defn app-ui

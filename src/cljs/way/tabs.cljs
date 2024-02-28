@@ -1,11 +1,6 @@
 (ns way.tabs
   (:require
-   ["react-dom/client" :refer [createRoot]]
-   [goog.dom :as gdom]
-   [reagent.core :as r]
    [re-frame.core :as rf]
-   [org.candelbio.multitool.core :as u]
-   [clojure.string :as str]
    ))
 
 ;;; manages any kind of tabbed ui, or top level pages
@@ -17,7 +12,8 @@
 
 (defn tabs
   [id tabs]
-  (let [active @(rf/subscribe [:active-tab id])]
+  (let [active (or @(rf/subscribe [:active-tab id])
+                   (ffirst tabs))]      ;Default to first tab TODO should do via dab
     [:div
      [:ul.nav.nav-tabs
       (for [[name view] tabs]
