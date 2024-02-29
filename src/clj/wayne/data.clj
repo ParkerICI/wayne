@@ -115,3 +115,108 @@ where
     "barchart" (data0 params)
     "violin" (data0 params)
     ))
+
+;;; Some data exploration tools, they are general so move to WAY
+
+;;; TODO version that includes frequences
+;;; TODO do these dynamically, incorporating constraints
+
+(defn values
+  [field]
+  (mapv (keyword field) (select (format "distinct `%s` {from}" field))))
+
+(defn field-frequencies
+  [field]
+  (let [r (select (format "count(1) as count, %s as value {from} group by %s" field field))]
+    (zipmap (map :value r) (map :count r))))
+
+
+(defn cols
+  []
+  (keys (first (select "* {from} limit 1"))))
+
+(defn too-big
+  [limit seq]
+  (if (> (count seq) limit)
+    (count seq)
+    seq))
+
+(defn all-values
+  [limit]
+  (let [fields (cols)]
+    (zipmap fields
+            (map (comp (partial too-big limit) values name) fields))))
+
+;  (map :site (select "distinct site {from}")))
+(def sites ["CoH" "CHOP" "UCLA" "UCSF" "Stanford"])
+
+(def rois ["other" "TUMOR" "SOLID_TUMOR" "INFILTRATING_TUMOR" "NORMAL_BRAIN" "SOLID_INFILTRATING_TUMOR"])
+
+(def recurrences ["yes" "unknown" "no"])
+
+(def progression ["unknown" "no" "yes"])
+
+(def cohorts
+  ["neoadjuvant"
+   "control"
+   "unknown"
+   "pbta_all"
+   "neoadjuvant_resp"
+   "pre_trial"
+   "0"
+   "neoadjuvant_lys_vaccine"
+   "openpbta"
+   "brain_cptac_2020"
+   "neoadjuvant_nonresp"
+   "lys_control"
+   "neoadjuvant_SPORE_CD27"
+   "neoadjuvant_SPORE_vaccine"
+   "non_trial_controls"
+   "pxa_group"])
+
+(def feature_sources ["cell_meta_cluster_final" "whole_sample"])
+
+(def group ["unknown" "A" "B" "C" "D"])
+
+(def immunotherapy ["false" "true"])
+
+;;; Ah this is too much trouble
+
+(def values
+  {:patient_id 268,
+   :group ["unknown" "A" "B" "C" "D"],
+   :ROI  ["other" "TUMOR" "SOLID_TUMOR" "INFILTRATING_TUMOR" "NORMAL_BRAIN" "SOLID_INFILTRATING_TUMOR"],
+   :site ["CoH" "CHOP" "UCLA" "UCSF" "Stanford"],
+   :immunotherapy ["false" "true"],
+   :feature_type
+   ["intensity"
+    "tumor_cell_ratios"
+    "immune_cell_ratios"
+    "immune_func_ratios"
+    "tumor_cell_density"
+    "immune_cell_density"
+    "immune_func_density"
+    "immune_func_ratios_to_all"],
+   :feature_value 350000,
+   :cell_meta_cluster_final 24,
+   :who_grade ["4" "unknown" "2" "3"],
+   :fov 603,
+   :sample_id 590,
+   :int64_field_0 350000,
+   :feature_source ["cell_meta_cluster_final" "whole_sample"],
+   :recurrence ["yes" "unknown" "no"],
+   :cohort 16,
+   :final_diagnosis
+   ["GBM"
+    "Astrocytoma"
+    "PXA"
+    "Oligodendroglioma"
+    "Normal_brain"
+    "pGBM"
+    "Thalmic_glioma"
+    "Glioma"
+    "pHGG"
+    "Diffuse_midline_glioma"
+    "Ganglioglioma"],
+   :feature_variable 14140,
+   :progression ["unknown" "no" "yes"]})

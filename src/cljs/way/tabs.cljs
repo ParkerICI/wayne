@@ -13,7 +13,7 @@
 (defn tabs
   [id tabs]
   (let [active (or @(rf/subscribe [:active-tab id])
-                   (ffirst tabs))]      ;Default to first tab TODO should do via dab
+                    (ffirst tabs))]      ;Default to first tab TODO should do via dab
     [:div
      [:ul.nav.nav-tabs
       (for [[name view] tabs]
