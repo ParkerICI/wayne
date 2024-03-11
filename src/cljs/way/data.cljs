@@ -5,11 +5,20 @@
             )
   )
 
+;;; Causes a new data fetch.
 (rf/reg-event-db
  :set-param
  (fn [db [_ data-id param value]]		
+   (prn :set-param data-id param value)
    (rf/dispatch [:fetch data-id])
-   (assoc-in db [:params data-id param] value)))
+   (if (vector? param)                  ;? smell
+     (assoc-in db (concat [:params data-id] param) value)
+     (assoc-in db [:params data-id param] value))))
+
+(rf/reg-sub
+ :param
+ (fn [db [_ data-id param]]
+   (get-in db [:params data-id param])))
 
 (rf/reg-event-db
  :fetch

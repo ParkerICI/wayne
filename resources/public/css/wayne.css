@@ -60,14 +60,6 @@
     color: white;
 }
 
-/* Override bootstrap class */
-.form-check-input {
-    width: 30px;
-    height: 30px;
-    position: initial;
-    margin-left: initial;
-}
-
 
 .ent {
     text-decoration: none;

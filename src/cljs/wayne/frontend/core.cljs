@@ -17,6 +17,7 @@
    [wayne.frontend.samples :as samples]
    [wayne.frontend.dotplot :as dotplot]
    [wayne.frontend.barchart :as barchart]
+   [wayne.frontend.universal :as universal]
 
    [org.candelbio.multitool.core :as u]
    [clojure.string :as str]
@@ -56,6 +57,7 @@
      :violin violins/violins
      :dotplot dotplot/plot              ;yes these are the same, the vega spec gets switched out with a kludge
      :barchart barchart/plot
+     :universal universal/ui
      }]
    #_ [footer]
    ])

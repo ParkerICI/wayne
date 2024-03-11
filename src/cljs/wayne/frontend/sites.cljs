@@ -63,7 +63,7 @@
      [:div
       ;; TODO pick one of these
       [v/vega-lite-view (bar-spec sites) sites]
-      [v/vega-lite-view (pie-spec sites) sites]
+      #_ [v/vega-lite-view (pie-spec sites) sites]
       [ag/ag-table 
        :sites
        (keys (first sites))
