@@ -120,15 +120,17 @@
 ;;; Note sure how to do "stage"
 (def grouping-features [:site :final_diagnosis :who_grade :cohort :ROI :recurrence])
 
+
 ;;; See radio-buttong groups https://getbootstrap.com/docs/5.3/components/button-group/#checkbox-and-radio-button-groups
 (defn dim-chooser
-  [f]
+  [vname f]
   [:div.col
    (for [feature grouping-features
          :let [label (name feature)]]
     [:div.form-check
      [:input.form-check-input {:type :radio
-                               :name "feature"
+                               :name vname
+                               ; TODO :value ...
                                :id label
                                :on-click #(f feature)}]
      [:label.form-check-label {:for label} (name feature)]])])
@@ -137,20 +139,21 @@
   []
   (let [feature @(rf/subscribe [:param :universal-meta :feature])
         values (sort (get data/values-c feature))] ;Ah looking in the data here
-  [:div.col
-   (for [value values
-         :let [id (str "feature" value)]]
-     [:div.form-check
-      [:input.form-check-input
-       {:type :checkbox
-        :id id
-        :on-change (fn [e]
-                     (rf/dispatch
-                      [:set-param :universal-meta [:values feature value] (-> e .-target .-checked)]
-                      ))
-        }]
-      [:label.form-check-label {:for id} value]])
-   ]))
+    [:div.col
+     (for [value values
+           :let [id (str "feature" (name feature) "-" value)]]
+       [:div.form-check
+        [:input.form-check-input
+         {:type :checkbox
+          :key id
+          :id id                        ;TODO for some reason React refuses to keep these straight.
+          :on-change (fn [e]
+                       (rf/dispatch
+                        [:set-param :universal-meta [:values feature value] (-> e .-target .-checked)]
+                        ))
+          }]
+        [:label.form-check-label {:for id} value]])
+     ]))
   
 (defn ui
   []
@@ -158,15 +161,19 @@
         dim @(rf/subscribe [:param :universal :dim])] 
     (prn :dim dim :data (count data))
     [:div
+     [:button.btn.btn-outline-primary {:on-click #(rf/dispatch [:set-param :universal-meta :values {}])} "Clear"]
      [:div.row
       [:h4 "Filter"]
-      [dim-chooser
+
+      [dim-chooser                      ;TODO radio buttons is wrong for this
+       "filter"
        #(rf/dispatch [:set-param :universal-meta :feature %])]
       [values]]
 
      [:div.row
       [:h4 "Compare"]
       [dim-chooser
+       "compare"
        #(rf/dispatch [:set-param :universal :dim %])]
       ]
      [:div.row
@@ -182,5 +189,6 @@
      [:div.row
       ;; Feature
       [:h4 "Visualization"]
-      [v/vega-view (violin data dim) data]
+      (when (and data dim)
+        [v/vega-view (violin data dim) data])
       ]]))

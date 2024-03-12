@@ -43,6 +43,10 @@
                  ;; vega
                  ;; highlight? (Not sure if needed)
 
+                 ;;; Dev only (TODO use profiles)
+                 [seesaw "1.5.0"]
+
+
                  ;;; Wayne specific
 
                  [com.google.cloud/google-cloud-bigquery "2.27.0"]

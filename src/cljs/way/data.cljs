@@ -11,6 +11,8 @@
  (fn [db [_ data-id param value]]		
    (prn :set-param data-id param value)
    (rf/dispatch [:fetch data-id])
+   (when (= data-id :universal-meta)    ;TODO temp nongeneral hack, need dependency mgt
+     (rf/dispatch [:fetch :universal]))
    (if (vector? param)                  ;? smell
      (assoc-in db (concat [:params data-id] param) value)
      (assoc-in db [:params data-id param] value))))
@@ -24,7 +26,10 @@
  :fetch
  (fn [db [_ data-id]]
    (api/ajax-get "/api/v2/data" {:params (assoc (get-in db [:params data-id])
-                                                :data-id data-id)
+                                                :data-id data-id
+                                                :filter (get-in db [:params :universal-meta :values]) ;TODO temp nongeneral hack until I think of something better
+
+                                                )
                                  :handler #(rf/dispatch [::loaded data-id %])
                                  })
    (assoc db :loading? true)))

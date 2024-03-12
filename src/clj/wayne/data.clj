@@ -105,7 +105,7 @@ where
   [params]
   (reduce-kv (fn [params k v]
                (if (and (string? k) (re-find #"\[.*\]" k)) 
-                 (assoc-in params (mapv keyword (re-seq #"\w+" k)) v) ;TODO a bit hacky
+                 (dissoc (assoc-in params (mapv keyword (re-seq #"\w+" k)) v) k) ;TODO a bit hacky
                  params))
              params params))
 
@@ -131,6 +131,7 @@ where
 ;;; TODO feature is misnomer, change to dim or something
 (defn query1-meta
   [{:keys [feature values] :as params}]
+  (way.debug/view :query1-meta params)
   (select "distinct {dim} {from} 
 where {where}
 "
@@ -138,12 +139,13 @@ where {where}
           :where (joint-where-clause (dissoc values feature))))
 
 (defn query1
-  [{:keys [feature values dim] :as params}]
+  [{:keys [feature values dim filter] :as params}]
+  (way.debug/view :query1 params)
   (-> (select "feature_value, {dim} {from} 
 where feature_variable = '{feature}' AND {where}"
               :dim dim
               :feature feature
-              :where (joint-where-clause values))
+              :where (joint-where-clause filter))
       clean-data))
 
 
