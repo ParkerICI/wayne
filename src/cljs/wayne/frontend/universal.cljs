@@ -116,9 +116,23 @@
         "as" ["q1" "median" "q3"]}]}],
     "description" "A violin plot example showing distributions for pengiun body mass."}))
 
+(defn boxplot
+  [data dim]
+  {
+   :$schema "https://vega.github.io/schema/vega-lite/v5.json",
+   :data {:values data}
+   :mark {:type "boxplot" :tooltip true}, ; :extent "min-max"
+   :encoding {:y {:field "feature_value", :type "quantitative"
+                  :scale {:zero false}},
+              :x {:field dim :type "nominal"}
+              :color {:field dim :type "nominal", :legend nil}
+              }
+   }
+  )
 
 ;;; Note sure how to do "stage"
-(def grouping-features [:site :final_diagnosis :who_grade :cohort :ROI :recurrence])
+(def grouping-features [:site :final_diagnosis :who_grade :cohort :ROI :recurrence
+                        :source_table :treatment :idh_status])
 
 
 ;;; See radio-buttong groups https://getbootstrap.com/docs/5.3/components/button-group/#checkbox-and-radio-button-groups
@@ -135,24 +149,32 @@
                                :on-click #(f feature)}]
      [:label.form-check-label {:for label} (name feature)]])])
 
-(defn values
+(defn filter-values
   []
   (let [feature @(rf/subscribe [:param :universal-meta :feature])
-        values (sort (get data/values-c feature))] ;Ah looking in the data here
+        all-values (sort (get data/values-c feature))
+        in-values (set (mapcat vals @(rf/subscribe [:data :universal-meta])))
+        ] 
+    (prn :yo  @(rf/subscribe [:data :universal-meta]))
     [:div.col
-     (for [value values
+     (for [value all-values
            :let [id (str "feature" (name feature) "-" value)]]
        [:div.form-check
         [:input.form-check-input
          {:type :checkbox
           :key id
-          :id id                        ;TODO for some reason React refuses to keep these straight.
+          :id id
+          :checked @(rf/subscribe [:param :universal-meta [:filters feature value]])
           :on-change (fn [e]
                        (rf/dispatch
-                        [:set-param :universal-meta [:values feature value] (-> e .-target .-checked)]
+                        [:set-param :universal-meta [:filters feature value] (-> e .-target .-checked)]
                         ))
           }]
-        [:label.form-check-label {:for id} value]])
+        [:label.form-check-label {:for id :class (if (contains? in-values value)
+                                                   ; text-decoration-line-through
+                                                   nil "text-black-50"
+                                                   )}
+         value]])
      ]))
   
 (defn ui
@@ -161,22 +183,24 @@
         dim @(rf/subscribe [:param :universal :dim])] 
     (prn :dim dim :data (count data))
     [:div
-     [:button.btn.btn-outline-primary {:on-click #(rf/dispatch [:set-param :universal-meta :values {}])} "Clear"]
+     [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal-meta :filters {}])
+                                                      (rf/dispatch [:set-param :universal-meta :feature nil]))} "Clear"]
      [:div.row
-      [:h4 "Filter"]
+      [:div.col
+       [:h4 "Filter"]
+       [dim-chooser                      ;TODO radio buttons is wrong for this
+        "filter"
+        #(rf/dispatch [:set-param :universal-meta :feature %])]]
+      [:div.col
+       [filter-values]]
 
-      [dim-chooser                      ;TODO radio buttons is wrong for this
-       "filter"
-       #(rf/dispatch [:set-param :universal-meta :feature %])]
-      [values]]
-
-     [:div.row
-      [:h4 "Compare"]
-      [dim-chooser
-       "compare"
-       #(rf/dispatch [:set-param :universal :dim %])]
-      ]
-     [:div.row
+      [:div.col
+       [:h4 "Compare"]
+       [dim-chooser
+        "compare"
+        #(rf/dispatch [:set-param :universal :dim %])]
+       ]
+     [:div.col
       [:h4 "Feature Selection"]
       ;; TODO hierarchy as in Stanford design, and/or limit with filters
       (wu/select-widget                 
@@ -185,10 +209,15 @@
        #(rf/dispatch [:set-param :universal :feature %])
        data/features
        "Feature")
-      ]
+      ]]
      [:div.row
       ;; Feature
       [:h4 "Visualization"]
+      [:span (str (count data) " rows")]
       (when (and data dim)
-        [v/vega-view (violin data dim) data])
+        [:div
+         [v/vega-view (violin data dim) data]
+          [v/vega-lite-view (boxplot data dim) data]
+         ])
+        
       ]]))

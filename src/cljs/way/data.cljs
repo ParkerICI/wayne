@@ -20,14 +20,16 @@
 (rf/reg-sub
  :param
  (fn [db [_ data-id param]]
-   (get-in db [:params data-id param])))
+   (if (vector? param)
+     (get-in db (concat [:params data-id] param))
+     (get-in db [:params data-id param]))))
 
 (rf/reg-event-db
  :fetch
  (fn [db [_ data-id]]
    (api/ajax-get "/api/v2/data" {:params (assoc (get-in db [:params data-id])
                                                 :data-id data-id
-                                                :filter (get-in db [:params :universal-meta :values]) ;TODO temp nongeneral hack until I think of something better
+                                                :filter (get-in db [:params :universal-meta :values] {}) ;TODO temp nongeneral hack until I think of something better
 
                                                 )
                                  :handler #(rf/dispatch [::loaded data-id %])
