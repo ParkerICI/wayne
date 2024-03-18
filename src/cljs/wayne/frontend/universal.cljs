@@ -1,11 +1,13 @@
 (ns wayne.frontend.universal
   (:require [re-frame.core :as rf]
             ["vega-embed" :as ve]
+            [clojure.string :as str]
             [wayne.frontend.data :as data]
             [way.web-utils :as wu]
             [way.vega :as v]
             [way.tabs :as tab]
             [reagent.dom]
+            [org.candelbio.multitool.core :as u]
             )
   )
 
@@ -155,7 +157,6 @@
         all-values (sort (get data/values-c feature))
         in-values (set (mapcat vals @(rf/subscribe [:data :universal-meta])))
         ] 
-    (prn :yo  @(rf/subscribe [:data :universal-meta]))
     [:div.col
      (for [value all-values
            :let [id (str "feature" (name feature) "-" value)]]
@@ -177,6 +178,20 @@
          value]])
      ]))
   
+(defn filter-text
+  []
+  (let [filter @(rf/subscribe [:param :universal-meta [:filters]])]
+    [:div.border.rounded.bg-light {:style {:text-wrap "wrap", :text-indent "-10px", :padding-left "15px" :padding-top "5px" :padding-right "5px"}}
+     (u/mapf (fn [[col vals]]
+               (let [in-vals (u/mapf (fn [[v in]]
+                                       (if in v))
+                                     vals)]
+                 (when-not (empty? in-vals)
+                   [:p (str (name col) ": "
+                            (str/join ", "
+                                      in-vals))])))
+             filter)]))
+
 (defn ui
   []
   (let [data @(rf/subscribe [:data :universal])
@@ -186,30 +201,34 @@
      [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal-meta :filters {}])
                                                       (rf/dispatch [:set-param :universal-meta :feature nil]))} "Clear"]
      [:div.row
-      [:div.col
+      [:div.col-2
        [:h4 "Filter"]
        [dim-chooser                      ;TODO radio buttons is wrong for this
         "filter"
         #(rf/dispatch [:set-param :universal-meta :feature %])]]
-      [:div.col
+      [:div.col-2
+       [:h4 " "]
        [filter-values]]
+      [:div.col-2
+       [:h4 " "]
+       [filter-text]]
 
-      [:div.col
+      [:div.col-3
        [:h4 "Compare"]
        [dim-chooser
         "compare"
         #(rf/dispatch [:set-param :universal :dim %])]
        ]
-     [:div.col
-      [:h4 "Feature Selection"]
-      ;; TODO hierarchy as in Stanford design, and/or limit with filters
-      (wu/select-widget                 
-       :feature
-       nil                                 ;todo value
-       #(rf/dispatch [:set-param :universal :feature %])
-       data/features
-       "Feature")
-      ]]
+      [:div.col-3
+       [:h4 "Feature Selection"]
+       ;; TODO hierarchy as in Stanford design, and/or limit with filters
+       (wu/select-widget                 
+        :feature
+        nil                                 ;todo value
+        #(rf/dispatch [:set-param :universal :feature %])
+        data/features
+        "Feature")
+       ]]
      [:div.row
       ;; Feature
       [:h4 "Visualization"]
@@ -217,7 +236,7 @@
       (when (and data dim)
         [:div
          [v/vega-view (violin data dim) data]
-          [v/vega-lite-view (boxplot data dim) data]
+         [v/vega-lite-view (boxplot data dim) data]
          ])
-        
+      
       ]]))
