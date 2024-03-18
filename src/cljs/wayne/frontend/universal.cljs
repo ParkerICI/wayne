@@ -5,7 +5,7 @@
             [wayne.frontend.data :as data]
             [way.web-utils :as wu]
             [way.vega :as v]
-            [way.tabs :as tab]
+            [way.tabs :as tabs]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
             )
@@ -154,7 +154,7 @@
 (defn filter-values
   []
   (let [feature @(rf/subscribe [:param :universal-meta :feature])
-        all-values (sort (get data/values-c feature))
+        all-values (sort (get data/values-d feature))
         in-values (set (mapcat vals @(rf/subscribe [:data :universal-meta])))
         ] 
     [:div.col
@@ -191,6 +191,19 @@
                             (str/join ", "
                                       in-vals))])))
              filter)]))
+
+(defn heatmap
+  [data dim1 dim2]
+  [v/vega-lite-view
+   {:mark :rect
+    :data {:values data}
+    :encoding {:y {:field dim1 :type "nominal"} 
+               :x {:field dim2 :type "nominal"}
+               :color {:aggregate :mean :field :feature_value}}
+    :config {:axis {:grid true :tickBand :extent}}
+    }
+   data])
+
 
 (defn ui
   []
@@ -234,9 +247,11 @@
       [:h4 "Visualization"]
       [:span (str (count data) " rows")]
       (when (and data dim)
-        [:div
-         [v/vega-view (violin data dim) data]
-         [v/vega-lite-view (boxplot data dim) data]
-         ])
-      
+        ;; TODO of course you might want to see these together, so tabs are not good design
+        [tabs/tabs
+         :uviz
+         {:violin (fn [] [v/vega-view (violin data dim) data])
+          :boxplot (fn [] [v/vega-lite-view (boxplot data dim) data])
+          :heatmap (fn [] [heatmap data dim "site"])
+          }])
       ]]))

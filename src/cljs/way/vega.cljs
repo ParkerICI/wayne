@@ -8,7 +8,7 @@
 (defn vega-lite-view
   [spec data]
   (when data
-    [vega-lite-adapter {:data (clj->js data)
+    [vega-lite-adapter {:data (clj->js data) ;I'm not sure this works?
                         :spec (clj->js spec)
                         :actions false}])) ;TODO on in dev mode
 

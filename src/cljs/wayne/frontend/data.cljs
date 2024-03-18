@@ -71,7 +71,7 @@
 
 
 
-(def values-c
+(def values-d
   {:patient_id 268,
    :group ["unknown" "A" "B" "C" "D"],
    :ROI
@@ -171,5 +171,4 @@
     "Diffuse_midline_glioma"
     "Ganglioglioma"],
    :feature_variable 18582,
-   :progression ["unknown" "no" "no_later_event" "yes_later_event" "yes"]
-   })
+   :progression ["unknown" "no" "no_later_event" "yes_later_event" "yes"]})
