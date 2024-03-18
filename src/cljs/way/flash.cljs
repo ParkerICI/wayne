@@ -26,9 +26,7 @@
         {:type "button" :title "Close"
          :on-click #(rf/dispatch [:flash {:show? false}])}
         [:i {:class "material-icons"} "close"]]
-       (if (some #(= % \newline) message)
-         [:pre message]
-         message)])))
+       [:pre (print-str message)]])))
 
 
  

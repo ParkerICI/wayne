@@ -148,13 +148,13 @@ where {where}
   [{:keys [feature dim filter]}]
   #_ (way.debug/view :query1 params)
   ;; TODO adding site for heatmap, temp
-  (-> (select "feature_value, {dim}, site {from} 
+  (when (and feature dim)
+    (-> (select "feature_value, {dim}, site {from} 
 where feature_variable = '{feature}' AND {where}"
-              :dim dim
-              :feature feature
-              :where (joint-where-clause filter))
-      clean-data))
-
+                :dim dim
+                :feature feature
+                :where (joint-where-clause filter))
+        clean-data)))
 
 (defn data0
   [params]
