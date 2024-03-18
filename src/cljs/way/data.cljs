@@ -29,7 +29,7 @@
  (fn [db [_ data-id]]
    (api/ajax-get "/api/v2/data" {:params (assoc (get-in db [:params data-id])
                                                 :data-id data-id
-                                                :filter (get-in db [:params :universal-meta :values] {}) ;TODO temp nongeneral hack until I think of something better
+                                                :filter (get-in db [:params :universal-meta :filters] {}) ;TODO temp nongeneral hack until I think of something better
 
                                                 )
                                  :handler #(rf/dispatch [::loaded data-id %])

@@ -137,7 +137,7 @@
                         :source_table :treatment :idh_status])
 
 
-;;; See radio-buttong groups https://getbootstrap.com/docs/5.3/components/button-group/#checkbox-and-radio-button-groups
+;;; See radio-button groups https://getbootstrap.com/docs/5.3/components/button-group/#checkbox-and-radio-button-groups
 (defn dim-chooser
   [vname f]
   [:div.col
@@ -209,22 +209,11 @@
   []
   (let [data @(rf/subscribe [:data :universal])
         dim @(rf/subscribe [:param :universal :dim])] 
-    (prn :dim dim :data (count data))
     [:div
      [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal-meta :filters {}])
                                                       (rf/dispatch [:set-param :universal-meta :feature nil]))} "Clear"]
      [:div.row
-      [:div.col-2
-       [:h4 "Filter"]
-       [dim-chooser                      ;TODO radio buttons is wrong for this
-        "filter"
-        #(rf/dispatch [:set-param :universal-meta :feature %])]]
-      [:div.col-2
-       [:h4 " "]
-       [filter-values]]
-      [:div.col-2
-       [:h4 " "]
-       [filter-text]]
+
 
       [:div.col-3
        [:h4 "Compare"]
@@ -241,7 +230,20 @@
         #(rf/dispatch [:set-param :universal :feature %])
         data/features
         "Feature")
-       ]]
+       ]
+      [:div.col-2
+       [:h4 "Filter"]
+       [dim-chooser                      ;TODO radio buttons is wrong for this
+        "filter"
+        #(rf/dispatch [:set-param :universal-meta :feature %])]]
+      [:div.col-2
+       [:h4 " "]
+       [filter-values]]
+      [:div.col-2
+       [:h4 " "]
+       [filter-text]]
+
+      ]
      [:div.row
       ;; Feature
       [:h4 "Visualization"]
