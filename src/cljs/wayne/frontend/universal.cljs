@@ -247,13 +247,16 @@
      [:div.row
       ;; Feature
       [:h4 "Visualization"]
-      [:span (str (count data) " rows")]
+
       (when (and data dim)
-        ;; TODO of course you might want to see these together, so tabs are not good design
-        [tabs/tabs
+        [:div
+         [:span (str (count data) " rows")]
+         [:span.ms-2 (wu/download-button data "wayne-export.tsv")]
+         ;; TODO of course you might want to see these together, so tabs are not good design
+         [tabs/tabs
          :uviz
          {:violin (fn [] [v/vega-view (violin data dim) data])
           :boxplot (fn [] [v/vega-lite-view (boxplot data dim) data])
           :heatmap (fn [] [heatmap data dim "site"])
-          }])
+          }]])
       ]]))
