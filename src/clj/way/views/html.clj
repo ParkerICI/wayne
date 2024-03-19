@@ -42,9 +42,9 @@
      [:meta {:charset "UTF-16"}]
      [:link {:href "https://fonts.googleapis.com/icon?family=Material+Icons"
              :rel "stylesheet"}]
-     [:link {:rel "stylesheet"
-             :href "https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" 
-             :integrity "sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
+     [:link {:href "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+             :rel "stylesheet"
+             :integrity "sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
              :crossorigin "anonymous"}]
      [:link {:rel "stylesheet"
              :href "/css/wayne.css"}]   ;TODO
@@ -72,10 +72,9 @@
      [:script {:src "https://code.jquery.com/jquery-3.5.1.slim.min.js"
                :integrity "sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
                :crossorigin "anonymous"}]
-     [:script {:src "https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
-               :integrity "sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
-               :crossorigin "anonymous"}]
-     ]]))
+     [:script {:src "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+               :integrity "sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+               :crossorigin "anonymous"}]]]))
 
 (defn app-url []
   (format "/cljs-out/%s-main.js"
@@ -98,9 +97,9 @@
      [:meta {:charset "UTF-16"}]
      [:link {:href "https://fonts.googleapis.com/icon?family=Material+Icons"
              :rel "stylesheet"}]
-     [:link {:rel "stylesheet"
-             :href "https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" 
-             :integrity "sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU"
+     [:link {:href "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+             :rel "stylesheet"
+             :integrity "sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
              :crossorigin "anonymous"}]
      [:link {:rel "stylesheet" :href "/css/wayne.css"}] ;TODO
      [:link {:rel "stylesheet" :href "/css/re-com.css"}]
@@ -116,8 +115,8 @@
     [:body 
      [:div#app]
      (app-html)
-     [:script {:src "https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"
-               :integrity "sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ"
+     [:script {:src "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+               :integrity "sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
                :crossorigin "anonymous"}]
      [:script "window.onload = function() { wayne.frontend.core.init('user'); }"] ;TODO
      ]]))
