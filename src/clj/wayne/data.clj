@@ -138,11 +138,13 @@ where
   [{:keys [feature filters] :as params}]
   ;; TODO conditionalize to avoid prod errors
   #_ (debug/view :query1-meta params)
-  (select "distinct {dim} {from} 
+  (when feature
+    (select "distinct {dim} {from} 
 where {where}
 "
-          :dim (name feature)
-          :where (joint-where-clause (dissoc filters (keyword feature)))))
+            :dim (name feature)
+            :where (joint-where-clause (dissoc filters (keyword feature))))
+    ))
 
 (defn query1
   [{:keys [feature dim filter]}]
@@ -161,18 +163,35 @@ where feature_variable = '{feature}' AND {where}"
   (-> (query0 params)
       clean-data))
 
+(defn heatmap
+  [{:keys [dim filter]}]
+  (when dim
+    (-> (select "avg(feature_value) as mean, feature_variable, {dim} {from} 
+ where feature_type = 'intensity'
+ group by feature_variable, {dim}"
+                :dim dim
+                :where (joint-where-clause filter))
+        )))
+
+(defn denil
+  [thing]
+  (if (nil? thing) [] thing))
+
 (defn data
   [{:keys [data-id] :as params}]
   (log/info :data params)
-  (case data-id
-    "patients" (patient-table)
-    "sites" (site-table)
-    "samples" (sample-table)
-    "dotplot" (data0 params)
-    "barchart" (data0 params)
-    "violin" (data0 params)
-    "universal-meta" (query1-meta (params-remap params)) ; 
-    "universal" (query1 (params-remap params))))
+  (-> (case data-id                     ;TODO multimethod or some other less kludgerous form
+        "patients" (patient-table)
+        "sites" (site-table)
+        "samples" (sample-table)
+        "dotplot" (data0 params)
+        "barchart" (data0 params)
+        "violin" (data0 params)
+        "universal-meta" (query1-meta (params-remap params)) ; 
+        "universal" (query1 (params-remap params))
+        "heatmap" (heatmap (params-remap params))
+        )
+      denil))                           ;TODO temp because nil is being used to mean no value on front-end...lazy
 
 ;;; Some data exploration tools, they are general so move to WAY
 

@@ -204,11 +204,24 @@
     }
    data])
 
+(defn real-heatmap
+  [dim]
+  ;; Filters are automatically put on the query
+  (let [data @(rf/subscribe [:data :heatmap])]
+    [v/vega-lite-view
+     {:mark :rect
+      :data {:values data}
+      :encoding {:y {:field dim  :type "nominal"} 
+                 :x {:field "feature_variable" :type "nominal"}
+                 :color {:field :mean :type "quantitative"}}   ;Note: mean computed on server
+      :config {:axis {:grid true :tickBand :extent}}
+      }
+     data]))
 
 (defn ui
   []
-  (let [data @(rf/subscribe [:data :universal])
-        dim @(rf/subscribe [:param :universal :dim])] 
+  (let [dim @(rf/subscribe [:param :universal :dim])
+        data @(rf/subscribe [:data :universal])] 
     [:div
      [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal-meta :filters {}])
                                                       (rf/dispatch [:set-param :universal-meta :feature nil]))} "Clear"]
@@ -258,5 +271,6 @@
          {:violin (fn [] [v/vega-view (violin data dim) data])
           :boxplot (fn [] [v/vega-lite-view (boxplot data dim) data])
           :heatmap (fn [] [heatmap data dim "site"])
+          :real-heatmap (fn [] [real-heatmap dim])
           }]])
       ]]))
