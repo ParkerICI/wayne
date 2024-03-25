@@ -53,9 +53,8 @@
   (case data-id
     :universal {:filter (get-in db [:params :universal-meta :filters] {})}
     :heatmap {:filter (get-in db [:params :universal-meta :filters] {})
-              :dim (get-in db [:params :universal :dim])}))
-
-
+              :dim (get-in db [:params :universal :dim])}
+    {}))
 
 (rf/reg-event-db
  :fetch
