@@ -18,6 +18,7 @@
    [wayne.frontend.dotplot :as dotplot]
    [wayne.frontend.barchart :as barchart]
    [wayne.frontend.universal :as universal]
+   [wayne.frontend.dendrogram :as dend]
 
    [org.candelbio.multitool.core :as u]
    [clojure.string :as str]
@@ -58,6 +59,7 @@
      :dotplot dotplot/plot              ;yes these are the same, the vega spec gets switched out with a kludge
      :barchart barchart/plot
      :universal universal/ui
+     :dendrogram dend/ui
      }]
    #_ [footer]
    ])
