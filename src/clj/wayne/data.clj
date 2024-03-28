@@ -416,3 +416,37 @@ where feature_variable = '{feature}' AND {where}"
 
 #_
 (def features (select "distinct feature_type, feature_source, feature_variable {from}"))
+
+;;; Sketches for real heatmap
+
+
+
+(comment
+  (def xav (select "avg(feature_value) as mean_value, feature_variable, sample_id {from} where feature_type = 'intensity' group by feature_variable, sample_id"))
+  (count (distinct (map :feature_variable xav)))
+  50
+  (count (distinct (map :sample_id xav)))
+  589)
+
+;;; TODO generalize, add to voracious or something. 
+(defn write-matrix
+  []
+  (let [cols (distinct (map :feature_variable xav))
+        rows (distinct (map :sample_id xav))
+        data (u/index-by (juxt :sample_id :feature_variable) xav)]
+    (cons
+     (cons "sample_id" cols)            ;header row
+     (for [row rows]
+       (cons row
+             (map (fn [col] (get-in data [[row col] :mean_value])) cols))))))
+
+#_
+(ju/write-tsv-rows "data/heatmap.tsv" (write-matrix ))
+
+;;; I read this into R and messed with it, see /opt/client/pici/bruce/r-heatmap-transcript
+;;; bruce <- read.table("/opt/mt/repos/pici/wayne/data/heatmap.tsv", header = T)
+
+
+
+
+
