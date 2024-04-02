@@ -75,13 +75,12 @@
 
 (def spec
   {:description "An example of Cartesian layouts for a node-link diagram of hierarchical data.",
-   :width 400,
+   :width 600 :height 600
    :$schema "https://vega.github.io/schema/vega/v5.json",
-   :height 400,
 
    ;; These are trying to get layout right
    ;; :autosize "pad"
-   :layout {:align "grid"
+   :layout {:align "each"
             :columns 2
             ;;:padding 70,     
             ;; :bounds "flush",
@@ -90,46 +89,55 @@
    ;; :config {:axisY {:minExtent 30}}
 
    :scales
-   [{:name "color",
-     :type "linear",
-     :range {:scheme "magma"},
-     :domain {:data "tree", :field "depth"},
-     :zero true}],
-   :data
-   [{:name "tree",
-     :url "https://vega.github.io/vega/data/flare.json",
-     :transform
-     [{:type "stratify", :key "id", :parentKey "parent"}
-      {:type "tree",
-       :method "cluster",
-       :size [{:signal "height"} {:signal "width - 100"}],
-       :separation {:signal "separation"},
-       :as ["y" "x" "depth" "children"]}]}
-    {:name "links",
-     :source "tree",
-     :transform
-     [{:type "treelinks"}
-      {:type "linkpath", :orient "horizontal", :shape "orthogonal"}]}]
+   [#_{:name "color",
+       :type "linear",
+       :range {:scheme "magma"},
+       :domain {:data "tree", :field "depth"},
+       :zero true}],
+
    :signals
    [{:name "labels", :value true, :bind {:input "checkbox"}}
     #_ {:name "layout", :value "tidy", :bind {:input "radio", :options ["tidy" "cluster"]}}
     #_ {:name "links",
         :value "diagonal",
         :bind {:input "select", :options ["line" "curve" "diagonal" "orthogonal"]}}
-    {:name "separation", :value false, :bind {:input "checkbox"}}]
+    {:name "separation", :value false, :bind {:input "checkbox"}}
+    {:name "hm_width" :value 400}
+    {:name "hm_height" :value 400}
+    {:name "dend_width" :value 200}]
    :padding 5,
    :marks
    [
 
     {:type :group                       ;Empty quadrant
-     :style :cell}
+     :style :cell
+     :encode {:update {:width {:signal "dend_width"},
+                       :height {:signal "dend_width"} ;??? why does this affect the OTHER group???
+                       }
+              }
+     }
 
 
     ;; V tree
     {:type "group"
      :style "cell"
-     :encode {:update {:width {:signal "height"}, ;This is what finally got the layout semi-sane
-                       :height {:signal "height"}
+     :data
+     [{:name "tree",
+       :url "https://vega.github.io/vega/data/flare.json",
+       :transform
+       [{:type "stratify", :key "id", :parentKey "parent"}
+        {:type "tree",
+         :method "cluster",
+         :size [{:signal "hm_width"} {:signal "dend_width - 100"}],
+         :separation {:signal "separation"},
+         :as ["x" "y" "depth" "children"]}]}
+      {:name "links",
+       :source "tree",
+       :transform
+       [{:type "treelinks"}
+        {:type "linkpath", :orient "vertical", :shape "orthogonal"}]}]
+     :encode {:update {:width {:signal "hm_width"}, ;This is what finally got the layout semi-sane
+                       :height {:signal "dend_width"} ;??? why does this affect the OTHER group???
                        }
               }
      :marks [{:type "path",
@@ -145,10 +153,11 @@
               :encode
               {:enter {:text {:field "name"}, :fontSize {:value 9}, :baseline {:value "middle"}},
                :update
-               {:y {:field "x"},
-                :x {:field "y"},
+               {:x {:field "x"},
+                :y {:field "y"},
                 :dy {:signal "datum.children ? -7 : 7"},
                 :align {:signal "datum.children ? 'right' : 'left'"},
+                :angle {:value 90}
                 :opacity {:signal "labels ? 1 : 0"}}}}],
      }
 
@@ -157,8 +166,23 @@
     {:type "group"
      :name "htree"
      :style "cell"
-     :encode {:update {:width {:signal "height"}, ;This is what finally got the layout semi-sane
-                       :height {:signal "height"}
+     :data
+     [{:name "tree",
+       :url "https://vega.github.io/vega/data/flare.json",
+       :transform
+       [{:type "stratify", :key "id", :parentKey "parent"}
+        {:type "tree",
+         :method "cluster",
+         :size [ {:signal "hm_height"} {:signal "dend_width"}],
+         :separation {:signal "separation"},
+         :as ["y" "x" "depth" "children"]}]}
+      {:name "links",
+       :source "tree",
+       :transform
+       [{:type "treelinks"}
+        {:type "linkpath", :orient "horizontal", :shape "orthogonal"}]}]
+     :encode {:update {:width {:signal "dend_width"}
+                       :height {:signal "hm_height"}
                        }
               }
      :marks [{:type "path",
@@ -189,19 +213,19 @@
                                         ;     :height 400
      :encode {
               :update {
-                       :width {:signal "height"},
-                       :height {:signal "height"}
+                       :width {:signal "hm_width"},
+                       :height {:signal "hm_height"}
                        }
               },
      :marks
-     [{:type "rect"
-       :from  {:data "tree"}
-       :encode
-       {:enter
-        {:y {:field "x"}
-         :x {:field "y"}
-         :width {:value 15}
-         :height {:value 5}}}}
+     [#_{:type "rect"
+         :from  {:data "tree"}
+         :encode
+         {:enter
+          {:y {:field "x"}
+           :x {:field "y"}
+           :width {:value 15}
+           :height {:value 5}}}}
       ]
      }
     ]}) 
