@@ -70,21 +70,24 @@
 
 ;;; Trimmed and customized
 
+;; TODO 
+
+
 (def spec
   {:description "An example of Cartesian layouts for a node-link diagram of hierarchical data.",
    :width 400,
    :$schema "https://vega.github.io/schema/vega/v5.json",
    :height 400,
 
-   ;; Therese are trying to get layout right
+   ;; These are trying to get layout right
    ;; :autosize "pad"
-   :layout {                            ;yes having an empty element here makes a differnece
+   :layout {:align "grid"
+            :columns 2
             ;;:padding 70,     
             ;; :bounds "flush",
             ;; :align "none"
-            },
+            }
    ;; :config {:axisY {:minExtent 30}}
-   ;; END
 
    :scales
    [{:name "color",
@@ -116,13 +119,48 @@
     {:name "separation", :value false, :bind {:input "checkbox"}}]
    :padding 5,
    :marks
-   [{:type "group"
+   [
+
+    {:type :group                       ;Empty quadrant
+     :style :cell}
+
+
+    ;; V tree
+    {:type "group"
      :style "cell"
-     :title {:text "nothingness" :frame "group"}
      :encode {:update {:width {:signal "height"}, ;This is what finally got the layout semi-sane
                        :height {:signal "height"}
-        }
-      }
+                       }
+              }
+     :marks [{:type "path",
+              :from {:data "links"},
+              :encode {:update {:path {:field "path"}, :stroke {:value "#ccc"}}}}
+             #_{:type "symbol",
+                :from {:data "tree"},
+                :encode
+                {:enter {:size {:value 100}, :stroke {:value "#fff"}},
+                 :update {:x {:field "x"}, :y {:field "y"}, :fill {:scale "color", :field "depth"}}}}
+             {:type "text",
+              :from {:data "tree"},
+              :encode
+              {:enter {:text {:field "name"}, :fontSize {:value 9}, :baseline {:value "middle"}},
+               :update
+               {:y {:field "x"},
+                :x {:field "y"},
+                :dy {:signal "datum.children ? -7 : 7"},
+                :align {:signal "datum.children ? 'right' : 'left'"},
+                :opacity {:signal "labels ? 1 : 0"}}}}],
+     }
+
+
+    ;; H tree
+    {:type "group"
+     :name "htree"
+     :style "cell"
+     :encode {:update {:width {:signal "height"}, ;This is what finally got the layout semi-sane
+                       :height {:signal "height"}
+                       }
+              }
      :marks [{:type "path",
               :from {:data "links"},
               :encode {:update {:path {:field "path"}, :stroke {:value "#ccc"}}}}
@@ -143,31 +181,30 @@
                 :opacity {:signal "labels ? 1 : 0"}}}}],
      }
 
-    ;; Second view
+    ;; actual hmap (to be)
     {:type "group"
      :name "heatmap"
      :style "cell"
-     :title {:text "your ad here" :frame "group"}
-;     :width 400
-;     :height 400
+                                        ;     :width 400
+                                        ;     :height 400
      :encode {
               :update {
                        :width {:signal "height"},
                        :height {:signal "height"}
-        }
-      },
-
-    :marks
+                       }
+              },
+     :marks
      [{:type "rect"
        :from  {:data "tree"}
-        :encode
-        {:enter
-           {:y {:field "x"}
-            :x {:field "y"}
-            :width {:value 15}
-            :height {:value 5}}}}
+       :encode
+       {:enter
+        {:y {:field "x"}
+         :x {:field "y"}
+         :width {:value 15}
+         :height {:value 5}}}}
       ]
-     }]}) 
+     }
+    ]}) 
 
 (defn dendrogram
   []  
