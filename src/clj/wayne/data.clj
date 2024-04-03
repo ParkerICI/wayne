@@ -134,6 +134,7 @@ where
 
 
 ;;; TODO feature is misnomer, change to dim or something
+;;; TODO hopefull obso
 (defn query1-meta
   [{:keys [feature filters] :as params}]
   ;; TODO conditionalize to avoid prod errors
@@ -447,6 +448,15 @@ where feature_variable = '{feature}' AND {where}"
 ;;; bruce <- read.table("/opt/mt/repos/pici/wayne/data/heatmap.tsv", header = T)
 
 
+(def grouping-features [:site :final_diagnosis :who_grade :cohort :ROI :recurrence
+                        :source_table :treatment :idh_status])
 
+
+;;; Generate a map of filter dims and values, pasted by hand into front end for now
+(defn generate-filters
+  []
+  (zipmap grouping-features
+          (map #(sort (map (comp second first) (query1-meta {:feature % :filters {}})))
+               grouping-features)))
 
 
