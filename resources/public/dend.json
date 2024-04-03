@@ -1,0 +1,85 @@
+[
+  {
+    "id": 1,
+    "name": "flare"
+  },
+  {
+    "id": 2,
+    "name": "analytics",
+    "parent": 1
+  },
+  {
+    "id": 3,
+    "name": "cluster",
+    "parent": 2
+  },
+  {
+    "id": 4,
+    "name": "AgglomerativeCluster",
+    "parent": 3
+  },
+  {
+    "id": 5,
+    "name": "CommunityStructure",
+    "parent": 3,
+    "size": 3812
+  },
+  {
+    "id": 6,
+    "name": "HierarchicalCluster",
+    "parent": 3,
+    "size": 6714
+  },
+  {
+    "id": 7,
+    "name": "MergeEdge",
+    "parent": 3,
+    "size": 743
+  },
+  {
+    "id": 8,
+    "name": "graph",
+    "parent": 2
+  },
+  {
+    "id": 9,
+    "name": "BetweennessCentrality",
+    "parent": 8,
+    "size": 3534
+  },
+  {
+    "id": 10,
+    "name": "LinkDistance",
+    "parent": 8,
+    "size": 5731
+  },
+  {
+    "id": 11,
+    "name": "MaxFlowMinCut",
+    "parent": 8,
+    "size": 7840
+  },
+  {
+    "id": 12,
+    "name": "ShortestPaths",
+    "parent": 8,
+    "size": 5914
+  },
+  {
+    "id": 13,
+    "name": "SpanningTree",
+    "parent": 8,
+    "size": 3416
+  },
+  {
+    "id": 14,
+    "name": "optimization",
+    "parent": 2
+  },
+  {
+    "id": 15,
+    "name": "AspectRatioBanker",
+    "parent": 14,
+    "size": 7074
+  }
+]

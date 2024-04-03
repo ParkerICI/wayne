@@ -123,7 +123,8 @@
      :style "cell"
      :data
      [{:name "tree",
-       :url "https://vega.github.io/vega/data/flare.json",
+       ; :url "https://vega.github.io/vega/data/flare.json"
+        :url "dend.json"
        :transform
        [{:type "stratify", :key "id", :parentKey "parent"}
         {:type "tree",
@@ -168,7 +169,7 @@
      :style "cell"
      :data
      [{:name "tree",
-       :url "https://vega.github.io/vega/data/flare.json",
+       :url "dend.json",
        :transform
        [{:type "stratify", :key "id", :parentKey "parent"}
         {:type "tree",
