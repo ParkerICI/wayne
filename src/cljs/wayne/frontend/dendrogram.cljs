@@ -214,8 +214,8 @@
              :url "hm2.json"}]
      :encode {
               :update {
-                       :width {:signal "hm_width"},
-                       :height {:signal "hm_height"}
+                       :width #_ {:signal "hm_width"}  {:value 80}, ;TODO compute from data size
+                       :height #_ {:signal "hm_height"} {:value 140}
                        }
               },
      
@@ -229,6 +229,11 @@
 ;       "reverse": {"signal": "reverse"},
 ;      "zero": false, "nice": true
        }]
+
+     :axes
+     [{:orient :right :scale :y :title "feature"} 
+      {:orient :bottom :scale :x :title "recurrence" :labelAngle 90 :labelAlign "left"}]
+
      :marks
      [{:type "rect"
        :from {:data "hm"}
@@ -236,7 +241,7 @@
        {:enter
         {:y {:field "feature_variable" :scale "y"}
          :x {:field "recurrence1" :scale "x"}
-         :width {:value 19} :height {:value 18}
+         :width {:value 19} :height {:value 19}
          :fill {:field "feature_value" :scale "color"}
 
                                         ;:width {:value 15}
