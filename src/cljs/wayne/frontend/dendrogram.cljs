@@ -123,8 +123,8 @@
      :style "cell"
      :data
      [{:name "tree",
-       ; :url "https://vega.github.io/vega/data/flare.json"
-        :url "dend.json"
+                                        ; :url "https://vega.github.io/vega/data/flare.json"
+       :url "dend.json"
        :transform
        [{:type "stratify", :key "id", :parentKey "parent"}
         {:type "tree",
@@ -206,27 +206,42 @@
                 :opacity {:signal "labels ? 1 : 0"}}}}],
      }
 
-    ;; actual hmap (to be)
+    ;; actual hmap 
     {:type "group"
      :name "heatmap"
      :style "cell"
-                                        ;     :width 400
-                                        ;     :height 400
+     :data [{:name "hm",
+             :url "hm2.json"}]
      :encode {
               :update {
                        :width {:signal "hm_width"},
                        :height {:signal "hm_height"}
                        }
               },
+     
+     :scales
+     [{:name "x" :type "band" :domain {:data "hm" :field "recurrence1"} :range {:step 20} }
+      {:name "y" :type "band" :domain {:data "hm" :field "feature_variable"} :range {:step 20}}
+      {:name "color"
+       :type "linear"
+       :range {:scheme "BlueOrange"}
+       :domain {:data "hm", :field "feature_value"},
+;       "reverse": {"signal": "reverse"},
+;      "zero": false, "nice": true
+       }]
      :marks
-     [#_{:type "rect"
-         :from  {:data "tree"}
-         :encode
-         {:enter
-          {:y {:field "x"}
-           :x {:field "y"}
-           :width {:value 15}
-           :height {:value 5}}}}
+     [{:type "rect"
+       :from {:data "hm"}
+       :encode
+       {:enter
+        {:y {:field "feature_variable" :scale "y"}
+         :x {:field "recurrence1" :scale "x"}
+         :width {:value 19} :height {:value 18}
+         :fill {:field "feature_value" :scale "color"}
+
+                                        ;:width {:value 15}
+                                        ;:height {:value 5}
+         }}}
       ]
      }
     ]}) 

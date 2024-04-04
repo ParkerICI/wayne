@@ -4,6 +4,7 @@
             [way.debug :as debug]
             [taoensso.timbre :as log]
             [org.candelbio.multitool.core :as u]
+            [org.candelbio.multitool.math :as mu]
             [clojure.string :as str]))
 
 (defn query
@@ -450,3 +451,49 @@ where feature_variable = '{feature}' AND {where}"
 
 
 
+;;; Heatmaps again. Gen data for .ai illustrations
+
+(def x2 (select "feature_variable, feature_value, recurrence, final_diagnosis {from} where feature_variable = 'EGFR_func_over_all_tumor_prop'"))
+(defn recurrence1
+  [{:keys [recurrence final_diagnosis] :as row}]
+  (assoc row
+         :recurrence1
+         (cond (= final_diagnosis "Normal_brain") "Normal_brain"
+               (= "no" recurrence) "Primary"
+               (= "yes" recurrence) "Recurrence"
+               :else "OTHER")))
+
+(def x2x (map recurrence1 x2))
+
+
+(def x3 (map recurrence1 (select (format "feature_variable, feature_value, recurrence, final_diagnosis {from}
+ where feature_variable in %s" (wu/sql-lit-list ["EGFR_func_over_all_tumor_prop" "GM2_GD2_func_over_all_tumor_prop"])))))
+
+
+(defn x3p
+  [features]
+  (map recurrence1 (select (format "feature_variable, feature_value, recurrence, final_diagnosis {from}
+ where feature_variable in %s" (wu/sql-lit-list features)))))
+
+(def features1 ["EGFR_func_over_all_tumor_prop"
+                "GM2_GD2_func_over_all_tumor_prop"
+                "GPC2_func_over_all_tumor_prop"
+                "VISTA_func_over_all_tumor_prop"
+                "HER2_func_over_all_tumor_prop"
+                "B7H3_func_over_all_tumor_prop"
+                "NG2_func_over_all_tumor_prop"
+                ])
+
+(def x3 (x3p features1))
+
+(defn write-file [f content]
+  (with-open [s (clojure.java.io/writer f)]
+    (clojure.data.json/write content s)))
+
+(def x3a (map (fn [[k v]]
+                (assoc (first v)
+                       :feature_value
+                       (mu/mean (map (fn [s] (Double. (:feature_value s))) v))))
+              (group-by (juxt :feature_variable :recurrence1) x3)))
+
+(write-file "resources/hm2.json" x3a)
