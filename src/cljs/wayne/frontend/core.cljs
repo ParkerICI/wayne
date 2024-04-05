@@ -51,7 +51,8 @@
    [flash/flash]
    [tabs/tabs
     :tab
-    {:home about
+    (array-map
+     :home about
      :sites sites/sites
      :patients patients/patients
      :samples samples/samples
@@ -60,7 +61,7 @@
      :barchart barchart/plot
      :universal universal/ui
      :dendrogram dend/ui
-     }]
+     )]
    #_ [footer]
    ])
 

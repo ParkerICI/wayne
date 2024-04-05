@@ -267,10 +267,11 @@
          [:span.ms-2 (wu/download-button data "wayne-export.tsv")]
          ;; TODO of course you might want to see these together, so tabs are not good design
          [tabs/tabs
-         :uviz
-         {:violin (fn [] [v/vega-view (violin data dim) data])
-          :boxplot (fn [] [v/vega-lite-view (boxplot data dim) data])
-          :heatmap (fn [] [heatmap data dim "site"])
-          :real-heatmap (fn [] [real-heatmap dim])
-          }]])
+          :uviz
+          (array-map
+           :violin (fn [] [v/vega-view (violin data dim) data])
+           :boxplot (fn [] [v/vega-lite-view (boxplot data dim) data])
+           :heatmap (fn [] [heatmap data dim "site"])
+           :real-heatmap (fn [] [real-heatmap dim])
+           )]])
       ]]))
