@@ -102,9 +102,9 @@
         :value "diagonal",
         :bind {:input "select", :options ["line" "curve" "diagonal" "orthogonal"]}}
     {:name "separation", :value false, :bind {:input "checkbox"}}
-    {:name "hm_width" :value 400}
-    {:name "hm_height" :value 400}
-    {:name "dend_width" :value 200}]
+    {:name "hm_width" :value 80}
+    {:name "hm_height" :value 140}      ;TODO derive from data
+    {:name "dend_width" :value 60}]
    :padding 5,
    :marks
    [
@@ -113,6 +113,7 @@
      :style :cell
      :encode {:update {:width {:signal "dend_width"},
                        :height {:signal "dend_width"} ;??? why does this affect the OTHER group???
+                       :strokeWidth {:value 0}
                        }
               }
      }
@@ -124,12 +125,12 @@
      :data
      [{:name "tree",
                                         ; :url "https://vega.github.io/vega/data/flare.json"
-       :url "dend.json"
+       :url "dend2.json"
        :transform
        [{:type "stratify", :key "id", :parentKey "parent"}
         {:type "tree",
          :method "cluster",
-         :size [{:signal "hm_width"} {:signal "dend_width - 100"}],
+         :size [{:signal "hm_width"} {:signal "dend_width"}],
          :separation {:signal "separation"},
          :as ["x" "y" "depth" "children"]}]}
       {:name "links",
@@ -139,6 +140,7 @@
         {:type "linkpath", :orient "vertical", :shape "orthogonal"}]}]
      :encode {:update {:width {:signal "hm_width"}, ;This is what finally got the layout semi-sane
                        :height {:signal "dend_width"} ;??? why does this affect the OTHER group???
+                       :strokeWidth {:value 0}
                        }
               }
      :marks [{:type "path",
@@ -149,6 +151,7 @@
                 :encode
                 {:enter {:size {:value 100}, :stroke {:value "#fff"}},
                  :update {:x {:field "x"}, :y {:field "y"}, :fill {:scale "color", :field "depth"}}}}
+             #_
              {:type "text",
               :from {:data "tree"},
               :encode
@@ -169,7 +172,7 @@
      :style "cell"
      :data
      [{:name "tree",
-       :url "dend.json",
+       :url "dend1.json",
        :transform
        [{:type "stratify", :key "id", :parentKey "parent"}
         {:type "tree",
@@ -184,8 +187,7 @@
         {:type "linkpath", :orient "horizontal", :shape "orthogonal"}]}]
      :encode {:update {:width {:signal "dend_width"}
                        :height {:signal "hm_height"}
-                       }
-              }
+                       :strokeWidth {:value 0} }}
      :marks [{:type "path",
               :from {:data "links"},
               :encode {:update {:path {:field "path"}, :stroke {:value "#ccc"}}}}
@@ -194,6 +196,7 @@
                 :encode
                 {:enter {:size {:value 100}, :stroke {:value "#fff"}},
                  :update {:x {:field "x"}, :y {:field "y"}, :fill {:scale "color", :field "depth"}}}}
+             #_
              {:type "text",
               :from {:data "tree"},
               :encode
@@ -233,6 +236,14 @@
      :axes
      [{:orient :right :scale :y :title "feature"} 
       {:orient :bottom :scale :x :title "recurrence" :labelAngle 90 :labelAlign "left"}]
+
+     :legends
+     [{:fill :color
+       :type :gradient
+       :title "Median feature value"
+       :titleOrient "bottom"
+       :gradientLength 140              ;TODO {:signal hm-height} or something
+       }]
 
      :marks
      [{:type "rect"
