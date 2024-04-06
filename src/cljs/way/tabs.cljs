@@ -11,6 +11,7 @@
    (:page db)))
 
 (defn tabs
+  "Define a set of tabs. id is a keyword, tabs is a map (array-map is best) mapping keywords to ui fns "
   [id tabs]
   (let [active (or @(rf/subscribe [:active-tab id])
                     (ffirst tabs))]      ;Default to first tab TODO should do via dab
