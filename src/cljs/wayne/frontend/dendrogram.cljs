@@ -28,11 +28,21 @@
    :$schema "https://vega.github.io/schema/vega/v5.json",
    :layout {:align "each"
             :columns 2}
-   :scales []
+   :data [{:name "hm",
+           :url "sheatmap.json"}]
+   :scales
+   ;; TODO note the feature values inserted here. Alt would be to have them in the data somehow
+   [{:name "x" :type "band" :domain {:data "hm" :field "sample"} :range {:step 20} }
+    {:name "y" :type "band" :domain {:data "hm" :field "gene"} :range {:step 20}}
+    {:name "color"
+     :type "linear"
+     :range {:scheme "BlueOrange"}
+     :domain {:data "hm", :field "value"},
+     }]
    :signals
    [{:name "labels", :value true, :bind {:input "checkbox"}}
-    {:name "hm_width" :value 60}
-    {:name "hm_height" :value 140}      ;TODO derive from data
+    {:name "hm_width" :update "range('x')[1]"} ;TODO do these really need to be signals? They don't change
+    {:name "hm_height" :update "range('y')[1]"}
     {:name "dend_width" :value 40}]
    :padding 5,
    :marks
@@ -126,8 +136,7 @@
     {:type "group"
      :name "heatmap"
      :style "cell"
-     :data [{:name "hm",
-             :url "hm2.json"}]
+
      :encode {
               :update {
                        :width {:signal "hm_width"}
@@ -135,15 +144,7 @@
                        }
               },
      
-     :scales
-     ;; TODO note the feature values inserted here. Alt would be to have them in the data somehow
-     [{:name "x" :type "band" :domain recurrence1 :range {:step 20} }
-      {:name "y" :type "band" :domain features1 :range {:step 20}}
-      {:name "color"
-       :type "linear"
-       :range {:scheme "BlueOrange"}
-       :domain {:data "hm", :field "feature_value"},
-       }]
+
 
      :axes
      [{:orient :right :scale :y :title "feature"} 
@@ -162,10 +163,10 @@
        :from {:data "hm"}
        :encode
        {:enter
-        {:y {:field "feature_variable" :scale "y"}
-         :x {:field "recurrence1" :scale "x"}
+        {:y {:field "gene" :scale "y"}
+         :x {:field "sample" :scale "x"}
          :width {:value 19} :height {:value 19}
-         :fill {:field "feature_value" :scale "color"}
+         :fill {:field "value" :scale "color"}
          }}}
       ]
      }
