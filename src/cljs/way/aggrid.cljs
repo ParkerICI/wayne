@@ -14,20 +14,17 @@
 
 ;;; Wrapping of ag-grid. 
 
-;;; For header interactivty, see https://ag-grid.com/react-data-grid/component-header/
-
 ;;; For export: mouse-right context menu works. To make more prominent affordance, see https://www.ag-grid.com/javascript-data-grid/csv-export/#reference-export-exportDataAsCsv
-
 
 (def ag-adapter (reagent/adapt-react-class agr/AgGridReact))
 
+;;; TODO not working, fix
 (comment
   (def license-key (ag-grid-license))
 
 ;;; Supposed to be done once, thus this top-level call.
 (when license-key
   (.setLicenseKey age/LicenseManager license-key)))
-
 
 ;;; Keep pointers to API objects for various purposes. This maps a keyword id to the appropriate API object.
 ;;; Note: this doesn't survive a figwheel reload. Maybe store in the re-frame db instead?
@@ -37,11 +34,12 @@
   [x]
   (into {} (for [k (.keys js/Object x)] [(keyword k) (aget x k)])))
 
-
-;;; TODO methods not actually used yet
 (defmulti ag-col-def (fn [col col-defs]
                         col))
 
+;;; Default column supports (TODO break these out and use only when needed?)
+;;; url-templates using %s format (TODO use u/expand-template)
+;;; multiple values (with count)
 (defmethod ag-col-def :default
   [col {:keys [url-template] :as col-def}]
   {:headerName (name col)
@@ -72,10 +70,7 @@
   ag-grid-options: a map of values passed directly to ag-grid
   checkboxes?: control whether checkboxes appear, defaults true
   class: css class to use for grid
-  col-defs: a map of col ids to maps. Fields:
-     :editable? : boolean to control editability (TODO)
-     :formatter : a fn on values to produce their display form (TODO)
-     :ag-def : supply col def to ag-grid (TODO)
+  col-defs: a map of col ids to maps. Fields are the standard ag-grid plus:
      :url-template : a format string from values to URL links
 "
   [id columns data ag-grid-options & {:keys [checkboxes? class col-defs] :or {checkboxes? true}}]
@@ -95,15 +90,9 @@
                                      (let [column-api (.-columnApi params)] 
                                        (.autoSizeColumns column-api (apply array (map :field column-defs)))))
               :columnDefs column-defs
-              ;; :suppressFieldDotNotation true
               :rowData data
-              ;; :suppressRowHoverHighlight true ;Be column-centric
-              ;; :columnHoverHighlight true
-              ;; :rowSelection "multiple"  ; no, this is fugly, use checkboxes if we need to do this
-              ;; :rowMultiSelectWithClick true
-              ;; :rowDeselection true
               :onColumnHeaderClicked (fn [params]
-                                       (let [col (jsx->clj (.-column params))]
+                                         (let [col (jsx->clj (.-column params))]
                                          (rf/dispatch [:col-select (:colId col)])))
               :pagination true
               :paginationAutoPageSize true
@@ -113,7 +102,7 @@
                                       :labelKey "columns"
                                       :iconKey "columns"
                                       :toolPanel "agColumnsToolPanel"
-                                      ;; Turning these off for now, might want to revisit in the future. Possibly incompatible with the master/detail feature?
+                                      ;; Turning these off. If turned back on, also need to set :enablePivot true in default col def
                                       :toolPanelParams {:suppressRowGroups true
                                                         :suppressValues true
                                                         :suppressPivots true 
@@ -136,9 +125,3 @@
         [ag-adapter grid-options])
       ]]))
 
-
-;;; See https://ag-grid.com/react-data-grid/view-refresh/#redraw-rows
-;;; This could be smarter and just redraw specific rows, but I'm lazy.
-(defn redraw
-  [gr-id]
-  (.redrawRows (get @ag-apis gr-id)))

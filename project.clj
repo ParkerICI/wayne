@@ -9,9 +9,6 @@
                  [org.clojure/data.json "2.5.0"]
                  [environ "1.2.0"]
                  [com.taoensso/timbre "6.3.1"]
-                 ;; This breaks gcs interface for some dependency shit, need to resolve
-                 #_ [me.raynes/fs "1.4.6"]
-                 ;; TODO alzabo
 
                  ;; Backend
                  [clj-http "3.12.3" :exclusions [commons-io]]
@@ -23,12 +20,11 @@
                  [ring-basic-authentication "1.2.0"]
                  [ring-logger "1.1.1"]
                  [ring-middleware-format "0.7.5" :exclusions [javax.xml.bind/jaxb-api]]
-
                  ;; Data
                  [clj-http "3.12.3" :exclusions [commons-io]]
                  [alandipert/enduro "1.2.0"] ;persistence for expensive calculations
-                 
                  ;; frontend
+                 ;; See packge.json for the real ones
                  #_ [org.clojure/clojurescript "1.11.132"] ;causes shadow-cljs error, who knows
                  [thheller/shadow-cljs "2.26.5"] ;TODO maybe only in dev profile
                  [reagent "1.2.0"]
@@ -37,15 +33,9 @@
                  [cljs-ajax "0.8.0"]
                  [day8.re-frame/tracing "0.6.2"]      ;TODO dev only
                  [day8.re-frame/re-frame-10x "1.9.3"] ;TODO dev only
-                 #_ [metasoarous/oz "1.6.0-alpha36"]
-                 ;; in package.json
-                 ;; ag-grid
-                 ;; vega
-                 ;; highlight? (Not sure if needed)
 
                  ;;; Dev only (TODO use profiles)
                  [seesaw "1.5.0"]
-
 
                  ;;; Wayne specific
 
