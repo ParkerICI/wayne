@@ -1,6 +1,11 @@
 (ns traverse.heatmap-data
   (:require [org.candelbio.multitool.cljcore :as ju]
+            [org.candelbio.multitool.core :as u]
             [clojure.string :as str]))
+
+;;; https://bioinformatics.ccr.cancer.gov/docs/btep-coding-club/CC2023/complex_heatmap_enhanced_volcano/
+;;; https://en.wikipedia.org/wiki/Ward%27s_method
+
 
 ;;; Not loaded in running system
 
@@ -178,7 +183,55 @@
 
 (write-json-file "resources/public/sheatmap.json" top20up)
 
-;;; OK stupid representation, use a matrix
-(defn distance
-  [maps idcol1 idcol2 colcol valcal]
-  )
+
+
+(defn square [x] (* x x))
+
+(defn manhattan-distance
+  [v1 v2]
+  (reduce + (map (comp abs -) v1 v2)))
+
+(defn euclidean-distance
+  [v1 v2]
+  (Math/sqrt (reduce + (map (comp square -) v1 v2))))
+
+(defn euclidean-squared-distance
+  [v1 v2]
+  (reduce + (map (comp square -) v1 v2)))
+
+(def vector-mean (u/vectorize (fn [a b] (/ (+ a b) 2))))
+
+;;; Naive and inefficient algo
+(defn cluster
+  [maps idcol colcol valcol]
+  (let [ids (distinct (map idcol maps))
+        cols (distinct (map colcol maps))
+        indexed (u/index-by (juxt idcol colcol) maps)
+        vectors (zipmap ids (map (fn [id] (vec (map (fn [col] (u/coerce-numeric (get (get indexed [id col]) valcol))) cols))) ids))
+        distances (into {}
+                        (u/forf [id1 ids id2 ids]
+                          (when (u/<* id1 id2)
+                            [[id1 id2] (euclidean-squared-distance (get vectors id1) (get vectors id2))])))
+        ]
+    (loop [vectors vectors              ;TODO make transient, but some issues
+           distances distances
+           tree []]
+      (if (= 1 (count vectors))
+        tree
+        (let [[[id1 id2] _] (u/min-by second distances)
+              cluster-id (str id1 "-" id2)
+              _ (prn :foo id1 id2)
+              vector (vector-mean (get vectors id1) (get vectors id2))]
+          (recur (-> vectors
+                     (dissoc id1 id2)
+                     (assoc cluster-id vector))
+                 (->> distances
+                      (u/dissoc-if (fn [[[xid1 xid2] _]]
+                                     (or (= id1 xid1) (= id1 xid2)
+                                         (= id2 xid1) (= id2 xid2))))
+                      (merge (into {}
+                                   (for [[id v] (dissoc vectors id1 id2)] ;TODO doing this twice
+                                     [[id cluster-id] (euclidean-squared-distance v vector)]))))
+
+                 (conj tree [cluster-id id1 id2])
+                 ))))))
