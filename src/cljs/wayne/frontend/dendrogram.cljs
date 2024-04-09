@@ -22,6 +22,32 @@
    "Recurrence"
    "Normal_brain"])
 
+(def samples
+  ["517" "513" "509" "521" "516" "520" "508" "512"])
+
+(def genes
+  ["ZBTB16"
+   "FAM107A"
+   "SPARCL1"
+   "CACNB2"
+   "HIF3A"
+   "TIMP4"
+   "WNT2"
+   "PRSS35"
+   "VCAM1"
+   "NEXN"
+   "DUSP1"
+   "MT2A"   
+   "STEAP2"
+   "DNM1"
+   "ADAM12"
+   "ACSS1"
+   "PDPN"
+   "MAOA"
+   "FGD4"
+   "DNAJB4"
+   ])
+
 (defn tree
   [url left?]
   (let [width-signal (if left? "dend_width" "hm_width")
@@ -47,10 +73,10 @@
          {:type "linkpath",
           :orient ~(if left? "horizontal" "vertical")
           :shape "orthogonal"}]}]
-      :encode {:enter {:width {:signal ~width-signal}, 
+      :encoding {:width {:signal ~width-signal}, 
                        :height {:signal ~height-signal}
                        :strokeWidth {:value 0}
-                       }
+                 
                }
       :marks [{:type "path",
                :from {:data "links"},
@@ -61,7 +87,7 @@
               #_
               {:type "text",
                :from {:data "tree"},
-               :encode                   ;TODO not sure which need to be in update
+               :encode              
                {:enter
                 {:text {:field "id"},
                  :fontSize {:value 9},
@@ -69,7 +95,7 @@
                 :update
                 {:x {:field "x"},
                  :y {:field "y"},
-                                        ;:dy {:signal "datum.children ? -7 : 7"},
+                 ;; :dy {:signal "datum.children ? -7 : 7"},
                  ;; :align {:signal "datum.children ? 'right' : 'left'"},
                  :angle {:value 90}
                  :tooltip {:signal "datum"}
@@ -87,8 +113,8 @@
            :url "sheatmap.json"}]
    :scales
    ;; TODO note the feature values inserted here. Alt would be to have them in the data somehow
-   [{:name "x" :type "band" :domain {:data "hm" :field "sample"} :range {:step 20} }
-    {:name "y" :type "band" :domain {:data "hm" :field "gene"} :range {:step 20}}
+   [{:name "x" :type "band" :domain samples :range {:step 20} } ; {:data "hm" :field "sample"}
+    {:name "y" :type "band" :domain genes :range {:step 20}}  ; {:data "hm" :field "gene"}
     {:name "color"
      :type "linear"
      :range {:scheme "BlueOrange"}
@@ -98,7 +124,7 @@
    [{:name "labels", :value true, :bind {:input "checkbox"}}
     {:name "hm_width" :update "range('x')[1]"} ;TODO do these really need to be signals? They don't change
     {:name "hm_height" :update "range('y')[1]"}
-    {:name "dend_width" :value 40}]
+    {:name "dend_width" :value 60}]
    :padding 5,
    :marks
    [
@@ -115,7 +141,7 @@
     (tree "dend-real-s.json" false)
 
     ;; H tree
-    (tree "dend1.json" true)
+    (tree "dend-real-g.json" true)
 
     ;; actual hmap 
     {:type "group"

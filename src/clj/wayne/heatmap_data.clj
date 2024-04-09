@@ -245,3 +245,6 @@
                            (map (fn [[c [p _]]]
                                   {:id c :parent p})
                                 invert)))))
+
+(write-clusters "resources/public/dend-real-s.json" (cluster top20up :sample :gene :value))
+(write-clusters "resources/public/dend-real-g.json" (cluster top20up :gene :sample :value))
