@@ -22,6 +22,61 @@
    "Recurrence"
    "Normal_brain"])
 
+(defn tree
+  [url left?]
+  (let [width-signal (if left? "dend_width" "hm_width")
+        height-signal (if left? "hm_height" "dend_width")]
+
+    `{:type "group"
+      :style "cell"
+      :data 
+      [{:name "tree",
+        :url ~url
+        :transform
+        [{:type "stratify", :key "id", :parentKey "parent"}
+         {:type "tree",
+          :method "cluster",
+          :size [{:signal ~(if left? "hm_height" "hm_width")} {:signal "dend_width"}],
+          :as ~(if left?
+                 ["y" "x" "depth" "children"]
+                 ["x" "y" "depth" "children"])}]}
+       {:name "links",
+        :source "tree",
+        :transform
+        [{:type "treelinks"}
+         {:type "linkpath",
+          :orient ~(if left? "horizontal" "vertical")
+          :shape "orthogonal"}]}]
+      :encode {:enter {:width {:signal ~width-signal}, 
+                       :height {:signal ~height-signal}
+                       :strokeWidth {:value 0}
+                       }
+               }
+      :marks [{:type "path",
+               :from {:data "links"},
+               :encode {:enter
+                        {:path {:field "path"},
+                         :stroke {:value "#666"}}}}
+
+              #_
+              {:type "text",
+               :from {:data "tree"},
+               :encode                   ;TODO not sure which need to be in update
+               {:enter
+                {:text {:field "id"},
+                 :fontSize {:value 9},
+                 :baseline {:value "middle"}},
+                :update
+                {:x {:field "x"},
+                 :y {:field "y"},
+                                        ;:dy {:signal "datum.children ? -7 : 7"},
+                 ;; :align {:signal "datum.children ? 'right' : 'left'"},
+                 :angle {:value 90}
+                 :tooltip {:signal "datum"}
+                 :opacity {:signal "labels ? 1 : 0"}}}}],
+      }))
+
+
 (def spec
   {:description "A clustered heatmap with side-dendrograms",
    :width 600 :height 600
@@ -49,7 +104,7 @@
    [
     {:type :group                       ;Empty quadrant
      :style :cell
-     :encode {:update {:width {:signal "dend_width"},
+     :encode {:enter {:width {:signal "dend_width"},
                        :height {:signal "dend_width"} ;??? why does this affect the OTHER group???
                        :strokeWidth {:value 0}
                        }
@@ -57,80 +112,10 @@
      }
 
     ;; V tree
-    {:type "group"
-     :style "cell"
-     :data
-     [{:name "tree",
-       :url "dend2.json"
-       :transform
-       [{:type "stratify", :key "id", :parentKey "parent"}
-        {:type "tree",
-         :method "cluster",
-         :size [{:signal "hm_width"} {:signal "dend_width"}],
-         :as ["x" "y" "depth" "children"]}]}
-      {:name "links",
-       :source "tree",
-       :transform
-       [{:type "treelinks"}
-        {:type "linkpath", :orient "vertical", :shape "orthogonal"}]}]
-     :encode {:update {:width {:signal "hm_width"}, ;This is what finally got the layout semi-sane
-                       :height {:signal "dend_width"} ;??? why does this affect the OTHER group???
-                       :strokeWidth {:value 0}
-                       }
-              }
-     :marks [{:type "path",
-              :from {:data "links"},
-              :encode {:update {:path {:field "path"}, :stroke {:value "#666"}}}}
-             #_ 
-             {:type "text",
-              :from {:data "tree"},
-              :encode
-              {:enter {:text {:field "name"}, :fontSize {:value 9}, :baseline {:value "middle"}},
-               :update
-               {:x {:field "x"},
-                :y {:field "y"},
-                :dy {:signal "datum.children ? -7 : 7"},
-                :align {:signal "datum.children ? 'right' : 'left'"},
-                :angle {:value 90}
-                :opacity {:signal "labels ? 1 : 0"}}}}],
-     }
+    (tree "dend-real-s.json" false)
 
     ;; H tree
-    {:type "group"
-     :name "htree"
-     :style "cell"
-     :data
-     [{:name "tree",
-       :url "dend1.json",
-       :transform
-       [{:type "stratify", :key "id", :parentKey "parent"}
-        {:type "tree",
-         :method "cluster",
-         :size [ {:signal "hm_height"} {:signal "dend_width"}],
-         :as ["y" "x" "depth" "children"]}]}
-      {:name "links",
-       :source "tree",
-       :transform
-       [{:type "treelinks"}
-        {:type "linkpath", :orient "horizontal", :shape "orthogonal"}]} ] ;diagonal is kind of interesting but not standard
-     :encode {:update {:width {:signal "dend_width"}
-                       :height {:signal "hm_height"}
-                       :strokeWidth {:value 0} }}
-     :marks [{:type "path",
-              :from {:data "links"},
-              :encode {:update {:path {:field "path"}, :stroke {:value "#666"}}}}
-             #_
-             {:type "text",
-              :from {:data "tree"},
-              :encode
-              {:enter {:text {:field "name"}, :fontSize {:value 9}, :baseline {:value "middle"}},
-               :update
-               {:x {:field "x"},
-                :y {:field "y"},
-                :dx {:signal "datum.children ? -7 : 7"},
-                :align {:signal "datum.children ? 'right' : 'left'"},
-                :opacity {:signal "labels ? 1 : 0"}}}}],
-     }
+    (tree "dend1.json" true)
 
     ;; actual hmap 
     {:type "group"
@@ -143,8 +128,6 @@
                        :height {:signal "hm_height"}
                        }
               },
-     
-
 
      :axes
      [{:orient :right :scale :y :title "feature"} 

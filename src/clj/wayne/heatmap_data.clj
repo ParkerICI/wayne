@@ -219,8 +219,7 @@
       (if (= 1 (count vectors))
         tree
         (let [[[id1 id2] _] (u/min-by second distances)
-              cluster-id (str id1 "-" id2)
-              _ (prn :foo id1 id2)
+              cluster-id (str id1 "-" id2) ;TODO These IDS are bigger than they need to be, but good for debugging
               vector (vector-mean (get vectors id1) (get vectors id2))]
           (recur (-> vectors
                      (dissoc id1 id2)
@@ -235,3 +234,14 @@
 
                  (conj tree [cluster-id id1 id2])
                  ))))))
+
+(defn write-clusters
+  [f clusters]
+  (let [invert (merge (u/index-by second clusters) (u/index-by #(nth % 2)  clusters))
+        root (last clusters)              ;TODO watch out
+        ]
+    (write-json-file f
+                     (cons {:id (first root)}
+                           (map (fn [[c [p _]]]
+                                  {:id c :parent p})
+                                invert)))))
