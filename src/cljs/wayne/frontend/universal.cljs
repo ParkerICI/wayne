@@ -294,55 +294,49 @@
   (let [dim @(rf/subscribe [:param :universal :dim])
         data @(rf/subscribe [:data :universal])] 
     [:div
-
      [:div.row
-
-      [:div.col-7                       ;everything but filter
-       [:div.row
-        [:div.col-2
-         [:h4 "Compare"]
-         [dim-chooser
-          "compare"
-          #(rf/dispatch [:set-param :universal :dim %])]
-         ]
-        [:div.col-5
-         [:h4 "Feature Selection"]
-         ;; TODO hierarchy as in Stanford design, and/or limit with filters
-         (wu/select-widget                 
-          :feature
-          nil                                 ;todo value
-          #(rf/dispatch [:set-param :universal :feature %])
-          data/features
-          "Feature")
-         ]]
-       [:div.row
-        ;; Feature
-        [:h4 "Visualization"]
-
-        (when (and data dim)
-          [:div
-           [:span (str (count data) " rows")]
-           [:span.ms-2 (wu/download-button data "wayne-export.tsv")]
-           ;; TODO of course you might want to see these together, so tabs are not good design
-           [tabs/tabs
-            :uviz
-            (array-map
-             :violin (fn [] [v/vega-view (violin data dim) data])
-             :boxplot (fn [] [v/vega-lite-view (boxplot data dim) data])
-             :heatmap (fn [] [heatmap data dim "site"])
-             :real-heatmap (fn [] [real-heatmap dim])
-             )]])
-        ]
+      [:div.col-2
+       [:h4 "Compare"]
+       [dim-chooser
+        "compare"
+        #(rf/dispatch [:set-param :universal :dim %])]
        ]
       [:div.col-3
        [:h4 "Filter"
         [:span.ms-2 [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal-meta :filters {}])
-                                                      (rf/dispatch [:set-param :universal-meta :feature nil]))} "Clear"]]]
+                                                                     (rf/dispatch [:set-param :universal-meta :feature nil]))} "Clear"]]]
        [new-filter-ui]
        ]
       [:div.col-2
        [:h4 " "]
        [filter-text]]
+      [:div.col-5
+       [:h4 "Feature Selection"]
+       ;; TODO hierarchy as in Stanford design, and/or limit with filters
+       (wu/select-widget                 
+        :feature
+        nil                                 ;todo value
+        #(rf/dispatch [:set-param :universal :feature %])
+        data/features
+        "Feature")
+       ]]
+     [:div.row
+      ;; Feature
+      [:h4 "Visualization"]
 
+      (when (and data dim)
+        [:div
+         [:span (str (count data) " rows")]
+         [:span.ms-2 (wu/download-button data "wayne-export.tsv")]
+         ;; TODO of course you might want to see these together, so tabs are not good design
+         [tabs/tabs
+          :uviz
+          (array-map
+           :violin (fn [] [v/vega-view (violin data dim) data])
+           :boxplot (fn [] [v/vega-lite-view (boxplot data dim) data])
+           :heatmap (fn [] [heatmap data dim "site"])
+           :real-heatmap (fn [] [real-heatmap dim])
+           )]])
       ]
-     ]))
+     ]
+    ))
