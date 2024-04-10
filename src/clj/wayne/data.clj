@@ -17,7 +17,8 @@
             (u/expand-template
              (str "select " q)
              (merge args
-                    {:from " FROM `pici-internal.bruce_external.feature_table_0307` "})
+                    {:from " FROM `pici-internal.bruce_external.feature_table_20240409` "}
+                    #_ {:from " FROM `pici-internal.bruce_external.feature_table_0307` "})
              :key-fn keyword)))
 
 

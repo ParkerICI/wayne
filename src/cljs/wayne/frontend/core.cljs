@@ -19,6 +19,7 @@
    [wayne.frontend.barchart :as barchart]
    [wayne.frontend.universal :as universal]
    [wayne.frontend.dendrogram :as dend]
+   [wayne.frontend.fgrid :as fgrid]
 
    [org.candelbio.multitool.core :as u]
    [clojure.string :as str]
@@ -61,6 +62,7 @@
      :barchart barchart/plot
      :universal universal/ui
      :dendrogram dend/ui
+     :fgrid fgrid/ui
      )]
    #_ [footer]
    ])
