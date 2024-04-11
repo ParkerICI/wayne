@@ -9,7 +9,7 @@
    :encoding
    {:x {:field "dim1" :type "nominal" :axis {:grid true :bandPosition 0}}
     :y {:field "dim2" :type "nominal" :axis {:grid true :bandPosition 0}}
-    :color {:value "#666"}
+    :color {:field "count" :type "quantitative" :scale {:domain [0 100]}}
     }
    })
 

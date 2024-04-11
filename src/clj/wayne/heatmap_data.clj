@@ -1,6 +1,7 @@
-(ns traverse.heatmap-data
+(ns wayne.heatmap-data
   (:require [org.candelbio.multitool.cljcore :as ju]
             [org.candelbio.multitool.core :as u]
+            [org.candelbio.multitool.math :as mu]
             [clojure.string :as str]))
 
 ;;; https://bioinformatics.ccr.cancer.gov/docs/btep-coding-club/CC2023/complex_heatmap_enhanced_volcano/
@@ -11,7 +12,7 @@
 
 ;;; Heatmaps again. Gen data for .ai illustrations
 
-(def x2 (select "feature_variable, feature_value, recurrence, final_diagnosis {from} where feature_variable = 'EGFR_func_over_all_tumor_prop'"))
+
 (defn recurrence1
   [{:keys [recurrence final_diagnosis] :as row}]
   (assoc row
@@ -21,12 +22,15 @@
                (= "yes" recurrence) "Recurrence"
                :else "OTHER")))
 
+(comment
+(def x2 (select "feature_variable, feature_value, recurrence, final_diagnosis {from} where feature_variable = 'EGFR_func_over_all_tumor_prop'"))
 (def x2x (map recurrence1 x2))
 
 (def x3 (map recurrence1 (select (format "feature_variable, feature_value, recurrence, final_diagnosis {from}
  where feature_variable in %s" (wu/sql-lit-list ["EGFR_func_over_all_tumor_prop" "GM2_GD2_func_over_all_tumor_prop"])))))
+)
 
-
+#_
 (defn x3p
   [features]
   (map recurrence1 (select (format "feature_variable, feature_value, recurrence, final_diagnosis {from}
@@ -41,6 +45,7 @@
                 "NG2_func_over_all_tumor_prop"
                 ])
 
+#_
 (def x3 (x3p features1))
 
 (defn write-json-file [f content]
@@ -59,12 +64,14 @@
     
 
 ;;; Note: this is probably wrong, the R code does median per-patient or per-sample or something. But good enough for our purposes I guesss
+#_
 (def x3a (map (fn [[k v]]
                 (assoc (first v)
                        :feature_value
                        (median (map (fn [s] (Double. (:feature_value s))) v))))
               (group-by (juxt :feature_variable :recurrence1) x3)))
 
+#_
 (write-json-file "resources/public/hm2.json" x3a)
 
 
@@ -136,11 +143,12 @@
      fake)))
   
     
+(comment
 (write-json-file "resources/public/dend1.json" (write-real-tree fake-tree-1))
 (write-json-file "resources/public/dend2.json" (write-real-tree fake-tree-2))
 
 (write-real-tree fake-tree-1)
-
+)
 
 ;;; Replication baybe
 
@@ -164,6 +172,7 @@
       (dissoc old)))
 
 
+#_
 (def top20 (map (partial rename-key "" :gene)
                 (read-csv-maps "/Users/mt/Downloads/data/RNAseq_mat_top20.csv")))
 
@@ -177,12 +186,13 @@
                  (dissoc row idcol)))
           rows))
 
+(comment
 (def top20up (-> "/Users/mt/Downloads/data/RNAseq_mat_top20.csv"
                  read-csv-maps
                  (unpivot "" :gene :sample :value)))
 
 (write-json-file "resources/public/sheatmap.json" top20up)
-
+)
 
 
 (defn square [x] (* x x))
@@ -246,5 +256,10 @@
                                   {:id c :parent p})
                                 invert)))))
 
-(write-clusters "resources/public/dend-real-s.json" (cluster top20up :sample :gene :value))
-(write-clusters "resources/public/dend-real-g.json" (cluster top20up :gene :sample :value))
+#_(write-clusters "resources/public/dend-real-s.json" (cluster top20up :sample :gene :value))
+#_(write-clusters "resources/public/dend-real-g.json" (cluster top20up :gene :sample :value))
+
+
+;;; https://github.com/lerouxrgd/clj-hclust
+;;; https://github.com/tyler/clojure-cluster
+
