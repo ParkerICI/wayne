@@ -12,6 +12,15 @@
             )
   )
 
+;;; TODO probably should be somewhere more global, also might do more. Should
+;;; be able to specify humanization for special cases. 
+;;; TODO also need to do this for vega labels (eg in fgrid, but everyehere)
+(defn humanize
+  [term]
+  (-> term
+      name
+      (str/replace "_" " ")))
+
 (defn violin
   [data dim]
   (let [dim (name dim)]
@@ -206,7 +215,7 @@
                                                    ; text-decoration-line-through
                                                    nil "text-muted"
                                                    )}
-         value]])
+         (humanize value)]])
      ]))
 
 (defn filter-ui
@@ -223,7 +232,7 @@
                                               :data-bs-target (str "#" collapse-id)
                                               :aria-expanded "true"
                                               :aria-controls collapse-id}
-          dim]]
+          (humanize dim)]]
         ;; .show
         [:div.accordion-collapse.collapse {:id collapse-id
                                            :aria-labelledby heading-id
@@ -245,7 +254,7 @@
                                ; TODO :value ...
                                :id label
                                :on-click #(f feature)}]
-     [:label.form-check-label {:for label} (name feature)]])])
+     [:label.form-check-label {:for label} (humanize feature)]])])
 
 (defn filter-text
   []
@@ -287,6 +296,16 @@
       }
      data]))
 
+(defn feature-ui
+  []
+  ;; TODO hierarchy as in Stanford design, and/or limit with filters
+  (wu/select-widget                 
+   :feature
+   nil                                 ;todo value
+   #(rf/dispatch [:set-param :universal :feature %])
+   data/features
+   "Feature"))
+
 (defn ui
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
@@ -306,20 +325,18 @@
        [:h4 "Filter"
         [:span.ms-2 [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal-meta :filters {}])
                                                                      (rf/dispatch [:set-param :universal-meta :feature nil]))} "Clear"]]]
-       [filter-ui]
-       ]
-      [:div.col-2
+       (if dim
+         [filter-ui]
+         [:span "← First select a dimension to compare ←"]) ]
+       [:div.col-2
        [:h4 " "]
        [filter-text]]
       [:div.col-5
        [:h4 "Feature Selection"]
-       ;; TODO hierarchy as in Stanford design, and/or limit with filters
-       (wu/select-widget                 
-        :feature
-        nil                                 ;todo value
-        #(rf/dispatch [:set-param :universal :feature %])
-        data/features
-        "Feature")
+       (if dim
+         [feature-ui]
+         [:span "← First select a dimension to compare ←"])
+
        ]]
      [:div.row
       ;; Feature

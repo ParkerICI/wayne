@@ -18,7 +18,8 @@
     :color {:field "count" :type "quantitative" :scale {:domain [0 100]}}
     ;; TODO damn it this does not work, apparently adding event handlers is rocket science to vega lite. 
     ;; In reality, this should populate the filter appropriately. 
-    :href {:value "javascript:print(\"foo\")"} ; 
+    ;; Going back to Vega-linte 5.15.1 did not fix, was hoping
+    :href {:value "javascript:alert(\"foo\")"} ; 
     }
    })
 
