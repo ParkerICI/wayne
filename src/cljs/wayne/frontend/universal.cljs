@@ -194,24 +194,28 @@
 (defn filter-values
   [feature]
   (let [all-values (get filter-features feature)
-        in-values (set (mapcat vals @(rf/subscribe [:data :universal-meta])))
+        ; in-values (set (mapcat vals @(rf/subscribe [:data :universal-meta])))
+        filters @(rf/subscribe [:param :universal-meta [:filters]])
         ] 
     [:div
      (for [value all-values
-           :let [id (str "feature" (name feature) "-" value)]]
+           :let [id (str "feature" (name feature) "-" value)
+                 checked? (get-in filters [feature value])
+                 ]]
        [:div.form-check
+        {:key (str "filter-val-" feature value)}
         [:input.form-check-input
          {:type :checkbox
           :key id
           :id id
           ;; TODO :disabled (not (contains? in-values value))
-          :checked @(rf/subscribe [:param :universal-meta [:filters feature value]])
+          :checked (if checked? "checked" "")
           :on-change (fn [e]
                        (rf/dispatch
                         [:set-param :universal-meta [:filters feature value] (-> e .-target .-checked)]
                         ))
           }]
-        [:label.form-check-label {:for id :class (if (contains? in-values value)
+        [:label.form-check-label {:for id :class (if false ; (contains? in-values value)
                                                    ; text-decoration-line-through
                                                    nil "text-muted"
                                                    )}
@@ -221,11 +225,11 @@
 (defn filter-ui
   []
   [:div#filter-accordion.accordion
-   (for [dim grouping-features
-         :let [vals (get filter-features dim)]]
+   (for [dim grouping-features]
      (let [collapse-id (str "collapse" (name dim))
            heading-id (str "heading" (name dim))]
        [:div.accordion-item
+        {:key (str "filter-dim-" dim)}
         [:h2.accordion-header {:id heading-id}
          [:button.accordion-button.collapsed {:type "button"
                                               :data-bs-toggle "collapse"
@@ -249,6 +253,7 @@
    (for [feature grouping-features
          :let [label (name feature)]]
     [:div.form-check
+     {:key (str "dim-chooser-" feature)}
      [:input.form-check-input {:type :radio
                                :name vname
                                ; TODO :value ...
@@ -265,7 +270,9 @@
                                        (if in v))
                                      vals)]
                  (when-not (empty? in-vals)
-                   [:p (str (name col) ": "
+                   [:p
+                    {:key (str "filter-text-" (name col))}
+                    (str (name col) ": "
                             (str/join ", "
                                       in-vals))])))
              filter)]))
@@ -310,12 +317,13 @@
  :vega-click
  (fn [db [_ value]]
    (let [[_ dim val] (re-matches #"(.*): (.*)" value) ;TODO overly linked to particular Vega data in fgrid
-         dim (keyword dim) val (keyword val)]
-     (prn :set dim val)
-     (rf/dispatch                       ;TODO seems like this should be done via db fns oh well
-      [:set-param :universal-meta [:filters dim val] true]
+         dim (keyword dim)] 
+     #_ ; Alt
+     (rf/dispatch                    
+      [:set-param :universal-meta [:filters dim val] (not (get-in db [:params :universal-meta :filters dim val]))]
       )
-     db)
+     (update-in db [:params :universal-meta :filters dim val] not)
+     )
    ))
 
 
