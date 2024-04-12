@@ -1,7 +1,10 @@
 (ns way.vega
   (:require
    [reagent.core :as reagent]
+   [re-frame.core :as rf]
    ["react-vega" :as rv]))
+
+;;; TODO some convenient way to call vl → vega compiler
 
 (def vega-lite-adapter (reagent/adapt-react-class rv/VegaLite))
 
@@ -10,7 +13,7 @@
   (when data
     [vega-lite-adapter {:data (clj->js data) ;I'm not sure this works?
                         :spec (clj->js spec)
-                        :actions false}])) ;TODO on in dev mode
+                        :actions true}])) ;TODO on in dev mode
 
 (def vega-adapter (reagent/adapt-react-class rv/Vega))
 
@@ -19,7 +22,9 @@
   (when data
     [vega-adapter {:data (clj->js data)
                    :spec (clj->js spec)
-                   :actions false
+                   ;; TODO need to generalize this
+                   :signalListeners (clj->js {"click" (fn [_ v] (rf/dispatch [:vega-click v]))}) 
+                   :actions true
                    }]))
 
 

@@ -306,6 +306,19 @@
    data/features
    "Feature"))
 
+(rf/reg-event-db
+ :vega-click
+ (fn [db [_ value]]
+   (let [[_ dim val] (re-matches #"(.*): (.*)" value) ;TODO overly linked to particular Vega data in fgrid
+         dim (keyword dim) val (keyword val)]
+     (prn :set dim val)
+     (rf/dispatch                       ;TODO seems like this should be done via db fns oh well
+      [:set-param :universal-meta [:filters dim val] true]
+      )
+     db)
+   ))
+
+
 (defn ui
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
@@ -358,3 +371,4 @@
       ]
      ]
     ))
+
