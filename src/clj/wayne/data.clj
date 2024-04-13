@@ -137,6 +137,9 @@ where
 
 ;;; TODO feature is misnomer, change to dim or something
 ;;; TODO hopefull obso
+;;; Yes there is no need for this specifiuc thing, wasn't there something that
+;;; got POPULATED values????
+;;; Not actively used
 (defn query1-meta
   [{:keys [feature filters] :as params}]
   ;; TODO conditionalize to avoid prod errors
@@ -150,7 +153,7 @@ where {where}
     ))
 
 (defn query1
-  [{:keys [feature dim filter]}]
+  [{:keys [feature dim filters]}]
   #_ (way.debug/view :query1 params)
   ;; TODO adding site for heatmap, temp
   (when (and feature dim)
@@ -158,7 +161,7 @@ where {where}
 where feature_variable = '{feature}' AND {where}"
                 :dim dim
                 :feature feature
-                :where (joint-where-clause filter))
+                :where (joint-where-clause filters))
         clean-data)))
 
 (defn data0
@@ -190,7 +193,6 @@ where feature_variable = '{feature}' AND {where}"
         "dotplot" (data0 params)
         "barchart" (data0 params)
         "violin" (data0 params)
-        "universal-meta" (query1-meta (params-remap params)) ; 
         "universal" (query1 (params-remap params))
         "heatmap" (heatmap (params-remap params))
         )
@@ -367,8 +369,8 @@ where feature_variable = '{feature}' AND {where}"
 ;;; bruce <- read.table("/opt/mt/repos/pici/wayne/data/heatmap.tsv", header = T)
 
 
-(def grouping-features [:site :final_diagnosis :who_grade :cohort :ROI :recurrence
-                        :source_table :treatment :idh_status])
+(def grouping-features [:final_diagnosis :who_grade :ROI :recurrence
+                         :treatment :idh_status])
 
 
 ;;; Generate a map of filter dims and values, pasted by hand into front end for now
@@ -379,3 +381,65 @@ where feature_variable = '{feature}' AND {where}"
                grouping-features)))
 
 
+;;; For filter-feature table
+
+;;; The new set
+(def filter-features
+  '{:ROI
+    ("INFILTRATING_TUMOR" "NORMAL_BRAIN" "SOLID_INFILTRATING_TUMOR" "SOLID_TUMOR" "TUMOR" "other"),
+    :treatment
+    ("CHOP_brain_cptac_2020"
+     "CHOP_openpbta"
+     "CHOP_pbta_all"
+     "CHOP_unknown"
+     "CoH_control"
+     "CoH_neoadjuvant"
+     "Stanford_unknown"
+     "UCLA_control"
+     "UCLA_neoadjuvant_nonresp"
+     "UCLA_neoadjuvant_resp"
+     "UCSF_0"
+     "UCSF_lys_control"
+     "UCSF_neoadjuvant_SPORE_CD27"
+     "UCSF_neoadjuvant_SPORE_vaccine"
+     "UCSF_neoadjuvant_lys_vaccine"
+     "UCSF_non_trial_controls"
+     "UCSF_pre_trial"
+     "UCSF_pxa_group"),
+    :who_grade ("2" "3" "4" "NA"),
+    :idh_status ("NA" "mutant" "unknown" "wild_type"),
+    :recurrence ("no" "unknown" "yes"),
+,
+    :final_diagnosis
+    ("Astrocytoma"
+     "Diffuse_midline_glioma"
+     "GBM"
+     "Ganglioglioma"
+     "Glioma"
+     "Normal_brain"
+     "Oligodendroglioma"
+     "PXA"
+     "Thalmic_glioma"
+     "pGBM"
+     "pHGG")})
+
+;;; → Multitool!
+(defn replace-key
+  [map old new]
+  (-> map
+      (assoc new (get map old))
+      (dissoc old)))
+
+(defn grid
+  []
+  (u/forcat [dim1 grouping-features
+             dim2 grouping-features]
+    (map (fn [row]
+           (-> row
+               (update :dim1 #(str (name dim1) ": " %))
+               (update :dim2 #(str (name dim2) ": " %))
+               ))
+         (select (format "%s as dim1, %s as dim2, count(distinct(patient_id)) as count {from} group by %s, %s" (name dim1) (name dim2)(name dim1) (name dim2))))))
+              
+#_
+(write-json-file "resources/public/filter-grid.js" (grid))

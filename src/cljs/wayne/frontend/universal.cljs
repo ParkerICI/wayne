@@ -185,22 +185,18 @@
      "pGBM"
      "pHGG")})
 
-
-(defn tapr
-  [tag & stuff]
-  (apply prn tag stuff)
-  (first stuff))
-
 (defn filter-values
   [feature]
   (let [all-values (get filter-features feature)
-        ; in-values (set (mapcat vals @(rf/subscribe [:data :universal-meta])))
-        filters @(rf/subscribe [:param :universal-meta [:filters]])
+        ;; Needs rethinking
+        ;; in-values (set (mapcat vals @(rf/subscribe [:data :universal-meta])))
+        filters @(rf/subscribe [:param :universal [:filters]])
         ] 
     [:div
      (for [value all-values
            :let [id (str "feature" (name feature) "-" value)
                  checked? (get-in filters [feature value])
+                 disabled? false ; (not (contains? in-values value))
                  ]]
        [:div.form-check
         {:key (str "filter-val-" feature value)}
@@ -208,18 +204,17 @@
          {:type :checkbox
           :key id
           :id id
-          ;; TODO :disabled (not (contains? in-values value))
+          :disabled (if disabled? "disabled" "")
           :checked (if checked? "checked" "")
           :on-change (fn [e]
                        (rf/dispatch
-                        [:set-param :universal-meta [:filters feature value] (-> e .-target .-checked)]
+                        [:set-param :universal [:filters feature value] (-> e .-target .-checked)]
                         ))
           }]
-        [:label.form-check-label {:for id :class (if false ; (contains? in-values value)
+        [:label.form-check-label {:for id :class (when disabled? "text-muted")
                                                    ; text-decoration-line-through
-                                                   nil "text-muted"
-                                                   )}
-         (humanize value)]])
+                                  }
+         (humanize value) disabled?]])
      ]))
 
 (defn filter-ui
@@ -263,7 +258,7 @@
 
 (defn filter-text
   []
-  (let [filter @(rf/subscribe [:param :universal-meta [:filters]])]
+  (let [filter @(rf/subscribe [:param :universal [:filters]])]
     [:div.border.rounded.bg-light {:style {:text-wrap "wrap", :text-indent "-10px", :padding-left "15px" :padding-top "5px" :padding-right "5px"}}
      (u/mapf (fn [[col vals]]
                (let [in-vals (u/mapf (fn [[v in]]
@@ -322,7 +317,7 @@
      (rf/dispatch                    
       [:set-param :universal-meta [:filters dim val] (not (get-in db [:params :universal-meta :filters dim val]))]
       )
-     (update-in db [:params :universal-meta :filters dim val] not)
+     (update-in db [:params :universal :filters dim val] not)
      )
    ))
 
@@ -344,8 +339,8 @@
        ]
       [:div.col-3
        [:h4 "Filter"
-        [:span.ms-2 [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal-meta :filters {}])
-                                                                     (rf/dispatch [:set-param :universal-meta :feature nil]))} "Clear"]]]
+        [:span.ms-2 [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal :filters {}])
+                                                                     (rf/dispatch [:set-param :universal :feature nil]))} "Clear"]]]
        (if dim
          [filter-ui]
          [:span "← First select a dimension to compare ←"]) ]

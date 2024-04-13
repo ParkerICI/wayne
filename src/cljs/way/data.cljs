@@ -31,9 +31,6 @@
  (fn [db [_ data-id param value]]		
    (prn :set-param data-id param value)
    (rf/dispatch [:fetch data-id])       ;timing issues?
-   ;; Perhaps no longer needed?
-   #_ (when (= data-id :universal-meta)    ;TODO temp nongeneral hack, need dependency mgt
-     (rf/dispatch [:fetch :universal]))
    (-> (if (vector? param)                  ;? smell
          (assoc-in db (concat [:params data-id] param) value)
          (assoc-in db [:params data-id param] value))
@@ -51,8 +48,7 @@
 (defn extra-params
   [db data-id]
   (case data-id
-    :universal {:filter (get-in db [:params :universal-meta :filters] {})}
-    :heatmap {:filter (get-in db [:params :universal-meta :filters] {})
+    :heatmap {:filter (get-in db [:params :universal :filters] {})
               :dim (get-in db [:params :universal :dim])}
     {}))
 
