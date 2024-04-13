@@ -113,10 +113,8 @@ where
              params params))
 
 ;;; Repeated in universal.cljs
-(def grouping-vars [:final_diagnosis :who_grade :cohort :ROI :recurrence])
-
-
-
+(def grouping-features [:final_diagnosis :who_grade :ROI :recurrence
+                        :treatment :idh_status])
 (defn true-values
   [map]
   (u/forf [[k v] map]
@@ -154,15 +152,27 @@ where {where}
 
 (defn query1
   [{:keys [feature dim filters]}]
-  #_ (way.debug/view :query1 params)
-  ;; TODO adding site for heatmap, temp
   (when (and feature dim)
-    (-> (select "feature_value, {dim}, site {from} 
+    (-> (select "feature_value, {dim} {from} 
 where feature_variable = '{feature}' AND {where}"
                 :dim dim
                 :feature feature
                 :where (joint-where-clause filters))
         clean-data)))
+
+;;; Return all legal values for all grouping dimensions, given some paramaters
+;;; TODO: it turns out there is no need to compute all of these at once, and doing a single dim would make more sense
+(defn query1-pop
+  [{:keys [feature filters]}]
+  (when feature
+    (->>
+     (select "{cols} {from} where feature_variable = '{feature}' AND {where}"
+             :cols (str/join ", " (map #(format "array_agg(distinct(%s)) as %s" (name %) (name %)) grouping-features))
+             :feature feature
+             :where (joint-where-clause filters))
+     first
+     (u/map-values set)
+     )))
 
 (defn data0
   [params]
@@ -194,6 +204,7 @@ where feature_variable = '{feature}' AND {where}"
         "barchart" (data0 params)
         "violin" (data0 params)
         "universal" (query1 (params-remap params))
+        "universal-pop" (query1-pop (params-remap params))
         "heatmap" (heatmap (params-remap params))
         )
       denil))                           ;TODO temp because nil is being used to mean no value on front-end...lazy
@@ -367,11 +378,6 @@ where feature_variable = '{feature}' AND {where}"
 
 ;;; I read this into R and messed with it, see /opt/client/pici/bruce/r-heatmap-transcript
 ;;; bruce <- read.table("/opt/mt/repos/pici/wayne/data/heatmap.tsv", header = T)
-
-
-(def grouping-features [:final_diagnosis :who_grade :ROI :recurrence
-                         :treatment :idh_status])
-
 
 ;;; Generate a map of filter dims and values, pasted by hand into front end for now
 (defn generate-filters

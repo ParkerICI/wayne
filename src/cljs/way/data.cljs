@@ -48,6 +48,7 @@
 (defn extra-params
   [db data-id]
   (case data-id
+    :universal-pop (get-in db [:params :universal]) ;copy these
     :heatmap {:filter (get-in db [:params :universal :filters] {})
               :dim (get-in db [:params :universal :dim])}
     {}))

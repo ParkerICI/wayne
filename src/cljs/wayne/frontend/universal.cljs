@@ -188,15 +188,14 @@
 (defn filter-values
   [feature]
   (let [all-values (get filter-features feature)
-        ;; Needs rethinking
-        ;; in-values (set (mapcat vals @(rf/subscribe [:data :universal-meta])))
+        in-values @(rf/subscribe [:data :universal-pop])
         filters @(rf/subscribe [:param :universal [:filters]])
         ] 
     [:div
      (for [value all-values
            :let [id (str "feature" (name feature) "-" value)
                  checked? (get-in filters [feature value])
-                 disabled? false ; (not (contains? in-values value))
+                 disabled? (not (get-in in-values [feature value]))
                  ]]
        [:div.form-check
         {:key (str "filter-val-" feature value)}
