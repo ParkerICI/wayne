@@ -16,10 +16,6 @@
    {:x {:field "dim2" :type "nominal" :axis {:grid true :bandPosition 0 :orient :top} :title false}
     :y {:field "dim1" :type "nominal" :axis {:grid true :bandPosition 0} :title false}
     :color {:field "count" :type "quantitative" :scale {:domain [0 100]}}
-    ;; TODO damn it this does not work, apparently adding event handlers is rocket science to vega lite. 
-    ;; In reality, this should populate the filter appropriately. 
-    ;; Going back to Vega-linte 5.15.1 did not fix, was hoping
-    :href {:value "javascript:alert(\"foo\")"} ; 
     }
    })
 
@@ -27,33 +23,23 @@
 ;;; TODO generate spec via compile + merge
 (defn vspec
   [dim]
-  {:legends [{:fill "color", :gradientLength {:signal "clamp(height, 64, 200)"}, :title "count"}],
-   :config {},
+  {
+   :data
+   [{:name "source_0",
+     :url "filter-grid.js",           
+     :format {:type "json"},
+     :transform
+     [{:type "filter", :expr (if dim
+                               (u/expand-template "test(/^{dim}/, datum.dim1) && !(test(/^{dim}/, datum.dim2))"
+                                                  {"dim" (name dim)})
+                               "true")}
+      {:type "filter", :expr "isValid(datum[\"count\"]) && isFinite(+datum[\"count\"])"}
+      ]}]
+
+   :legends [{:fill "color", :gradientLength {:signal "clamp(height, 64, 200)"}, :title "count"}],
+
    :axes
-   [{:labels false,
-     :scale "x",
-     :grid true,
-     :gridScale "y",
-     :orient "top",
-     :minExtent 0,
-     :aria false,
-     :maxExtent 0,
-     :bandPosition 0,
-     :ticks false,
-     :domain false,
-     :zindex 1}
-    {:labels false,
-     :scale "y",
-     :grid true,
-     :gridScale "x",
-     :orient "left",
-     :minExtent 0,
-     :aria false,
-     :maxExtent 0,
-     :bandPosition 0,
-     :ticks false,
-     :domain false,
-     :zindex 1}
+   [
     {:scale "x",
      :orient "top",
      :grid false,
@@ -61,9 +47,19 @@
      :labelAlign "left",
      :labelAngle 270,
      :labelBaseline "middle",
-     :zindex 1}
-    {:scale "y", :orient "left", :grid false, :bandPosition 0, :zindex 1}],
+     :zindex 1
+     :encode
+     {:labels {:update {:text {:signal "replace(datum.value, regexp('_', 'g'), ' ')"}}}}
+     }
+    {:scale "y",
+     :orient "left",
+     :grid false,
+     :bandPosition 0,
+     :zindex 1
+     :encode
+     {:labels {:update {:text {:signal "replace(datum.value, regexp('_', 'g'), ' ')"}}}}}]
    :background "white",
+
    :scales
    [{:name "x",
      :type "band",
@@ -82,7 +78,8 @@
      :domain [0 100],
      :range "heatmap",
      :interpolate "hcl",
-     :zero true}],
+     :zero true}]
+   ,
    :style "cell",
    :padding 5,
    :marks
@@ -110,27 +107,11 @@
     {:name "width", :update "bandspace(domain('x').length, 0, 0) * x_step"}
     {:name "y_step", :value 20}
     {:name "height", :update "bandspace(domain('y').length, 0, 0) * y_step"}
-    #_
-    {:name "hover",
-     :value nil,
-     :on [
-          {:events "rect:mouseover", :update "datum.dim1"},
-          {:events "mousedown!", :update "null"}
-          ]
-     }
     {:name "click"
-     :on [{:events "rect:mousedown" :update "datum.dim2"}]}
+     ;; TODO there is some kind of debouncing going on that I haven't figured out how to turn off. Adding {0,0} does not work.
+     :on [{:events "rect:click" :update "datum.dim2"}]}
     ],
-   :data
-   [{:name "source_0",
-     :url "filter-grid.js",
-     :format {:type "json"},
-     :transform
-     [{:type "filter", :expr (if dim
-                               (u/expand-template "test(/^{dim}/, datum.dim1) && !(test(/^{dim}/, datum.dim2))"
-                                                  {"dim" (name dim)})
-                               "true")}
-      {:type "filter", :expr "isValid(datum[\"count\"]) && isFinite(+datum[\"count\"])"}]}]})
+   })
 
 (defn lite-ui
   [& [dim]]

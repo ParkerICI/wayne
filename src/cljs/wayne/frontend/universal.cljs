@@ -190,6 +190,8 @@
   (let [all-values (get filter-features dim)
         feature @(rf/subscribe [:param :universal [:feature]])
         filters @(rf/subscribe [:param :universal [:filters]])
+        ;; TODO this ends up accumulating a lot in the db, I don't think its fatal but
+        ;; TODO also filter needs to be cleaned/regularized for matching
         in-values @(rf/subscribe [:data [:universal-pop dim feature filters]])
         ] 
     [:div
@@ -360,7 +362,8 @@
 
       (when (and data dim)
         [:div
-         [:span (str (count data) " rows")]
+         ;; TODO pluralize
+         [:span (str (count data) " rows")]   ; could do this but it is wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows"))
          [:span.ms-2 (wu/download-button data "wayne-export.tsv")]
          ;; TODO of course you might want to see these together, so tabs are not good design
          [tabs/tabs
