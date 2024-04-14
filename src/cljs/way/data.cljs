@@ -48,24 +48,34 @@
 (defn extra-params
   [db data-id]
   (case data-id
-    :universal-pop (get-in db [:params :universal]) ;copy these
     :heatmap {:filter (get-in db [:params :universal :filters] {})
               :dim (get-in db [:params :universal :dim])}
+    {}))
+
+;;; TODO make this a method or something
+(defn label-params
+  [data-id]
+  (if (vector? data-id)
+    (zipmap [:dim :feature :filters]
+            (rest data-id))
     {}))
 
 (rf/reg-event-db
  :fetch
  (fn [db [_ data-id]]
-   (api/ajax-get
-    "/api/v2/data"
-    {:params (merge (get-in db [:params data-id])
-                    (extra-params db data-id)
-                    {:data-id data-id}
-                    )
-     :handler #(rf/dispatch [::loaded data-id %])
-     :error-handler #(rf/dispatch [:data-error data-id %1]) ;Override standard error handler
-     })
-   (assoc db :loading? true)))
+   (let [event-params (label-params data-id)
+         data-key (if (vector? data-id) (first data-id) data-id)]
+     (api/ajax-get
+      "/api/v2/data"
+      {:params (merge (get-in db [:params data-id])
+                      event-params
+                      (extra-params db data-id)
+                      {:data-id data-key} ;TODO fix terminology to be consistent
+                      )
+       :handler #(rf/dispatch [::loaded data-id %])
+       :error-handler #(rf/dispatch [:data-error data-id %1]) ;Override standard error handler
+       })
+     (assoc db :loading? true))))
 
 (rf/reg-event-db
  :data-error

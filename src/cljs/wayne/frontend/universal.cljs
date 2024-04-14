@@ -185,20 +185,21 @@
      "pGBM"
      "pHGG")})
 
-(defn filter-values
-  [feature]
-  (let [all-values (get filter-features feature)
-        in-values @(rf/subscribe [:data :universal-pop])
+(defn filter-values-ui
+  [dim]
+  (let [all-values (get filter-features dim)
+        feature @(rf/subscribe [:param :universal [:feature]])
         filters @(rf/subscribe [:param :universal [:filters]])
+        in-values @(rf/subscribe [:data [:universal-pop dim feature filters]])
         ] 
     [:div
      (for [value all-values
-           :let [id (str "feature" (name feature) "-" value)
-                 checked? (get-in filters [feature value])
-                 disabled? (not (get-in in-values [feature value]))
+           :let [id (str "dim" (name dim) "-" value)
+                 checked? (get-in filters [dim value])
+                 disabled? (not (contains? in-values value))
                  ]]
        [:div.form-check
-        {:key (str "filter-val-" feature value)}
+        {:key (str "filter-val-" dim value)}
         [:input.form-check-input
          {:type :checkbox
           :key id
@@ -207,7 +208,7 @@
           :checked (if checked? "checked" "")
           :on-change (fn [e]
                        (rf/dispatch
-                        [:set-param :universal [:filters feature value] (-> e .-target .-checked)]
+                        [:set-param :universal [:filters dim value] (-> e .-target .-checked)]
                         ))
           }]
         [:label.form-check-label {:for id :class (when disabled? "text-muted")
@@ -236,7 +237,7 @@
                                            :aria-labelledby heading-id
                                            :data-bs-parent "#filter-accordion"}
          [:div.accordion-body
-          [filter-values dim]
+          [filter-values-ui dim]
           ]]]
        ))])
 

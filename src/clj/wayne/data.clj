@@ -107,9 +107,11 @@ where
 (defn params-remap
   [params]
   (reduce-kv (fn [params k v]
-               (if (and (string? k) (re-find #"\[.*\]" k)) 
-                 (dissoc (assoc-in params (mapv keyword (re-seq #"\w+" k)) v) k) ;TODO a bit hacky
-                 params))
+               (if (= v "null")         ;fix "null"s
+                 (dissoc params k)      
+                 (if (and (string? k) (re-find #"\[.*\]" k)) 
+                   (dissoc (assoc-in params (mapv keyword (re-seq #"\w+" k)) v) k) ;TODO a bit hacky
+                   params)))
              params params))
 
 ;;; Repeated in universal.cljs
@@ -160,19 +162,18 @@ where feature_variable = '{feature}' AND {where}"
                 :where (joint-where-clause filters))
         clean-data)))
 
-;;; Return all legal values for all grouping dimensions, given some paramaters
-;;; TODO: it turns out there is no need to compute all of these at once, and doing a single dim would make more sense
-(defn query1-pop
-  [{:keys [feature filters]}]
-  (when feature
+;;; Allowable feature values for a single dim, given feature and filters
+;;; TODO should delete dim from filters, here or upstream
+(defn query1-pop2
+  [{:keys [dim feature filters] :as params}]
+  (when dim
     (->>
-     (select "{cols} {from} where feature_variable = '{feature}' AND {where}"
-             :cols (str/join ", " (map #(format "array_agg(distinct(%s)) as %s" (name %) (name %)) grouping-features))
-             :feature feature
-             :where (joint-where-clause filters))
-     first
-     (u/map-values set)
-     )))
+     (select "distinct {dim} {from} where {feature-clause} AND {where}"
+             (assoc params
+                    :feature-clause (if feature (u/expand-template "feature_variable = '{feature}'" {:feature feature} :key-fn keyword) "1=1")
+                    :where (joint-where-clause (dissoc filters (keyword dim)))))
+     (map (comp second first))
+     set)))
 
 (defn data0
   [params]
@@ -196,7 +197,7 @@ where feature_variable = '{feature}' AND {where}"
 (defn data
   [{:keys [data-id] :as params}]
   (log/info :data params)
-  (-> (case data-id                     ;TODO multimethod or some other less kludgerous form
+  (-> (case (if (vector? data-id) (first data-id) data-id) ;TODO multimethod or some other less kludgerous form
         "patients" (patient-table)
         "sites" (site-table)
         "samples" (sample-table)
@@ -204,7 +205,7 @@ where feature_variable = '{feature}' AND {where}"
         "barchart" (data0 params)
         "violin" (data0 params)
         "universal" (query1 (params-remap params))
-        "universal-pop" (query1-pop (params-remap params))
+        "universal-pop" (query1-pop2 (params-remap params))
         "heatmap" (heatmap (params-remap params))
         )
       denil))                           ;TODO temp because nil is being used to mean no value on front-end...lazy
