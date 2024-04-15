@@ -75,7 +75,10 @@
        :handler #(rf/dispatch [::loaded data-id %])
        :error-handler #(rf/dispatch [:data-error data-id %1]) ;Override standard error handler
        })
-     (assoc db :loading? true))))
+     (-> db
+         (assoc :loading? true)
+         (assoc-in [:data-status data-id] :fetching)
+         ))))
 
 (rf/reg-event-db
  :data-error
@@ -101,7 +104,7 @@
    (let [data (or (get-in db [:data data-id]) [])]
      (case (get-in db [:data-status data-id])
        :valid data
-       :fetching data
+       :fetching nil                   ; TODO unclear if it only means initial fetch or later ones
        :error []
        (:invalid nil) (do (rf/dispatch [:fetch data-id])
                           data)))))

@@ -313,10 +313,10 @@
  (fn [db [_ value]]
    (let [[_ dim val] (re-matches #"(.*): (.*)" value) ;TODO overly linked to particular Vega data in fgrid
          dim (keyword dim)] 
-     #_ ; Alt
      (rf/dispatch                    
-      [:set-param :universal-meta [:filters dim val] (not (get-in db [:params :universal-meta :filters dim val]))]
+      [:set-param :universal [:filters dim val] (not (get-in db [:params :universal :filters dim val]))]
       )
+     #_ ;; alt
      (update-in db [:params :universal :filters dim val] not)
      )
    ))
