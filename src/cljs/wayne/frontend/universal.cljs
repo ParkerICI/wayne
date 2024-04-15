@@ -12,9 +12,7 @@
             )
   )
 
-;;; TODO probably should be somewhere more global, also might do more. Should
-;;; be able to specify humanization for special cases. 
-;;; TODO also need to do this for vega labels (eg in fgrid, but everyehere)
+;;; TODO replace with way.web-utils cljc version
 (defn humanize
   [term]
   (-> term

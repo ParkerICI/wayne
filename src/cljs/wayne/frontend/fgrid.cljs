@@ -1,5 +1,6 @@
 (ns wayne.frontend.fgrid
   (:require [way.vega :as v]
+            [way.web-utils :as wu]
             [org.candelbio.multitool.core :as u]
             )
   )
@@ -56,8 +57,12 @@
      :grid false,
      :bandPosition 0,
      :zindex 1
+     :title (when dim (wu/humanize dim))
      :encode
-     {:labels {:update {:text {:signal "replace(datum.value, regexp('_', 'g'), ' ')"}}}}}]
+     {:labels {:update {:text {:signal (if dim
+                                         "replace(split(datum.value, ':')[1], regexp('_', 'g'), ' ')"
+                                         "replace(datum.value, regexp('_', 'g'), ' ')")
+                               }}}}}]
    :background "white",
 
    :scales
@@ -109,7 +114,7 @@
     {:name "height", :update "bandspace(domain('y').length, 0, 0) * y_step"}
     {:name "click"
      ;; TODO there is some kind of debouncing going on that I haven't figured out how to turn off. Adding {0,0} does not work.
-     :on [{:events "rect:click" :update "datum.dim2"}]}
+     :on (when dim [{:events "rect:click" :update "datum.dim2"}])}
     ],
    })
 

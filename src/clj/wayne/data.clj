@@ -450,3 +450,12 @@ where feature_variable = '{feature}' AND {where}"
               
 #_
 (write-json-file "resources/public/filter-grid.js" (grid))
+
+;;; Feature hacking
+
+
+(comment
+(def features (select "distinct feature_variable, feature_type, cell_meta_cluster_final, feature_source, bio_feature_type, Feature {from} "))
+
+(map #(frequencies (map % features)) [:feature_type, :cell_meta_cluster_final, :feature_source, :bio_feature_type, :Feature])
+)

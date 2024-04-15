@@ -318,3 +318,10 @@ setter #(let [value @(rf/subscribe [::edited-value key])]
                    (download-data-as-tsv data-sub filename))}
      "Download"]))
 
+;;; Kind of BRUCE specific?
+;;; CLJC
+(defn humanize
+  [term]
+  (-> term
+      name
+      (str/replace "_" " ")))
