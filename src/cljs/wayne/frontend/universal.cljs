@@ -267,9 +267,9 @@
                  (when-not (empty? in-vals)
                    [:p
                     {:key (str "filter-text-" (name col))}
-                    (str (name col) ": "
+                    (str (humanize (name col)) ": "
                             (str/join ", "
-                                      in-vals))])))
+                                      (map humanize in-vals)))])))
              filter)]))
 
 (defn heatmap
