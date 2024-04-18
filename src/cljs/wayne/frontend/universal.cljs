@@ -102,8 +102,8 @@
     "signals"
     [{"name" "plotWidth", "value" 160}  ;controls fatness of violins
      {"name" "height", "update" "(plotWidth + 10) * 3"}
-     {"name" "trim", "value" true, "bind" {"input" "checkbox"}}
-     {"name" "bandwidth", "value" 0, "bind" {"input" "range", "min" 0, "max" 0.00002, "step" 0.000001}}], ;Note: very sensitive, was hard to find these values
+     {"name" "trim", "value" true, #_ "bind" #_ {"input" "checkbox"}}
+     {"name" "bandwidth", "value" 0, #_ "bind" #_ {"input" "range", "min" 0, "max" 0.00002, "step" 0.000001}}], ;Note: very sensitive, was hard to find these values
     "$schema" "https://vega.github.io/schema/vega/v5.json",
     "data"
     [{"name" "source",
