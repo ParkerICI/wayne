@@ -9,10 +9,7 @@
    ; :patient_id {:patient_id "patient/%s"}
    })
 
-;;; Temp hack, these should be 
-
 (def sites ["CoH" "CHOP" "UCLA" "UCSF" "Stanford"])
-
 
 (def features
   ["Olig2"

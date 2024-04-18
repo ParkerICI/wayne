@@ -273,6 +273,7 @@
                                       (map humanize in-vals)))])))
              filter)]))
 
+#_
 (defn heatmap
   [data dim1 dim2]
   [v/vega-lite-view
@@ -285,14 +286,14 @@
     }
    data])
 
-(defn real-heatmap
+(defn heatmap
   [dim]
   ;; Filters are automatically put on the query
   (let [data @(rf/subscribe [:data :heatmap])]
     [v/vega-lite-view
      {:mark :rect
       :data {:values data}
-      :encoding {:y {:field dim  :type "nominal"} 
+      :encoding {:y {:field dim :type "nominal"} 
                  :x {:field "feature_variable" :type "nominal"}
                  :color {:field :mean :type "quantitative"}}   ;Note: mean computed on server
       :config {:axis {:grid true :tickBand :extent}}
@@ -376,8 +377,8 @@
           (array-map
            :violin (fn [] [v/vega-view (violin data dim) data])
            :boxplot (fn [] [v/vega-lite-view (boxplot data dim) data])
-           :heatmap (fn [] [heatmap data dim "site"])
-           :real-heatmap (fn [] [real-heatmap dim])
+           ;; :heatmap (fn [] [heatmap data dim "site"])
+           :heatmap (fn [] [heatmap dim])
            )]])
       ]
      ]
