@@ -9,6 +9,7 @@
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
             [wayne.frontend.fgrid :as fgrid]
+            [wayne.frontend.feature-select :as fui]
             )
   )
 
@@ -321,6 +322,10 @@
      )
    ))
 
+(defn dim-first-warning
+  []
+  [:div.mt-4
+   [:span.alert.alert-info "← First select a dimension to compare ←"]])  
 
 (defn ui
   []
@@ -343,15 +348,17 @@
                                                                      (rf/dispatch [:set-param :universal :feature nil]))} "Clear"]]]
        (if dim
          [filter-ui]
-         [:span "← First select a dimension to compare ←"]) ]
+         [dim-first-warning]) ]
        [:div.col-2
        [:h4 " "]
        [filter-text]]
       [:div.col-5
        [:h4 "Feature Selection"]
        (if dim
-         [feature-ui]
-         [:span "← First select a dimension to compare ←"])
+         [:div
+          [feature-ui]
+          [fui/ui]]
+         [dim-first-warning])
 
        ]]
      [:div.row

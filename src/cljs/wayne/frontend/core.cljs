@@ -57,12 +57,12 @@
      :sites sites/sites
      :patients patients/patients
      :samples samples/samples
-     :violin violins/violins
-     :dotplot dotplot/plot              ;yes these are the same, the vega spec gets switched out with a kludge
+;     :violin violins/violins
+     :dotplot dotplot/plot
      :barchart barchart/plot
      :universal universal/ui
      :dendrogram dend/ui
-     :fgrid fgrid/ui
+     :fgrid fgrid/ui                    ;TODO better name
      )]
    #_ [footer]
    ])
