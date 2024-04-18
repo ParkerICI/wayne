@@ -20,6 +20,7 @@
    [wayne.frontend.universal :as universal]
    [wayne.frontend.dendrogram :as dend]
    [wayne.frontend.fgrid :as fgrid]
+   [wayne.frontend.feature-select :as fui]
 
    [org.candelbio.multitool.core :as u]
    [clojure.string :as str]
@@ -36,6 +37,9 @@
     "Experiments towards a BRUCE Data Portal."]
    [:p
     [:a {:href "https://github.com/mtravers/wayne"} "Source"]]
+   [:p
+    [:a {:href "https://docs.google.com/document/d/1VuoqIaiXaNTA9ROrQFZJYRUNOEk8A5zADDDVuE8wlyc/edit"} "Requirements document"]
+    ]
    [:p
     [:a {:href "https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit?usp=sharing"} "Design document"]
     ]
@@ -62,7 +66,8 @@
      :barchart barchart/plot
      :universal universal/ui
      :dendrogram dend/ui
-     :fgrid fgrid/ui                    ;TODO better name
+     :data_grid fgrid/ui                    ;TODO better name
+     :feature_selector fui/ui
      )]
    #_ [footer]
    ])

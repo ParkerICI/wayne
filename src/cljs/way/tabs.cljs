@@ -1,6 +1,6 @@
 (ns way.tabs
-  (:require
-   [re-frame.core :as rf]
+  (:require [re-frame.core :as rf]
+            [way.web-utils :as wu]
    ))
 
 ;;; manages any kind of tabbed ui, or top level pages
@@ -11,7 +11,7 @@
    (:page db)))
 
 (defn tabs
-  "Define a set of tabs. id is a keyword, tabs is a map (array-map is best) mapping keywords to ui fns "
+  "Define a set of tabs. id is a keyword, tabs is a map (array-map is best to preserve order) mapping keywords to ui fns "
   [id tabs]
   (let [active (or @(rf/subscribe [:active-tab id])
                     (ffirst tabs))]      ;Default to first tab TODO should do via dab
@@ -23,7 +23,7 @@
          (if name
            [:a.nav-link {:class (when (= name active) "active")
                          :on-click #(rf/dispatch [:choose-tab id name])}
-            name]
+            (wu/humanize name)]
            [:a.nav-link.disabled.vtitle view])])]
      (when active
        ((tabs active)))]))

@@ -358,7 +358,7 @@
        (if dim
          [:div
           [feature-ui]
-          [fui/ui]]
+          #_ [fui/ui]]
          [dim-first-warning])
 
        ]]
