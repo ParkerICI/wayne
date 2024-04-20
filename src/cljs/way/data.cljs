@@ -34,7 +34,22 @@
    (-> (if (vector? param)                  ;? smell
          (assoc-in db (concat [:params data-id] param) value)
          (assoc-in db [:params data-id param] value))
-       (invalidate data-id param))))    ;TODO completely not working and the wrong thing
+       (invalidate data-id param))))
+
+                                        ;TODO completely not working and the wrong thing
+
+(rf/reg-event-db
+ :set-param-if
+ (fn [db [_ data-id param value]]		
+   (prn :set-param-if data-id param value)
+   (if (if (vector? param)
+         (get-in db (concat [:params data-id] param))
+         (get-in db [:params data-id param]))
+     db
+     (if (vector? param)                  ;? smell
+       (assoc-in db (concat [:params data-id] param) value)
+       (assoc-in db [:params data-id param] value))
+     )))
 
 (rf/reg-sub
  :param
