@@ -67,12 +67,14 @@
               :dim (get-in db [:params :universal :dim])}
     {}))
 
-;;; TODO make this a method or something
+;;; TODO get rid of this and just use a parameter map
 (defn label-params
   [data-id]
   (if (vector? data-id)
-    (zipmap [:dim :feature :filters]
-            (rest data-id))
+    (if (map? (second data-id))
+      (second data-id)
+      (zipmap [:dim :feature :filters]
+              (rest data-id)))
     {}))
 
 (rf/reg-event-db

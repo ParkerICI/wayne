@@ -194,6 +194,12 @@ where feature_variable = '{feature}' AND {where}"
   [thing]
   (if (nil? thing) [] thing))
 
+(defn bio_feature_type-features
+  [bio_feature_type]
+  (map :feature_variable
+       (select "distinct feature_variable {from} where bio_feature_type = '{bio_feature_type}'"
+               :bio_feature_type bio_feature_type)))
+
 (defn data
   [{:keys [data-id] :as params}]
   (log/info :data params)
@@ -207,6 +213,7 @@ where feature_variable = '{feature}' AND {where}"
         "universal" (query1 (params-remap params))
         "universal-pop" (query1-pop2 (params-remap params))
         "heatmap" (heatmap (params-remap params))
+        "features" (bio_feature_type-features (:bio_feature_type params))
         )
       denil))                           ;TODO temp because nil is being used to mean no value on front-end...lazy
 

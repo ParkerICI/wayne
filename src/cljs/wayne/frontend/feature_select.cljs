@@ -59,11 +59,10 @@
                             ]]
    ])
 
-
-
 (defn select-widget
   [id values]
-  (rf/dispatch [:set-param-if :universal id (name (first values))]) ;TODO smell? But need to initialize somewhere
+  (when-not (empty? values)
+    (rf/dispatch [:set-param-if :universal id (name (first values))])) ;TODO smell? But need to initialize somewhere
   [:div.row
    [:div.col-4 [:label.small [:b id]]]  ;TEMP for dev I think
    [:div.col-4
@@ -96,17 +95,16 @@
   [:div 
    (select-widget :feature-l2 (map first non-spatial-features-2-3))
    (let [feature-l2 @(rf/subscribe [:param :universal :feature-l2])]
-     
-   (if (= "marker_intensity" feature-l2)
-     [:div
-      (select-widget :feature-l3-meta-cluster cell-meta-clusters)
-      [l3-feature]]
-     ;; Not marker_intensity
-     [:div
-      (select-widget :feature-l3-bio-feature-type (get (into {} non-spatial-features-2-3) feature-l2))
-      (case @(rf/subscribe [:param :universal :feature-l3-bio-feature-type])
-        "tumor_antigen_co_relative" [tumor_antigen_co_relative]
-        "TBD")]))])
+     (if (= "marker_intensity" feature-l2)
+       [:div
+        (select-widget :feature-l3-meta-cluster cell-meta-clusters)
+        [l3-feature]]
+       ;; Not marker_intensity
+       [:div
+        (select-widget :feature-l3-bio-feature-type (get (into {} non-spatial-features-2-3) feature-l2))
+        (when-let [bio_feature_type @(rf/subscribe [:param :universal :feature-l3-bio-feature-type])]
+          (when-let [l4-features @(rf/subscribe [:data [:features {:bio_feature_type bio_feature_type}]])]
+            (select-widget :feature-l4-feature l4-features)))]))])
 
 (defn ui
   []
