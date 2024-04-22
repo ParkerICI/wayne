@@ -112,7 +112,7 @@
              :rel "stylesheet"}]
      ]
 
-    [:body 
+    [:body {:height 5000}              ;TODO prevents aannoying scroll behavior, but clearly not the right thing
      [:div#app]
      (app-html)
      [:script {:src "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
