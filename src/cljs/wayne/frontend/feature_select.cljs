@@ -133,7 +133,7 @@
    (u/for* [part (analyze-feature-class features)
          i (range)]
      (if (= 1 (count part))
-       [:span.mx-2.pt-2 (first part)]   ;TODO note approximating alignment, not sure how to do it right
+       [:span.mx-2.pt-2 (wu/humanize (first part))]   ;TODO note approximating alignment, not sure how to do it right
        [select-widget-minimal (keyword (str "feature-seg-" i)) part]))])
 
 (defn l2-nonspatial

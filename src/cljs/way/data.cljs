@@ -34,7 +34,8 @@
    (-> (if (vector? param)                  ;? smell
          (assoc-in db (concat [:params data-id] param) value)
          (assoc-in db [:params data-id param] value))
-       (invalidate data-id param))))
+       ;; TODO not needed? All this needs to be rethought anyway
+       #_ (invalidate data-id param))))
 
                                         ;TODO completely not working and the wrong thing
 
