@@ -156,7 +156,7 @@ where {where}
   [{:keys [feature dim filters]}]
   (when (and feature dim)
     (-> (select "feature_value, {dim} {from} 
-where feature_variable = '{feature}' AND {where}"
+where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of differe
                 :dim dim
                 :feature feature
                 :where (joint-where-clause filters))
@@ -465,4 +465,150 @@ where feature_variable = '{feature}' AND {where}"
 (def features (select "distinct feature_variable, feature_type, cell_meta_cluster_final, feature_source, bio_feature_type, Feature {from} "))
 
 (map #(frequencies (map % features)) [:feature_type, :cell_meta_cluster_final, :feature_source, :bio_feature_type, :Feature])
+
+
+
+(def fgx (group-by :bio_feature_type features))
+(u/map-values #(map :feature_variable (random-elements 5 %)) fgx)
+;;; Random samples
+(def features-samples
+{"tumor_antigen_fractions"
+ ("EGFR_func_over_EGFR_func_counts_plus_GM2_GD2_func_counts_prop"
+  "GPC2_func_over_GM2_GD2_func_counts_plus_GPC2_func_counts_prop"
+  "EGFR_func_over_EGFR_func_counts_plus_GPC2_func_counts_prop"
+  "VISTA_func_over_GPC2_func_counts_plus_VISTA_func_counts_prop"
+  "GM2_GD2_func_over_GM2_GD2_func_counts_plus_HER2_func_counts_prop"),
+ "immune_cell_relative_to_all_tumor"
+ ("Endothelial_cells_over_all_tumor_count_prop"
+  "Unassigned_over_all_tumor_count_prop"
+  "Unassigned_over_all_tumor_count_prop"
+  "APC_over_all_tumor_count_prop"
+  "Endothelial_cells_over_all_tumor_count_prop"),
+ "tumor_antigen_co_relative"
+ ("B7H3_func_GPC2_func_over_GPC2_func_prop"
+  "GM2_GD2_func_VISTA_func_over_EGFR_func_prop"
+  "EGFR_func_VISTA_func_over_VISTA_func_prop"
+  "GM2_GD2_func_GPC2_func_over_EGFR_func_prop"
+  "B7H3_func_GPC2_func_over_VISTA_func_prop"),
+ "immune_cell_functional_relative_to_all_tumor"
+ ("Unassigned_Ki67_over_all_tumor_count"
+  "Tcell_CD8_ICOS_over_all_tumor_count"
+  "Macrophage_CD163_iNOS_over_all_tumor_count"
+  "Macrophage_CD206_Ki67_over_all_tumor_count"
+  "DC_CD123_TIM3_over_all_tumor_count"),
+ "immune_cell_functional_spatial_density"
+ ("Ki67_density" "iNOS_density" "CD38_density" "PD1_density" "CD38_density"),
+ "immune_tumor_antigen_fractions"
+ ("Tcell_CD8_over_Tcell_CD8_plus_NG2_func_prop"
+  "Unassigned_over_Unassigned_plus_NG2_func_prop"
+  "VISTA_func_over_Myeloid_CD14_plus_VISTA_func_prop"
+  "DC_CD123_over_DC_CD123_plus_HER2_func_prop"
+  "NG2_func_over_Tcell_FoxP3_plus_NG2_func_prop"),
+ "not_relevant"
+ ("EGFR_func_GM2_GD2_func_NG2_func_VISTA_func_over_GPC2_func_prop"
+  "EGFR_func_GM2_GD2_func_HER2_func_NG2_func_over_GPC2_func_prop"
+  "GPC2_func_HER2_func_NG2_func_over_all_tumor_prop"
+  "B7H3_func_GPC2_func_HER2_func_over_HER2_func_prop"
+  "EGFR_func_GM2_GD2_func_HER2_func_VISTA_func_over_GPC2_func_prop"),
+ "immune_cell_fractions"
+ ("Microglia_over_Myeloid_CD141_plus_Microglia_prop"
+  "Tcell_CD8_over_Tcell_CD4_plus_Tcell_CD8_prop"
+  "Tcell_CD4_over_Tcell_CD4_plus_Tcell_FoxP3_prop"
+  "Tcell_CD8_over_DC_Mac_CD209_plus_Tcell_CD8_prop"
+  "Tcell_CD8_over_DC_CD206_plus_Tcell_CD8_prop"),
+ "immune_cell_functional_relative_to_all_immune"
+ ("Myeloid_CD11b_PDL1_over_all_immune_count"
+  "Myeloid_CD141_Ki67_over_all_immune_count"
+  "Microglia_TIM3_over_all_immune_count"
+  "Macrophage_CD206_CD86_over_all_immune_count"
+  "Tcell_CD8_Ki67_over_all_immune_count"),
+ "immune_functional_marker_fractions"
+ ("DC_Mac_CD209_PDL1_over_Tcell_CD4_PDL1_plus_DC_Mac_CD209_PDL1"
+  "Tumor_cells_IDO1_over_Immune_unassigned_PD1_plus_Tumor_cells_IDO1"
+  "APC_TIM3_over_APC_TIM3_plus_Tcell_FoxP3_LAG3"
+  "APC_Ki67_over_APC_Ki67_plus_Unassigned_GLUT1"
+  "Microglia_PDL1_over_Microglia_PDL1_plus_Tcell_CD4_TIM3"),
+ "tumor_antigen_spatial_density"
+ ("EGFR_func_GPC2_func_density"
+  "B7H3_func_HER2_func_VISTA_func_density"
+  "EGFR_func_HER2_func_NG2_func_density"
+  "B7H3_func_HER2_func_NG2_func_VISTA_func_density"
+  "EGFR_func_GM2_GD2_func_HER2_func_density"),
+ "immune_cell_func_tumor_antigen_fractions"
+ ("DC_Mac_CD209_Ki67_over_Ki67_plus_GM2_GD2"
+  "Microglia_PD1_over_PD1_plus_NG2"
+  "Neurons_PDL1_over_PDL1_plus_GM2_GD2"
+  "Tcell_FoxP3_Ki67_over_Ki67_plus_EGFR"
+  "Immune_unassigned_Ki67_over_Ki67_plus_NG2"),
+ "immune_cell_spatial_density"
+ ("Tcell_CD8_density"
+  "DC_CD206_density"
+  "Endothelial_cells_density"
+  "Macrophage_CD206_density"
+  "Macrophage_CD163_density"),
+ "immune_cell_relative_to_all_immune"
+ ("DC_Mac_CD209_over_all_immune_count_prop"
+  "APC_over_all_immune_count_prop"
+  "Tcell_FoxP3_over_all_immune_count_prop"
+  "Tcell_CD4_over_all_immune_count_prop"
+  "Neutrophils_over_all_immune_count_prop"),
+ "NA" ("CD163" "GFAP" "GFAP" "GLUT1" "Olig2")})
+
+
+
+  
 )
+
+
+
+
+
+(def non-spatial-features-2-3
+  [["marker_intensity" []]                ;special cased
+   ;; orange
+   ["tumor_cell_features" ["tumor_antigen_co_relative"
+                           "tumor_antigen_fractions"
+                           "tumor_antigen_spatial_density"]]
+   ;; purple
+   ["immune_tumor_cell_features" ["immune_cell_relative_to_all_tumor"
+                                  "immune_tumor_antigen_fractions"
+                                  "immune_cell_functional_relative_to_all_tumor"
+                                  "immune_cell_func_tumor_antigen_fractions"]]
+   ;; green
+   ["immune_cell_features" ["immune_cell_functional_relative_to_all_immune"                            
+                            "immune_cell_relative_to_all_immune"
+                            "immune_cell_fractions"
+                            "immune_functional_marker_fractions"
+                            "immune_cell_functional_spatial_density"
+                            "immune_cell_spatial_density"                            
+                            ]]
+   ])
+
+(map (fn [a b] (map (fn [c] [c (take 3 (bio_feature_type-features c))]) b)) non-spatial-features-2-3)
+
+
+(def boilerplate? #{"over" "plus"  "prop" "density"})
+
+(defn resplice
+  [[t1 & tail]]
+  (cond (nil? t1) '()
+        (boilerplate? t1)
+        (cons t1 (resplice tail))
+        (boilerplate? (first tail))
+        (cons t1 (resplice tail))
+        :else
+        (let [r (resplice tail)]
+          (cons (str t1 "_" (first r))
+                (rest r)))))
+
+(defn analyze-features
+  [f]
+  (resplice (re-seq #"[A-Za-z0-9]+" f)))
+
+(defn analyze-feature-class
+  [c]
+  (let [fs (bio_feature_type-features c)
+        tokenized (map analyze-features fs)]
+    (for [i (range (count (first tokenized)))];assuming everything is same size
+      (let [tokens (distinct (map #(nth % i) tokenized))]
+        tokens))))

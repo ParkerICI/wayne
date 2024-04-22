@@ -326,7 +326,7 @@
 (defn dim-first-warning
   []
   [:div.mt-4
-   [:span.alert.alert-info "← First select a dimension to compare ←"]])  
+   [:span.alert.alert-info.text-nowrap "← First select a dimension to compare ←"]])  
 
 (defn ui
   []

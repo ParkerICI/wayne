@@ -66,8 +66,8 @@
     Note: select widget doesn't have a separate prompt, so gets added to the option list.
     If you don't want nil to be selectable, omit prompt (yes prompt is complecting a couple of things, but it works out)
   "
-  [id value dispatch options prompt & [disabled?]]
-  [:select.selector.form-control
+  [id value dispatch options prompt & [disabled? styles]]
+  [:select.selector.form-control        ;TODO form selector is heavy weight and not always wanted
    {:on-change #(do
                   (.remove (.-classList (.-target %)) "font-italic")
                   (let [value (-> % .-target .-value)
@@ -76,6 +76,7 @@
     :value (and value (str value))
     :id id
     :class (if (= none-value value) "font-italic" "")
+    :style styles
     :disabled disabled?}
     (select-widget-options options prompt)
     ])
