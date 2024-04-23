@@ -219,7 +219,7 @@
      ]))
 
 (defn filter-ui
-  []
+  [compare-dim]
   [:div#filter-accordion.accordion
    (for [dim grouping-features]
      (let [collapse-id (str "collapse" (name dim))
@@ -231,8 +231,11 @@
                                               :data-bs-toggle "collapse"
                                               :data-bs-target (str "#" collapse-id)
                                               :aria-expanded "true"
-                                              :aria-controls collapse-id}
-          (humanize dim)]]
+                                              :aria-controls collapse-id
+                                              :class (if (= dim compare-dim) "filter-compare-dim")
+                                              }
+          (humanize dim)
+          (when (= dim compare-dim) [:i.px-2 "(y-axis)"])]]
         ;; .show
         [:div.accordion-collapse.collapse {:id collapse-id
                                            :aria-labelledby heading-id
@@ -348,7 +351,7 @@
         [:span.ms-2 [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal :filters {}])
                                                                      (rf/dispatch [:set-param :universal :feature nil]))} "Clear"]]]
        (if dim
-         [filter-ui]
+         [filter-ui dim]
          [dim-first-warning]) ]
        [:div.col-2
        [:h4 " "]

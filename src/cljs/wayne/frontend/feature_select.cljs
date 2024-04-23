@@ -167,6 +167,7 @@
      (if (= "non-spatial" @(rf/subscribe [:param :features :feature-supertype]))
        [l2-nonspatial]
        [l2-spatial])]]
+   #_                                   ;They didn't like this so much
    [:div.row
     [:h4 "Alt menu"]
     (wu/select-widget
