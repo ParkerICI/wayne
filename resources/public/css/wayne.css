@@ -41,6 +41,8 @@
 }
 
 .modal-child {
+  width: 75%;
+  background: white;
   margin: auto;
   margin-top: 30px;
   z-index: 2;

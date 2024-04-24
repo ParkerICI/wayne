@@ -58,7 +58,6 @@
                  (.preventDefault event)
                  (.stopPropagation event))}]
    [:div.modal-child
-    {:style {:width "75%"}}
     (modal-contents modal-state)
     ]])
 

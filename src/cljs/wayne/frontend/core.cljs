@@ -21,6 +21,7 @@
    [wayne.frontend.dendrogram :as dend]
    [wayne.frontend.fgrid :as fgrid]
    [wayne.frontend.feature-select :as fui]
+   [wayne.frontend.signup :as signup]
 
    [org.candelbio.multitool.core :as u]
    [clojure.string :as str]
