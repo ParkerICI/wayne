@@ -337,8 +337,27 @@
         data @(rf/subscribe [:data :universal])] 
     [:div
      [:div.row
-      [:div.col-12
-       (when dim (fgrid/ui dim))]]
+      [:div.col-4
+       [:h4 "Visualization"]
+
+       (when (and data dim)
+         [:div
+          ;; TODO pluralize
+          [:span (str (count data) " rows")]   ; could do this but it is wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows"))
+          [:span.ms-2 (wu/download-button data "wayne-export.tsv")]
+          ;; TODO of course you might want to see these together, so tabs are not good design
+          [tabs/tabs
+           :uviz
+           (array-map
+            :violin (fn [] [v/vega-view (violin data dim) data])
+            :boxplot (fn [] [v/vega-lite-view (boxplot data dim) data])
+            ;; :heatmap (fn [] [heatmap data dim "site"])
+            :heatmap (fn [] [heatmap dim])
+            )]])]
+      [:div.col-8
+       (when dim (fgrid/ui dim))]
+      ]
+
      [:div.row
       [:div.col-2
        [:h4 "Compare"]
@@ -353,7 +372,7 @@
        (if dim
          [filter-ui dim]
          [dim-first-warning]) ]
-       [:div.col-2
+      [:div.col-2
        [:h4 " "]
        [filter-text]]
       [:div.col-5
@@ -365,25 +384,7 @@
          [dim-first-warning])
 
        ]]
-     [:div.row
-      ;; Feature
-      [:h4 "Visualization"]
 
-      (when (and data dim)
-        [:div
-         ;; TODO pluralize
-         [:span (str (count data) " rows")]   ; could do this but it is wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows"))
-         [:span.ms-2 (wu/download-button data "wayne-export.tsv")]
-         ;; TODO of course you might want to see these together, so tabs are not good design
-         [tabs/tabs
-          :uviz
-          (array-map
-           :violin (fn [] [v/vega-view (violin data dim) data])
-           :boxplot (fn [] [v/vega-lite-view (boxplot data dim) data])
-           ;; :heatmap (fn [] [heatmap data dim "site"])
-           :heatmap (fn [] [heatmap dim])
-           )]])
-      ]
      ]
     ))
 
