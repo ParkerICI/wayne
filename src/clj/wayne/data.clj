@@ -52,6 +52,15 @@ count(distinct(feature_variable)) as features
 {from} group by site"))
 
 
+(defn cohort-table
+  []
+  (select "final_diagnosis,
+count(distinct(patient_id)) as patients,
+count(distinct(sample_id)) as samples,
+count(distinct(feature_variable)) as features
+{from} group by final_diagnosis"))
+
+
 ;;; Cohorts
 
 (comment 
@@ -63,12 +72,16 @@ count(distinct(feature_variable)) as features
   []
   (select "sample_id, 
 any_value(patient_id) as patient_id, 
-any_value(fov) as fov, 
-count(1) as values, 
-count(distinct(feature_variable)) as features
+any_value(who_grade) as who_grade,
+any_value(final_diagnosis) as final_diagnosis,
+any_value(recurrence) as recurrence,
+any_value(immunotherapy) as immunotherapy,
 {from}
 group by sample_id"))
 
+; count(distinct(feature_variable)) as features
+; count(1) as values, 
+; any_value(fov) as fov, 
 
 (defn clean-data
   [d]
@@ -206,6 +219,7 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
   (-> (case (if (vector? data-id) (first data-id) data-id) ;TODO multimethod or some other less kludgerous form
         "patients" (patient-table)
         "sites" (site-table)
+˛        "cohort" (cohort-table)
         "samples" (sample-table)
         "dotplot" (data0 params)
         "barchart" (data0 params)

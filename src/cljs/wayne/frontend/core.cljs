@@ -13,7 +13,8 @@
    ;; TODO belongs in app probably oh well
    [wayne.frontend.violins :as violins]
    [wayne.frontend.patients :as patients]
-   [wayne.frontend.sites :as sites]
+;;   [wayne.frontend.sites :as sites]
+   [wayne.frontend.cohort :as cohort]
    [wayne.frontend.samples :as samples]
    [wayne.frontend.dotplot :as dotplot]
    [wayne.frontend.barchart :as barchart]
@@ -49,9 +50,12 @@
     [:li ]
     ]])
 
+
+
 (defn app-ui
   []
   [:div
+   ;; TODO not used (but maybe for "login")
    [modal/modal]
    [app/header]
    [flash/flash]
@@ -59,16 +63,18 @@
     :tab
     (array-map
      :home about
-     :sites sites/sites
-     :patients patients/patients
-     :samples samples/samples
+     :cohort cohort/ui
+     ;; :sites sites/sites
+     ;; :patients patients/patients
+     :sample_metadata samples/samples
 ;     :violin violins/violins
      :dotplot dotplot/plot
      :barchart barchart/plot
      :universal universal/ui
      :dendrogram dend/ui
-     :data_grid fgrid/ui                    ;TODO better name
+     ;; :data_grid fgrid/ui
      :feature_selector fui/ui
+     :signup signup/signup
      )]
    #_ [footer]
    ])
