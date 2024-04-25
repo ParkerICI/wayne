@@ -21,7 +21,7 @@
       (str/replace "_" " ")))
 
 (defn violin
-  [data dim]
+  [data dim feature]
   (let [dim (name dim)]
   `{"width" 700,
     "config" {"axisBand" {"bandPosition" 1, "tickExtra" true, "tickOffset" 0}},
@@ -97,7 +97,7 @@
       "domain" {"data" "source", "field" ~dim},
       "range" "category"}],
     "axes"
-    [{"orient" "bottom", "scale" "xscale", "zindex" 1}
+    [{"orient" "bottom", "scale" "xscale", "zindex" 1 :title ~(humanize feature)} ;TODO want metacluster in this
      {"orient" "left", "scale" "layout", "tickCount" 5, "zindex" 1}],
     "signals"
     [{"name" "plotWidth", "value" 160}  ;controls fatness of violins
@@ -305,7 +305,6 @@
 
 (defn feature-ui
   []
-  ;; TODO hierarchy as in Stanford design, and/or limit with filters
   (wu/select-widget                 
    :feature
    nil                                 ;todo value
@@ -329,15 +328,21 @@
 (defn dim-first-warning
   []
   [:div.mt-4
-   [:span.alert.alert-info.text-nowrap "← First select a dimension to compare ←"]])  
+   [:span.alert.alert-info.text-nowrap "← First select a dimension to compare ←"]])
+
+(defn feature-second-warning
+  []
+  [:div.my-3
+   [:span.alert.alert-info.text-nowrap "↓  Next select a feature below ↓"]])
 
 (defn ui
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
+        feature @(rf/subscribe [:param :universal :feature])
         data @(rf/subscribe [:data :universal])] 
     [:div
      [:div.row
-      [:div.col-4
+      [:div.col-6
        [:h4 "Visualization"]
 
        (when (and data dim)
@@ -349,12 +354,12 @@
           [tabs/tabs
            :uviz
            (array-map
-            :violin (fn [] [v/vega-view (violin data dim) data])
+            :violin (fn [] [v/vega-view (violin data dim feature) data])
             :boxplot (fn [] [v/vega-lite-view (boxplot data dim) data])
             ;; :heatmap (fn [] [heatmap data dim "site"])
             :heatmap (fn [] [heatmap dim])
             )]])]
-      [:div.col-8
+      [:div.col-6
        (when dim (fgrid/ui dim))]
       ]
 
@@ -379,12 +384,12 @@
        [:h4 "Feature Selection"]
        (if dim
          [:div
-          [feature-ui]
-          #_ [fui/ui]]
+          #_ [feature-ui]
+          (when-not feature
+            [feature-second-warning])
+          [fui/ui]]
          [dim-first-warning])
-
        ]]
-
      ]
     ))
 

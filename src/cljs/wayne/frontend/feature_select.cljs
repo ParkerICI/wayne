@@ -65,16 +65,18 @@
   (subs (name id) (count "feature-")))
 
 (defn select-widget
-  [id values]
+  [id values & [extra-action]]
   (when-not (empty? values)
     (rf/dispatch [:set-param-if :features id (name (first values))])) ;TODO smell? But need to initialize somewhere
   [:div.row
-   [:div.col-2 [:label.small.pt-2 [:b (wu/humanize (trim-prefix id))]]]  ;TEMP for dev I think
+   [:div.col-4  [:label.small.pt-2 [:b (wu/humanize (trim-prefix id))]]]  ;TEMP for dev I think
    [:div.col-6
     (wu/select-widget
      id
      @(rf/subscribe [:param :features id])
-     #(rf/dispatch [:set-param :features id %])
+     #(do
+        (rf/dispatch [:set-param :features id %])
+        (when extra-action (extra-action %) )) ;TODO ugh
      (map (fn [v] {:value v :label (wu/humanize v)}) values)
      nil)]])
 
@@ -94,7 +96,7 @@
 ;;; TODO this is not right, should filter features by meta-cluster I think?
 (defn l3-feature
   []
-  (select-widget :feature-feature data/features))
+  (select-widget :feature-feature data/features #(rf/dispatch [:set-param :universal :feature %])))
 
 (defn l2-spatial
   []
@@ -151,9 +153,11 @@
         (when-let [bio_feature_type @(rf/subscribe [:param :features :feature-bio-feature-type])]
           (when-let [l4-features @(rf/subscribe [:data [:features {:bio_feature_type bio_feature_type}]])]
             [:div
-             (select-widget :feature-feature l4-features)
+             (select-widget :feature-feature l4-features #(rf/dispatch [:set-param :universal :feature %]))
+             ;; Off until I get some feedback from Stanford
+             #_
              [:div.row
-              [:div.col-2.px-4 "segmented"]
+              [:div.col-4.px-4 "segmented"]
               [:div.col-10
                (segmented-selector l4-features)]]]))]))])
 
@@ -162,7 +166,6 @@
   [:div
    [:div.row
     [:div.col-10
-     [:h4 "Feature Selector"]
      [select-widget :feature-supertype [:non-spatial :spatial]]
      (if (= "non-spatial" @(rf/subscribe [:param :features :feature-supertype]))
        [l2-nonspatial]

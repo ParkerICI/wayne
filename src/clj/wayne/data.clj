@@ -172,7 +172,7 @@ where {where}
 where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of differe
                 :dim dim
                 :feature feature
-                :where (joint-where-clause filters))
+                :where (str (joint-where-clause (dissoc filters (keyword feature)))  )) ; " and cell_meta_cluster_final = 'APC'"
         clean-data)))
 
 ;;; Allowable feature values for a single dim, given feature and filters
@@ -219,7 +219,7 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
   (-> (case (if (vector? data-id) (first data-id) data-id) ;TODO multimethod or some other less kludgerous form
         "patients" (patient-table)
         "sites" (site-table)
-˛        "cohort" (cohort-table)
+        "cohort" (cohort-table)
         "samples" (sample-table)
         "dotplot" (data0 params)
         "barchart" (data0 params)
