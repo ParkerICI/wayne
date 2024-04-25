@@ -16,9 +16,10 @@
 ;;; TODO replace with way.web-utils cljc version
 (defn humanize
   [term]
-  (-> term
-      name
-      (str/replace "_" " ")))
+  (when term
+    (-> term
+        name
+        (str/replace "_" " "))))
 
 (defn violin
   [data dim feature]

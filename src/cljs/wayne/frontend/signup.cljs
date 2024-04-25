@@ -1,7 +1,7 @@
 (ns wayne.frontend.signup
-  (:require    [re-frame.core :as rf]
-               [way.modal :as modal]))
+  (:require [re-frame.core :as rf]))
 
+;;; Idea: copy the actual HTML of the form and serve it up, then all the iframe security shit goes away.
 
 (defn signup
   []
