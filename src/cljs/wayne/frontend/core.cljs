@@ -50,8 +50,6 @@
     [:li ]
     ]])
 
-
-
 (defn app-ui
   []
   [:div
@@ -63,18 +61,19 @@
     :tab
     (array-map
      :home about
+     :signup signup/signup
      :cohort cohort/ui
      ;; :sites sites/sites
      ;; :patients patients/patients
      :sample_metadata samples/samples
 ;     :violin violins/violins
-     :dotplot dotplot/plot
-     :barchart barchart/plot
-     :universal universal/ui
-     :dendrogram dend/ui
+     ;; :dotplot dotplot/plot
+     ;; :barchart barchart/plot
+     :query universal/ui
+     ;; :dendrogram dend/ui
      ;; :data_grid fgrid/ui
-     :feature_selector fui/ui
-     :signup signup/signup
+     ;; :feature_selector fui/ui
+
      )]
    #_ [footer]
    ])
