@@ -82,7 +82,7 @@
 
 (defn select-widget-minimal
   [id values]
-  (when-not (empty? values)
+  (when (and (not (empty? values)) (first values))
     (rf/dispatch [:set-param-if :features id (name (first values))])) ;TODO smell? But need to initialize somewhere
   (wu/select-widget
    id
@@ -91,7 +91,7 @@
    (map (fn [v] {:value v :label (wu/humanize v)}) values)
    nil
    nil
-   {:display "inherit" :width "inherit"}))
+   {:display "inherit" :width "inherit" :margin-left "2px"}))
 
 ;;; TODO this is not right, should filter features by meta-cluster I think?
 (defn l3-feature
@@ -104,7 +104,9 @@
 
 ;;; Hack and temporary
 
-(def boilerplate? #{"over" "plus"  "prop" "density"})
+(def boilerplate? #{"over" "plus"  "prop" "density"
+                    "func"
+                    })
 
 (defn resplice
   [[t1 & tail]]
@@ -138,6 +140,31 @@
        [:span.mx-2.pt-2 (wu/humanize (first part))]   ;TODO note approximating alignment, not sure how to do it right
        [select-widget-minimal (keyword (str "feature-seg-" i)) part]))])
 
+(defmulti feature-ui keyword)
+
+(defmethod feature-ui :default
+  [_]
+  [:span "TBD"])
+
+(defn subfeature-values
+  [feature-type position]
+  (-> data/feature-ui-master
+      (get (name feature-type))
+      first                             ;this gets the first size entry, ideally those will go away
+      second
+      (nth position)))
+
+(defmethod feature-ui :tumor_antigen_co_relative
+  [_]
+  [:div.border.p-2 {:style { :display "inline-flex"}}
+   [select-widget-minimal :tumor_antigen_co_relative_antigen1 (subfeature-values :tumor_antigen_co_relative 0)]
+   [select-widget-minimal :tumor_antigen_co_relative_antigen2 (subfeature-values :tumor_antigen_co_relative 2)]
+   [:span.mx-2.pt-2 "over"]
+   (let [antigen1 @(rf/subscribe [:param :features :tumor_antigen_co_relative_antigen1])
+         antigen2 @(rf/subscribe [:param :features :tumor_antigen_co_relative_antigen2])]
+     [select-widget-minimal :tumor_antigen_denominator [antigen1 antigen2 "all_tumor"]])])
+
+
 (defn l2-nonspatial
   []
   [:div 
@@ -151,15 +178,19 @@
        [:div
         (select-widget :feature-bio-feature-type (get (into {} non-spatial-features-2-3) feature-l2))
         (when-let [bio_feature_type @(rf/subscribe [:param :features :feature-bio-feature-type])]
-          (when-let [l4-features @(rf/subscribe [:data [:features {:bio_feature_type bio_feature_type}]])]
-            [:div
-             (select-widget :feature-feature l4-features #(rf/dispatch [:set-param :universal :feature %]))
-             ;; Off until I get some feedback from Stanford
-             #_
-             [:div.row
-              [:div.col-4.px-4 "segmented"]
-              [:div.col-10
-               (segmented-selector l4-features)]]]))]))])
+          [:div
+           [feature-ui bio_feature_type]
+           (when-let [l4-features @(rf/subscribe [:data [:features {:bio_feature_type bio_feature_type}]])]
+             [:div [:h6 "OBSOLETE"]
+              (select-widget :feature-feature l4-features #(rf/dispatch [:set-param :universal :feature %]))
+              ;; Off until I get some feedback from Stanford
+              [:div.row
+               [:div.col-4.px-4 "segmented"]
+               [:div.col-10
+                (segmented-selector l4-features)]]])
+           ]
+
+          )]))])
 
 (defn ui
   []

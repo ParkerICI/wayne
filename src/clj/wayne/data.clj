@@ -207,9 +207,9 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
   [thing]
   (if (nil? thing) [] thing))
 
-(defn bio_feature_type-features
+(u/defn-memoized bio_feature_type-features
   [bio_feature_type]
-  (map :feature_variable
+  (map :feature_variable                ;(comp patch-feature
        (select "distinct feature_variable {from} where bio_feature_type = '{bio_feature_type}'"
                :bio_feature_type bio_feature_type)))
 
@@ -601,15 +601,15 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
 (map (fn [a b] (map (fn [c] [c (take 3 (bio_feature_type-features c))]) b)) non-spatial-features-2-3)
 
 
-(def boilerplate? #{"over" "plus"  "prop" "density"})
+(def boilerplate? #{"over" "plus"  "prop" "density"
+                    "func"})
 
+;;; This takes a list tokenized by underscores and tries to glue back pieces that are really parts of a single name.
 (defn resplice
   [[t1 & tail]]
-  (cond (nil? t1) '()
-        (boilerplate? t1)
-        (cons t1 (resplice tail))
-        (boilerplate? (first tail))
-        (cons t1 (resplice tail))
+  (cond (nil? t1)                      '()
+        (boilerplate? t1)              (cons t1 (resplice tail))
+        (boilerplate? (first tail))    (cons t1 (resplice tail))
         :else
         (let [r (resplice tail)]
           (cons (str t1 "_" (first r))
@@ -617,12 +617,22 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
 
 (defn analyze-features
   [f]
-  (resplice (re-seq #"[A-Za-z0-9]+" f)))
+  (resplice (re-seq #"[A-Za-z0-9\-]+" f)))
 
 (defn analyze-feature-class
   [c]
   (let [fs (bio_feature_type-features c)
-        tokenized (map analyze-features fs)]
-    (for [i (range (count (first tokenized)))];assuming everything is same size
-      (let [tokens (distinct (map #(nth % i) tokenized))]
-        tokens))))
+        tokenized (map analyze-features fs)
+        size-groups (group-by count tokenized)]
+    (into
+     {}
+    (for [[size tokenized] size-groups]
+      [size 
+       (mapv (fn [i]
+               (let [tokens (distinct (map #(nth % i) tokenized))]
+                 tokens))
+             (range size))]))))
+
+(def bio-feature-classes (mapcat second non-spatial-features-2-3))
+
+(def ui-master (zipmap bio-feature-classes (map analyze-feature-class bio-feature-classes)))
