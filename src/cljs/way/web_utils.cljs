@@ -323,6 +323,7 @@ setter #(let [value @(rf/subscribe [::edited-value key])]
 ;;; CLJC
 (defn humanize
   [term]
-  (-> term
-      name
-      (str/replace "_" " ")))
+  (when term
+    (-> term
+        name
+        (str/replace "_" " "))))

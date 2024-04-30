@@ -161,9 +161,87 @@
    [select-widget-minimal :tumor_antigen_co_relative_antigen2 (subfeature-values :tumor_antigen_co_relative 2)]
    [:span.mx-2.pt-2 "over"]
    (let [antigen1 @(rf/subscribe [:param :features :tumor_antigen_co_relative_antigen1])
-         antigen2 @(rf/subscribe [:param :features :tumor_antigen_co_relative_antigen2])]
+         antigen2 @(rf/subscribe [:param :features :tumor_antigen_co_relative_antigen2])] ;TODO this is optional, need to handle that
      [select-widget-minimal :tumor_antigen_denominator [antigen1 antigen2 "all_tumor"]])])
 
+;;; Note. the db variables are insonsistant about naming (the two terms of the denominator can be swapped)
+(defmethod feature-ui :tumor_antigen_fractions
+  [_]
+  [:div.border.p-2 {:style { :display "inline-flex"}}
+   [select-widget-minimal :tumor_antigen_fractions_antigen1 (subfeature-values :tumor_antigen_fractions 0)]
+   (let [antigen1 @(rf/subscribe [:param :features :tumor_antigen_fractions_antigen1])]
+     [:span.mx-2.pt-2 {:style { :display "inline-flex"}}
+      [:span.mx-2.pt-2 "over"]
+      [select-widget-minimal :tumor_antigen_fractions-denominator (subfeature-values :tumor_antigen_fractions 0)]
+      [:span.mx-2.pt-2 "plus"]
+      [:span.mx-2.pt-2 antigen1]])])
+
+;; ;TODO null value stuff only partly working
+(defmethod feature-ui :tumor_antigen_spatial_density
+  [_]
+  [:div.border.p-2 {:style { :display "inline-flex"}}
+   [select-widget-minimal :tumor_antigen_spatial_density_antigen1 (cons nil (subfeature-values :tumor_antigen_spatial_density 0))]
+   (let [antigen1 @(rf/subscribe [:param :features :tumor_antigen_spatial_density_antigen1])]
+     (when antigen1                     
+       ;; TODO could exclude antigen1
+       [select-widget-minimal :tumor_antigen_spatial_density_antigen2 (cons nil (subfeature-values :tumor_antigen_fractions 0))]
+       ))])
+
+(defmethod feature-ui :immune_cell_relative_to_all_tumor
+  [_]
+  [:div.border.p-2 {:style { :display "inline-flex"}}
+   [select-widget-minimal :immune_cell_relative_to_all_tumor_cell_type (subfeature-values :immune_cell_relative_to_all_tumor 0)]
+   [:span.mx-2.pt-2 "over all tumor count"]]
+  )
+
+(defmethod feature-ui :immune_tumor_antigen_fractions
+  [_]
+  [:div.border.p-2 {:style { :display "inline-flex"}}
+   [select-widget-minimal :immune_tumor_antigen_fractions_antigen (subfeature-values :immune_tumor_antigen_fractions 1)]
+   [:span.mx-2.pt-2 "over"]
+   [select-widget-minimal :immune_tumor_antigen_fractions_cell_type (subfeature-values :immune_tumor_antigen_fractions 0)]
+   [:span.mx-2.pt-2 "plus"]
+   ])
+
+;;; In multitool
+(defn keyword-conc
+  [& parts]
+  (keyword (str/join "-" (map name parts))))
+
+;;; TODO propagate up into earlier guys
+(defn subfeature-selector
+  [feature-type subfeature-name template-position]
+  (let [subfeatures (subfeature-values feature-type template-position)]
+    (when-not (empty? subfeatures)
+      (select-widget-minimal (keyword-conc feature-type subfeature-name) subfeatures))))
+
+(defn boilerplate
+  [s]
+  [:span.mx-2.pt-2 s])
+
+(defn echo
+  [feature-type subfeature-name]
+  (let [value @(rf/subscribe [:param :features (keyword-conc feature-type subfeature-name)])]
+    [:span.mx-2.pt-2 value]))
+
+(defmethod feature-ui :immune_cell_functional_relative_to_all_tumor
+  [_]
+  [:div.border.p-2 {:style { :display "inline-flex"}}
+   (subfeature-selector :immune_cell_functional_relative_to_all_tumor :functional_marker 1)
+   (subfeature-selector :immune_cell_functional_relative_to_all_tumor :cell-type 0)
+   (boilerplate "over all tumor count")
+   ])
+
+(defmethod feature-ui :immune_cell_func_tumor_antigen_fractions
+  [_]
+  [:div.border.p-2 {:style { :display "inline-flex"}}
+   (subfeature-selector :immune_cell_func_tumor_antigen_fractions :functional_marker 1)
+   (subfeature-selector :immune_cell_func_tumor_antigen_fractions :cell-type 0)
+   (boilerplate "over")
+   (echo :immune_cell_func_tumor_antigen_fractions :functional_marker)
+   (boilerplate "plus")
+   (subfeature-selector :immune_cell_func_tumor_antigen_fractions :relative 5)
+   ])
 
 (defn l2-nonspatial
   []
@@ -181,6 +259,8 @@
           [:div
            [feature-ui bio_feature_type]
            (when-let [l4-features @(rf/subscribe [:data [:features {:bio_feature_type bio_feature_type}]])]
+             ;; Causes errors now
+             #_
              [:div [:h6 "OBSOLETE"]
               (select-widget :feature-feature l4-features #(rf/dispatch [:set-param :universal :feature %]))
               ;; Off until I get some feedback from Stanford

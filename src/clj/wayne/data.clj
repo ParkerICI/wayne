@@ -629,10 +629,30 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
     (for [[size tokenized] size-groups]
       [size 
        (mapv (fn [i]
-               (let [tokens (distinct (map #(nth % i) tokenized))]
+               (let [tokens (sort (distinct (map #(nth % i) tokenized)))]
                  tokens))
              (range size))]))))
 
 (def bio-feature-classes (mapcat second non-spatial-features-2-3))
 
 (def ui-master (zipmap bio-feature-classes (map analyze-feature-class bio-feature-classes)))
+
+(defn split-further-one
+  [name]
+  (let [last (str/last-index-of name \_)]
+    (list (subs name 0 last) (subs name (inc last)))))
+
+(defn vocabulate
+  [tokenized]
+  (mapv (fn [i]
+          (let [tokens (sort (distinct (map #(nth % i) tokenized)))]
+            tokens))
+        (range (count (first tokenized)))))
+
+
+(defn split-further
+  [list]
+  (map split-further-one list))
+
+;;; Done by hand fo "immune_cell_functional_relative_to_all_tumor"
+
