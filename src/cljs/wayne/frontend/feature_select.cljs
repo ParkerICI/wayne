@@ -209,11 +209,14 @@
   (keyword (str/join "-" (map name parts))))
 
 ;;; TODO propagate up into earlier guys
+;;; TODO subfeature name not actually used, but could be a tooltip or something
 (defn subfeature-selector
   [feature-type subfeature-name template-position]
-  (let [subfeatures (subfeature-values feature-type template-position)]
+  (let [subfeatures (subfeature-values feature-type template-position)
+        param-key (keyword-conc feature-type (str template-position))] ;  subfeature-name
     (when-not (empty? subfeatures)
-      (select-widget-minimal (keyword-conc feature-type subfeature-name) subfeatures))))
+      ;; Encodes the position in the parameter keyword for later extraction. Hacky but simple.
+      (select-widget-minimal param-key subfeatures))))
 
 (defn boilerplate
   [s]
@@ -223,6 +226,34 @@
   [feature-type subfeature-name]
   (let [value @(rf/subscribe [:param :features (keyword-conc feature-type subfeature-name)])]
     [:span.mx-2.pt-2 value]))
+
+(defn feature-template
+  [feature-type]
+  (-> data/feature-ui-master
+      (get (name feature-type))
+      first                             ;this gets the first size entry, ideally those will go away
+      second
+      ))
+
+;;; Perhaps this should be a subscription? Yes
+(rf/reg-sub
+ :selected-feature
+ (fn [db _]
+  ;; stuff into query machinery
+  ;; (should be) A method since I'm guessing there may be exceptions to the general rule
+  (let [feature-type (keyword (get-in db [:params :features :feature-bio-feature-type]))
+        feature-params (get-in db [:params :features])
+        template (feature-template feature-type)
+        ;; join into feature name
+        elements
+        (map (fn [item i]
+               (if (= 1 (count item))
+                 (first item)           ;boilerplate
+                 (get feature-params  (keyword-conc feature-type (str i)))   ;a feature, read out of params
+                 ))
+             template (range))
+        feature (str/join "_" elements)]
+    feature)))
 
 (defmethod feature-ui :immune_cell_functional_relative_to_all_tumor
   [_]
@@ -259,11 +290,11 @@
           [:div
            [feature-ui bio_feature_type]
            (when-let [l4-features @(rf/subscribe [:data [:features {:bio_feature_type bio_feature_type}]])]
-             ;; Causes errors now
-             #_
+
              [:div [:h6 "OBSOLETE"]
               (select-widget :feature-feature l4-features #(rf/dispatch [:set-param :universal :feature %]))
               ;; Off until I get some feedback from Stanford
+              #_
               [:div.row
                [:div.col-4.px-4 "segmented"]
                [:div.col-10
@@ -280,7 +311,8 @@
      [select-widget :feature-supertype [:non-spatial :spatial]]
      (if (= "non-spatial" @(rf/subscribe [:param :features :feature-supertype]))
        [l2-nonspatial]
-       [l2-spatial])]]
+       [l2-spatial])
+     [:h6] "Feature: " @(rf/subscribe [:selected-feature])]]
    #_                                   ;They didn't like this so much
    [:div.row
     [:h4 "Alt menu"]
