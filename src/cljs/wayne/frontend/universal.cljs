@@ -299,7 +299,11 @@
       :data {:values data}
       :encoding {:y {:field dim :type "nominal"} 
                  :x {:field "feature_variable" :type "nominal"}
-                 :color {:field :mean :type "quantitative"}}   ;Note: mean computed on server
+                 :color {:field :mean
+                         :type "quantitative"
+                         :legend {:orient :top}
+                         :title "mean feature value"
+                         }}   ;Note: mean computed on se rver
       :config {:axis {:grid true :tickBand :extent}}
       }
      data]))
