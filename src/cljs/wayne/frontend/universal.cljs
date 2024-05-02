@@ -377,15 +377,19 @@
        ]
       [:div.col-3
        [:h4 "Filter"
-        [:span.ms-2 [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal :filters {}])
-                                                                     (rf/dispatch [:set-param :universal :feature nil]))} "Clear"]]]
+              [:span.ms-2 [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal :filters {}])
+                                                                     (rf/dispatch [:set-param :universal :feature nil]))} "Clear"]]
+        ]
+       [filter-text]                    ;TODO tweak
+        
        (if dim
          [filter-ui dim]
          [dim-first-warning]) ]
+      #_
       [:div.col-2
        [:h4 " "]
        [filter-text]]
-      [:div.col-5
+      [:div.col-7
        [:h4 "Feature Selection"]
        (if dim
          [:div

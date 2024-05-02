@@ -64,34 +64,46 @@
   [id]
   (subs (name id) (count "feature-")))
 
+(defn row
+  [label contents]
+  [:div.row
+   [:div.col-3 [:label.small.pt-2 [:b label]]]  ;TEMP for dev I think
+   [:div.col-7 contents]])
+
 (defn select-widget
   [id values & [extra-action]]
-  (when-not (empty? values)
+  #_
+  (when (and (not (empty? values)) (first values))
     (rf/dispatch [:set-param-if :features id (name (first values))])) ;TODO smell? But need to initialize somewhere
-  [:div.row
-   [:div.col-4  [:label.small.pt-2 [:b (wu/humanize (trim-prefix id))]]]  ;TEMP for dev I think
-   [:div.col-6
-    (wu/select-widget
+  [row
+   (wu/humanize (trim-prefix id))
+   (wu/select-widget
      id
      @(rf/subscribe [:param :features id])
      #(do
         (rf/dispatch [:set-param :features id %])
         (when extra-action (extra-action %) )) ;TODO ugh
-     (map (fn [v] {:value v :label (wu/humanize v)}) values)
-     nil)]])
+     (cons {:value nil :label "---"}
+         (map (fn [v] {:value v :label (wu/humanize v)}) values))
+     nil)])
 
+;;; TODO DRYify with above
 (defn select-widget-minimal
   [id values]
+  ;; Something wrong, smelly about this
+  #_
   (when (and (not (empty? values)) (first values))
+    ;; -if removal seems to fix things? This is wrong and breaks updates
     (rf/dispatch [:set-param-if :features id (name (first values))])) ;TODO smell? But need to initialize somewhere
   (wu/select-widget
    id
    @(rf/subscribe [:param :features id])
    #(rf/dispatch [:set-param :features id %]) ;Necessary to allow changes! But also does some kind of gross invalidation
-   (map (fn [v] {:value v :label (wu/humanize v)}) values)
+   (cons {:value nil :label "---"}
+         (map (fn [v] {:value v :label (wu/humanize v)}) values))
    nil
    nil
-   {:display "inherit" :width "inherit" :margin-left "2px"}))
+   {:display "inherit" :width "inherit" :margin-left "2px"})) ;TODO tooltips
 
 ;;; TODO this is not right, should filter features by meta-cluster I think?
 (defn l3-feature
@@ -161,6 +173,19 @@
       second
       ))
 
+(def repeated-subfeatures (atom {}))
+
+(defn extend-params
+  [feature-type params]
+  (let [repeats (get @repeated-subfeatures feature-type)]
+    (reduce (fn [m [k v]] (assoc m
+                                 (keyword-conc feature-type (str k))
+                                 (get params (keyword-conc feature-type (str v)))
+                                 ))
+            params
+            repeats)))
+
+
 ;;; Perhaps this should be a subscription? Yes
 (rf/reg-sub
  :selected-feature
@@ -169,13 +194,14 @@
   ;; (should be) A method since I'm guessing there may be exceptions to the general rule
   (let [feature-type (keyword (get-in db [:params :features :feature-bio-feature-type]))
         feature-params (get-in db [:params :features])
+        feature-params (extend-params feature-type feature-params)
         template (feature-template feature-type)
         ;; join into feature name
         elements
         (map (fn [item i]
                (if (= 1 (count item))
                  (first item)           ;boilerplate
-                 (get feature-params  (keyword-conc feature-type (str i)))   ;a feature, read out of params
+                 (get feature-params (keyword-conc feature-type (str i)))   ;a feature, read out of params
                  ))
              template (range))
         feature (str/join "_" elements)]
@@ -207,11 +233,6 @@
   [s]
   [:span.mx-2.pt-2 s])
 
-(defn echo
-  [feature-type subfeature-name]
-  (let [value @(rf/subscribe [:param :features (keyword-conc feature-type subfeature-name)])]
-    [:span.mx-2.pt-2 value]))
-
 (defmulti feature-ui keyword)
 
 (defmethod feature-ui :default
@@ -239,12 +260,20 @@
      [subfeature-selector-literal :tumor_antigen_co_relative :denominator 5 [antigen1 antigen2 "all_tumor"]])])
 
 ;;; TODO. the db variables are insonsistant about naming (the two terms of the denominator can be swapped)
+
+(defn repeater
+  [feature-type boss-pos flunky-pos]
+  (let [subfeature-param (keyword-conc feature-type (str boss-pos))]
+    (swap! repeated-subfeatures assoc-in [feature-type flunky-pos] boss-pos)
+    (prn :argh @repeated-subfeatures)
+    (boilerplate @(rf/subscribe [:param :features subfeature-param]))))            ;TODO needs to get plugged into feature name generator somehow (pos 3))
+
 (defmethod feature-ui :tumor_antigen_fractions
   [_]
   [:div.border.p-2 {:style { :display "inline-flex"}}
    [subfeature-selector :tumor_antigen_fractions :antigen1 0]
    [boilerplate "over"]
-   [boilerplate @(rf/subscribe [:param :features :tumor_antigen_fractions-0])]            ;TODO needs to get plugged into feature name generator someohow (pos 3)
+   [repeater :tumor_antigen_fractions 0 3]
    [boilerplate "plus"]
    [subfeature-selector :tumor_antigen_fractions :denominator 7]
    ])
@@ -270,14 +299,12 @@
 (defmethod feature-ui :immune_tumor_antigen_fractions
   [_]
   [:div.border.p-2 {:style { :display "inline-flex"}}
-   [subfeature-selector :immune_tumor_antigen_fractions :antigen 3]
+   [subfeature-selector :immune_tumor_antigen_fractions :antigen 0]
    [boilerplate "over"]
-   [subfeature-selector :immune_tumor_antigen_fractions :cell_type 0]
+   [subfeature-selector :immune_tumor_antigen_fractions :cell_type 3]
    [boilerplate "plus"]
-   [boilerplate @(rf/subscribe [:param :features :immune_tumor_antigen_fractions-0])] ;TODO plug in
+   (repeater :immune_tumor_antigen_fractions 0 5)
    ])
-
-
 
 
 (defmethod feature-ui :immune_cell_functional_relative_to_all_tumor
@@ -294,7 +321,7 @@
    (subfeature-selector :immune_cell_func_tumor_antigen_fractions :functional_marker 1)
    (subfeature-selector :immune_cell_func_tumor_antigen_fractions :cell-type 0)
    (boilerplate "over")
-   (echo :immune_cell_func_tumor_antigen_fractions :functional_marker)
+   (repeater :immune_cell_func_tumor_antigen_fractions 1 3)
    (boilerplate "plus")
    (subfeature-selector :immune_cell_func_tumor_antigen_fractions :relative 5)
    ])
@@ -302,7 +329,6 @@
 (defmethod feature-ui :immune_cell_functional_relative_to_all_immune
   [_]
   [:div.border.p-2 {:style { :display "inline-flex"}}
-   (subfeature-selector :immune_cell_functional_relative_to_all_immune :functional-marker 1)
    (subfeature-selector :immune_cell_functional_relative_to_all_immune :cell-type 0) ;needs gluing
    (boilerplate "over all immune count")
    ])
@@ -319,12 +345,13 @@
   [:div.border.p-2 {:style { :display "inline-flex"}}
    [subfeature-selector :immune_cell_fractions :cell-type-1 0]
    [boilerplate "over"]
-   [subfeature-selector :immune_cell_fractions :cell_type-2 2]
+   [repeater :immune_cell_fractions 0 2]
    [boilerplate "plus"]
-   [boilerplate @(rf/subscribe [:param :features :immune_cell_fractions-0])]
+   [subfeature-selector :immune_cell_fractions :cell-type-2 4]
    ])
 
-;;; This one has 4 parts
+;;; TODO This one has 4 parts, but we have 2
+#_
 (defmethod feature-ui :immune_functional_marker_fractions
   [_]
   [:div.border.p-2 {:style { :display "inline-flex"}}
@@ -337,6 +364,17 @@
    [subfeature-selector :immune_functional_marker_fractions :cell-type-2 4]
    ;; TODO needs breaking up
    #_ [subfeature-selector :immune_functional_marker_fractions :functional-marker-1 5]
+   ])
+
+;;; 2 part version, works but not what was speced
+(defmethod feature-ui :immune_functional_marker_fractions
+  [_]
+  [:div.border.p-2 {:style { :display "inline-flex"}}
+   [subfeature-selector :immune_functional_marker_fractions :combo-1 0]
+   [boilerplate "over"]
+   (repeater :immune_functional_marker_fractions 0 2)
+   [boilerplate "plus"]
+   [subfeature-selector :immune_functional_marker_fractions :combo-2 4]
    ])
 
 (defn l2-nonspatial
@@ -353,9 +391,12 @@
         (select-widget :feature-bio-feature-type (get (into {} non-spatial-features-2-3) feature-l2))
         (when-let [bio_feature_type @(rf/subscribe [:param :features :feature-bio-feature-type])]
           [:div
-           [feature-ui bio_feature_type]
+           [row "feature" [feature-ui bio_feature_type]] 
            (let [feature @(rf/subscribe [:selected-feature])]
-             [:span [:h5 "Feature: "] feature [:b (str (boolean (feature-valid? feature)))]])
+             [row "actual"
+                  [:span
+                   feature 
+                   [:b (str " " (if (feature-valid? feature) "valid" "nope") )]]])
            (when-let [l4-features @(rf/subscribe [:data [:features {:bio_feature_type bio_feature_type}]])]
              [:div [:h5 "OBSOLETE"]
               (select-widget :feature-feature l4-features #(rf/dispatch [:set-param :universal :feature %]))
