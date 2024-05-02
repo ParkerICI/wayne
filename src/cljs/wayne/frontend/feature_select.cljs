@@ -185,8 +185,6 @@
             params
             repeats)))
 
-
-;;; Perhaps this should be a subscription? Yes
 (rf/reg-sub
  :selected-feature
  (fn [db _]
@@ -200,11 +198,14 @@
         elements
         (map (fn [item i]
                (if (= 1 (count item))
-                 (first item)           ;boilerplate
-                 (get feature-params (keyword-conc feature-type (str i)))   ;a feature, read out of params
+                 (first item)                                             ;boilerplate
+                 (get feature-params (keyword-conc feature-type (str i))) ;a feature, read out of params
                  ))
              template (range))
         feature (str/join "_" elements)]
+    ;; NOTE Connects up to query machinery. Not completely sure if this is kosher, but it seems to work
+    (when-not (= feature (get-in db [:params :universal :feature]))
+      (rf/dispatch [:set-param :universal :feature feature]))
     feature)))
 
 (defn feature-valid?
@@ -229,9 +230,10 @@
       ;; Encodes the position in the parameter keyword for later extraction. Hacky but simple.
       (select-widget-minimal param-key subfeatures))))
 
+;;; Used for non-boilerplate elements (like repeated antigen names)
 (defn boilerplate
   [s]
-  [:span.mx-2.pt-2 s])
+  [:span.mx-2.pt-2.text-nowrap s])
 
 (defmulti feature-ui keyword)
 
@@ -265,8 +267,7 @@
   [feature-type boss-pos flunky-pos]
   (let [subfeature-param (keyword-conc feature-type (str boss-pos))]
     (swap! repeated-subfeatures assoc-in [feature-type flunky-pos] boss-pos)
-    (prn :argh @repeated-subfeatures)
-    (boilerplate @(rf/subscribe [:param :features subfeature-param]))))            ;TODO needs to get plugged into feature name generator somehow (pos 3))
+    (boilerplate (wu/humanize @(rf/subscribe [:param :features subfeature-param])))))            ;TODO needs to get plugged into feature name generator somehow (pos 3))
 
 (defmethod feature-ui :tumor_antigen_fractions
   [_]
@@ -397,6 +398,8 @@
                   [:span
                    feature 
                    [:b (str " " (if (feature-valid? feature) "valid" "nope") )]]])
+           ;; Hah don't need this any more
+           #_
            (when-let [l4-features @(rf/subscribe [:data [:features {:bio_feature_type bio_feature_type}]])]
              [:div [:h5 "OBSOLETE"]
               (select-widget :feature-feature l4-features #(rf/dispatch [:set-param :universal :feature %]))
