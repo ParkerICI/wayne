@@ -177,6 +177,7 @@
 ;;; Generally if there is only one size, we're good.
 ;;; From clj/data/ui-master
 ;;; PATCHED by hand in a few cases, which are marked
+;;; PATCHED fix count_ errors
 (def feature-ui-master
   '{"tumor_antigen_fractions"
     {11
@@ -356,7 +357,7 @@
         "Unassigned")
        ("CD86" "ICOS" "IDO1" "Ki67" "LAG3" "PD1" "PDL1" "TIM3" "Tox" "iNOS")
       ("over")
-      ("all_tumor_count_")]},
+      ("all_tumor_count")]},
     "immune_cell_functional_spatial_density"
     {2
      [("CD38" "CD86" "GLUT1" "ICOS" "IDO1" "Ki67" "LAG3" "PD1" "PDL1" "TIM3" "Tox" "iNOS")
@@ -613,7 +614,7 @@
        "Unassigned_Ki67"
        "Unassigned_PDL1")
       ("over")
-      ("all_immune_count_")]},
+      ("all_immune_count")]},
     "immune_functional_marker_fractions"
     {5
      [("APC_CD86"
