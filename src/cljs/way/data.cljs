@@ -95,7 +95,8 @@
        })
      (-> db
          (assoc :loading? true)
-         (assoc-in [:data-status data-id] :fetching)
+         ;; blanks out view in between updates, which we don't want
+         ;(assoc-in [:data-status data-id] :fetching)
          ))))
 
 (rf/reg-event-db

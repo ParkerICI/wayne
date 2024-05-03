@@ -349,8 +349,7 @@
      [:div.row
       [:div.col-6
        [:h4 "Visualization"]
-
-       (when (and data dim)
+       (when dim
          [:div
           ;; TODO pluralize
           [:span (str (count data) " rows")]   ; could do this but it is wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows"))
@@ -378,7 +377,7 @@
       [:div.col-3
        [:h4 "Filter"
               [:span.ms-2 [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal :filters {}])
-                                                                     (rf/dispatch [:set-param :universal :feature nil]))} "Clear"]]
+                                                                           (rf/dispatch [:set-param :universal :feature nil]))} "Clear"]]
         ]
        [filter-text]                    ;TODO tweak
         
