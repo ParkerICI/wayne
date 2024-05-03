@@ -308,15 +308,6 @@
       }
      data]))
 
-(defn feature-ui
-  []
-  (wu/select-widget                 
-   :feature
-   nil                                 ;todo value
-   #(rf/dispatch [:set-param :universal :feature %])
-   data/features
-   "Feature"))
-
 (rf/reg-event-db
  :vega-click
  (fn [db [_ value]]
@@ -392,7 +383,6 @@
        [:h4 "Feature Selection"]
        (if dim
          [:div
-          #_ [feature-ui]
           (when-not feature
             [feature-second-warning])
           [fui/ui]]

@@ -104,14 +104,7 @@
    (wu/humanize (trim-prefix id))
    (select-widget-minimal id values extra-action)])
 
-;;; TODO this is not right, should filter features by meta-cluster I think?
-(defn l3-feature
-  []
-  (select-widget :feature-feature data/features #(rf/dispatch [:set-param :universal :feature %])))
 
-(defn l2-spatial
-  []
-  [:i "TBD"])
 
 ;;; Hack and temporary
 
@@ -210,17 +203,21 @@
 (rf/reg-sub
  :selected-feature
  (fn [db _]
-  ;; stuff into query machinery
-  ;; (should be) A method since I'm guessing there may be exceptions to the general rule
-  (let [feature-type (keyword (get-in db [:params :features :feature-bio-feature-type]))
-        feature-params (get-in db [:params :features])
-        feature-params (u/map-values clean-select-value feature-params)
-        feature-params (extend-params feature-type feature-params)
-        feature (compute-feature-variable feature-type feature-params)]
-    ;; NOTE Connects up to query machinery. Not completely sure if this is kosher, but it seems to work
-    (when-not (= feature (get-in db [:params :universal :feature]))
-      (rf/dispatch [:set-param :universal :feature feature]))
-    feature)))
+   ;; stuff into query machinery
+   (when (get-in db [:params :features :feature-type])
+     (let [feature
+           (if (= "marker_intensity" (get-in db [:params :features :feature-type]))
+             (get-in db [:params :features :feature-feature])
+             (let [feature-type (keyword (get-in db [:params :features :feature-bio-feature-type]))
+                   feature-params (get-in db [:params :features])
+                   feature-params (u/map-values clean-select-value feature-params)
+                   feature-params (extend-params feature-type feature-params)]
+               (when (and feature-type feature-params)
+                 (compute-feature-variable feature-type feature-params))))] ;methodized
+       ;; NOTE Connects up to query machinery. Not completely sure if this is kosher, but it seems to work
+       (when-not (= feature (get-in db [:params :universal :feature]))
+         (rf/dispatch [:set-param :universal :feature feature]))
+       feature))))
 
 (defn feature-valid?
   [feature]
@@ -404,6 +401,15 @@
    [subfeature-selector :immune_functional_marker_fractions :combo-2 4]
    ])
 
+;;; TODO this is not right, should filter features by meta-cluster I think?
+(defn l3-feature
+  []
+  (select-widget :feature-feature data/features #(rf/dispatch [:set-param :universal :feature %])))
+
+(defn l2-spatial
+  []
+  [:i "TBD"])
+
 (defn l2-nonspatial
   []
   [:div 
@@ -417,28 +423,14 @@
        [:div
         (select-widget :feature-bio-feature-type (get (into {} non-spatial-features-2-3) feature-l2))
         (when-let [bio_feature_type @(rf/subscribe [:param :features :feature-bio-feature-type])]
-          [:div
-           [row "feature" [feature-ui bio_feature_type]] 
-           (let [feature @(rf/subscribe [:selected-feature])]
-             [:div.bg-warning
-             [row "feature_variable"
-                  [:span
-                   feature 
-                   [:b (str " " (if (feature-valid? feature) "valid" "invalid") )]]]])
-           ;; Hah don't need this any more
-           #_
-           (when-let [l4-features @(rf/subscribe [:data [:features {:bio_feature_type bio_feature_type}]])]
-             [:div [:h5 "OBSOLETE"]
-              (select-widget :feature-feature l4-features #(rf/dispatch [:set-param :universal :feature %]))
-              ;; Off until I get some feedback from Stanford
-              #_
-              [:div.row
-               [:div.col-4.px-4 "segmented"]
-               [:div.col-10
-                (segmented-selector l4-features)]]])
-           ]
-
-          )]))])
+           [row "feature" [feature-ui bio_feature_type]] )]))
+   (let [feature @(rf/subscribe [:selected-feature])]
+     [:div.bg-warning
+      [row "feature_variable"
+       [:span
+        feature 
+        [:b (str " " (if (feature-valid? feature) "valid" "invalid") )]]]])
+   ])
 
 (defn ui
   []
@@ -450,15 +442,5 @@
        [l2-nonspatial]
        [l2-spatial])
      ]]
-   #_                                   ;They didn't like this so much
-   [:div.row
-    [:h4 "Alt menu"]
-    (wu/select-widget
-     :feature-type-exp
-     nil
-     #(rf/dispatch [:foo])
-     (cons "marker intensity"
-           (map (fn [[c l]] {:optgroup (wu/humanize c) :options (map wu/humanize l)})
-                (rest non-spatial-features-2-3)))
-     "hierarchical type select")]])
+   ])
 

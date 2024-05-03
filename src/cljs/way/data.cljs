@@ -49,8 +49,7 @@
      db
      (if (vector? param)                  ;? smell
        (assoc-in db (concat [:params data-id] param) value)
-       (assoc-in db [:params data-id param] value))
-     )))
+       (assoc-in db [:params data-id param] value)))))
 
 (rf/reg-sub
  :param
@@ -132,7 +131,7 @@
 
 (defmethod loaded :default
   [id data db]
-  (prn "no loaded for" id)) 
+  #_ (prn "no loaded for" id)) 
 
 (rf/reg-event-db
  ::loaded
