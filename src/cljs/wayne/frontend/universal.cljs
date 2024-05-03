@@ -233,7 +233,7 @@
                                               :data-bs-target (str "#" collapse-id)
                                               :aria-expanded "true"
                                               :aria-controls collapse-id
-                                              :class (if (= dim compare-dim) "filter-compare-dim")
+                                              :class (if (= dim compare-dim) "bg-info")
                                               }
           (humanize dim)
           (when (= dim compare-dim) [:i.px-2 "(y-axis)"])]]

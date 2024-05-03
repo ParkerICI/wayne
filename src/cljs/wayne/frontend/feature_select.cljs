@@ -66,44 +66,43 @@
 
 (defn row
   [label contents]
-  [:div.row
+  [:div.row.my-2
    [:div.col-3 [:label.small.pt-2 [:b label]]]  ;TEMP for dev I think
    [:div.col-7 contents]])
 
-(defn select-widget
-  [id values & [extra-action]]
-  #_
-  (when (and (not (empty? values)) (first values))
-    (rf/dispatch [:set-param-if :features id (name (first values))])) ;TODO smell? But need to initialize somewhere
-  [row
-   (wu/humanize (trim-prefix id))
-   (wu/select-widget
-     id
-     @(rf/subscribe [:param :features id])
-     #(do
-        (rf/dispatch [:set-param :features id %])
-        (when extra-action (extra-action %) )) ;TODO ugh
-     (cons {:value nil :label "---"}
-         (map (fn [v] {:value v :label (wu/humanize v)}) values))
-     nil)])
 
-;;; TODO DRYify with above
+(defn safe-name
+  [thing]
+  (when thing
+    (or (.-name thing)
+        thing)))
+
+;;; TODO nil should be option (could be in values
+;;; TODO extra-actions
 (defn select-widget-minimal
-  [id values]
-  ;; Something wrong, smelly about this
-  #_
-  (when (and (not (empty? values)) (first values))
+  [id values & [extra-action]]
+  ;; TODO Something wrong, smelly about this. And doesn't always work
+  (when (not (empty? values))
     ;; -if removal seems to fix things? This is wrong and breaks updates
-    (rf/dispatch [:set-param-if :features id (name (first values))])) ;TODO smell? But need to initialize somewhere
+    (rf/dispatch [:set-param-if :features id (safe-name (first values))])) ;TODO smell? But need to initialize somewhere
   (wu/select-widget
    id
    @(rf/subscribe [:param :features id])
-   #(rf/dispatch [:set-param :features id %]) ;Necessary to allow changes! But also does some kind of gross invalidation
-   (cons {:value nil :label "---"}
-         (map (fn [v] {:value v :label (wu/humanize v)}) values))
+     #(do
+        (rf/dispatch [:set-param :features id %])
+        (when extra-action (extra-action %) )) ;ugn
+   (map (fn [v]
+          {:value v :label (if v (wu/humanize v)  "---")})
+         values)
    nil
    nil
    {:display "inherit" :width "inherit" :margin-left "2px"})) ;TODO tooltips
+
+(defn select-widget
+  [id values & [extra-action]]
+  [row
+   (wu/humanize (trim-prefix id))
+   (select-widget-minimal id values extra-action)])
 
 ;;; TODO this is not right, should filter features by meta-cluster I think?
 (defn l3-feature
@@ -185,15 +184,12 @@
             params
             repeats)))
 
-(rf/reg-sub
- :selected-feature
- (fn [db _]
-  ;; stuff into query machinery
-  ;; (should be) A method since I'm guessing there may be exceptions to the general rule
-  (let [feature-type (keyword (get-in db [:params :features :feature-bio-feature-type]))
-        feature-params (get-in db [:params :features])
-        feature-params (extend-params feature-type feature-params)
-        template (feature-template feature-type)
+(defmulti compute-feature-variable
+  (fn [feature-type feature-params] feature-type))
+
+(defmethod compute-feature-variable :default
+  [feature-type feature-params]
+  (let [template (feature-template feature-type)
         ;; join into feature name
         elements
         (map (fn [item i]
@@ -203,6 +199,24 @@
                  ))
              template (range))
         feature (str/join "_" elements)]
+    feature))
+
+(defn clean-select-value
+  [v]
+  (if (= v "---")
+    nil
+    v))
+
+(rf/reg-sub
+ :selected-feature
+ (fn [db _]
+  ;; stuff into query machinery
+  ;; (should be) A method since I'm guessing there may be exceptions to the general rule
+  (let [feature-type (keyword (get-in db [:params :features :feature-bio-feature-type]))
+        feature-params (get-in db [:params :features])
+        feature-params (u/map-values clean-select-value feature-params)
+        feature-params (extend-params feature-type feature-params)
+        feature (compute-feature-variable feature-type feature-params)]
     ;; NOTE Connects up to query machinery. Not completely sure if this is kosher, but it seems to work
     (when-not (= feature (get-in db [:params :universal :feature]))
       (rf/dispatch [:set-param :universal :feature feature]))
@@ -215,11 +229,12 @@
 ;;; TODO propagate up into earlier guys
 ;;; TODO subfeature name not actually used, but could be a tooltip or something
 (defn subfeature-selector
-  [feature-type subfeature-name template-position]
+  [feature-type subfeature-name template-position & [nullable?]]
   (let [subfeatures (subfeature-values feature-type template-position)
+        subfeatures (if nullable? (cons nil subfeatures) subfeatures)
+        ;; Encodes the position in the parameter keyword for later extraction. Hacky but simple.
         param-key (keyword-conc feature-type (str template-position))] ;  subfeature-name
     (when-not (empty? subfeatures)
-      ;; Encodes the position in the parameter keyword for later extraction. Hacky but simple.
       (select-widget-minimal param-key subfeatures))))
 
 (defn subfeature-selector-literal
@@ -279,16 +294,27 @@
    [subfeature-selector :tumor_antigen_fractions :denominator 7]
    ])
 
-;;; TODO feature name generation needs to be more complex in this case.
 (defmethod feature-ui :tumor_antigen_spatial_density
   [_]
   [:div.border.p-2 {:style { :display "inline-flex"}}
-   [subfeature-selector :tumor_antigen_spatial_density :antigen1 0]
+   [subfeature-selector :tumor_antigen_spatial_density :antigen1 0 true]
    (let [antigen1 @(rf/subscribe [:param :features :tumor_antigen_spatial_density-0])]
      (when antigen1                     
        ;; TODO could exclude antigen1
-       [subfeature-selector :tumor_antigen_spatial_density :antigen2 2]
+       [subfeature-selector :tumor_antigen_spatial_density :antigen2 2 true]
        ))])
+
+;;; feature name generation needs to be more complex in this case.
+(defmethod compute-feature-variable :tumor_antigen_spatial_density
+  [_ feature-params]
+  (let [a1 (:tumor_antigen_spatial_density-0 feature-params)
+        a2 (:tumor_antigen_spatial_density-2 feature-params)]
+    (if (nil? a2)
+      (if (nil? a1)
+        "all_tumor_count_density"       ;no antigens
+        (str a1 "_func_density"))       ;1 antigen
+      (str a1 "_func_" a2 "_func_density") ;2 antigens
+      ))) 
 
 (defmethod feature-ui :immune_cell_relative_to_all_tumor
   [_]
@@ -394,10 +420,11 @@
           [:div
            [row "feature" [feature-ui bio_feature_type]] 
            (let [feature @(rf/subscribe [:selected-feature])]
-             [row "actual"
+             [:div.bg-warning
+             [row "feature_variable"
                   [:span
                    feature 
-                   [:b (str " " (if (feature-valid? feature) "valid" "nope") )]]])
+                   [:b (str " " (if (feature-valid? feature) "valid" "invalid") )]]]])
            ;; Hah don't need this any more
            #_
            (when-let [l4-features @(rf/subscribe [:data [:features {:bio_feature_type bio_feature_type}]])]
