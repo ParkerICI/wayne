@@ -21,126 +21,139 @@
         name
         (str/replace "_" " "))))
 
+(defn interpret-scale
+  [scale]
+  (case scale
+    "log2" {:type "log" :base 2}
+    "log10" {:type "log" :base 10}
+     {:type scale}))
+
 (defn violin
   [data dim feature]
-  (let [dim (name dim)]
-  `{"width" 700,
-    "config" {"axisBand" {"bandPosition" 1, "tickExtra" true, "tickOffset" 0}},
-    "padding" 5,
-    "marks"
-    [{"type" "group",
-      "from" {"facet" {"data" "density", "name" "violin", "groupby" ~dim}},
-      "encode"
-      {"enter"
-       {"yc" {"scale" "layout", "field" ~dim, "band" 0.5},
-        "height" {"signal" "plotWidth"},
-        "width" {"signal" "width"}}},
-      "data"
-      [{"name" "summary",
-        "source" "stats",
-        "transform" [{"type" "filter", "expr" ~(wu/js-format "datum.%s === parent.%s" dim dim)}]}],
+  (let [dim (name dim)
+        scale (interpret-scale @(rf/subscribe [:param :features :scale]))] ;TODO wee fui/ref below
+    `{"width" 700,
+      "config" {"axisBand" {"bandPosition" 1, "tickExtra" true, "tickOffset" 0}},
+      "padding" 5,
       "marks"
-      [{"type" "area",
-        "from" {"data" "violin"},
+      [{"type" "group",
+        "from" {"facet" {"data" "density", "name" "violin", "groupby" ~dim}},
         "encode"
-        {"enter" {"fill" {"scale" "color", "field" {"parent" ~dim}}},
-         "update"
-         {"x" {"scale" "xscale", "field" "value"},
-          "yc" {"signal" "plotWidth / 2"},
-          "height" {"scale" "hscale", "field" "density"}}}}
-       {"type" "symbol"
-        "from" {"data" "source"}
-        "encode"
-        {"enter" {"fill" "black" "y" {"value" 0}},
-         "update"
-         {"x" {"scale" "xscale", "field" "feature_value"},
-          "yc" {"signal" "plotWidth / 2 + 80*(random() - 0.5)"}, ;should scale with fatness
-          "size" {"value" 25},
-          "shape" {"value" "circle"},
-          "strokeWidth" {"value" 1},
-          "stroke" {"value" "#000000"}
-          "fill" {"value" "#000000"}
-          "opacity" {"value" "0.3"}
+        {"enter"
+         {"yc" {"scale" "layout", "field" ~dim, "band" 0.5},
+          "height" {"signal" "plotWidth"},
+          "width" {"signal" "width"}}},
+        "data"
+        [{"name" "summary",
+          "source" "stats",
+          "transform" [{"type" "filter", "expr" ~(wu/js-format "datum.%s === parent.%s" dim dim)}]}],
+        "marks"
+        [{"type" "area",
+          "from" {"data" "violin"},
+          "encode"
+          {"enter" {"fill" {"scale" "color", "field" {"parent" ~dim}}},
+           "update"
+           {"x" {"scale" "xscale", "field" "value"},
+            "yc" {"signal" "plotWidth / 2"},
+            "height" {"scale" "hscale", "field" "density"}}}}
+         {"type" "symbol"
+          "from" {"data" "source"}
+          "encode"
+          {"enter" {"fill" "black" "y" {"value" 0}},
+           "update"
+           {"x" {"scale" "xscale", "field" "feature_value"},
+            "yc" {"signal" "plotWidth / 2 + 80*(random() - 0.5)"}, ;should scale with fatness
+            "size" {"value" 25},
+            "shape" {"value" "circle"},
+            "strokeWidth" {"value" 1},
+            "stroke" {"value" "#000000"}
+            "fill" {"value" "#000000"}
+            "opacity" {"value" "0.3"}
+            }
+           }
           }
-         }
-        }
-       {"type" "rect",
-        "from" {"data" "summary"},
-        "encode"
-        {"enter" {"fill" {"value" "black"}, "height" {"value" 2}},
-         "update"
-         {"x" {"scale" "xscale", "field" "q1"},
-          "x2" {"scale" "xscale", "field" "q3"},
-          "yc" {"signal" "plotWidth / 2"}}}}
-       {"type" "rect",
-        "from" {"data" "summary"},
-        "encode"
-        {"enter" {"fill" {"value" "black"}, "width" {"value" 2}, "height" {"value" 8}},
-         "update" {"x" {"scale" "xscale", "field" "median"}, "yc" {"signal" "plotWidth / 2"}}}}]}],
-    "scales"
-    [{"name" "layout",
-      "type" "band",
-      "range" "height",
-      "domain" {"data" "source", "field" ~dim}}
-     {"name" "xscale",
-      "type" "linear",
-      "range" "width",
-      "round" true,
-      "domain" {"data" "source", "field" "feature_value"},
-      "zero" false,
-      "nice" true}
-     {"name" "hscale",
-      "type" "linear",
-      "range" [0 {"signal" "plotWidth"}],
-      "domain" {"data" "density", "field" "density"}}
-     {"name" "color",
-      "type" "ordinal",
-      "domain" {"data" "source", "field" ~dim},
-      "range" "category"}],
-    "axes"
-    [{"orient" "bottom", "scale" "xscale", "zindex" 1 :title ~(humanize feature)} ;TODO want metacluster in this
-     {"orient" "left", "scale" "layout", "tickCount" 5, "zindex" 1}],
-    "signals"
-    [{"name" "plotWidth", "value" 160}  ;controls fatness of violins
-     {"name" "height", "update" "(plotWidth + 10) * 3"}
-     {"name" "trim", "value" true, #_ "bind" #_ {"input" "checkbox"}}
-     {"name" "bandwidth", "value" 0, #_ "bind" #_ {"input" "range", "min" 0, "max" 0.00002, "step" 0.000001}}], ;Note: very sensitive, was hard to find these values
-    "$schema" "https://vega.github.io/schema/vega/v5.json",
-    "data"
-    [{"name" "source",
-      "values" ~data}
-     {"name" "density",
-      "source" "source",
-      "transform"
-      [{"type" "kde",
-        "field" "feature_value",
-        "groupby" [~dim],
-        "bandwidth" {"signal" "bandwidth"}
-        "extent" {"signal" "trim ? null : [0.0003, 0.0005]"} ;TODO not sure what this does or how to adjust it propery
-        }]} 
-     {"name" "stats",
-      "source" "source",
-      "transform"
-      [{"type" "aggregate",
-        "groupby" [~dim],
-        "fields" ["feature_value" "feature_value" "feature_value"], ;??? do not understand why we need to repeat this three times, but it is important
-        "ops" ["q1" "median" "q3"],
-        "as" ["q1" "median" "q3"]}]}],
-    "description" "A violin plot example showing distributions for pengiun body mass."}))
+         {"type" "rect",
+          "from" {"data" "summary"},
+          "encode"
+          {"enter" {"fill" {"value" "black"}, "height" {"value" 2}},
+           "update"
+           {"x" {"scale" "xscale", "field" "q1"},
+            "x2" {"scale" "xscale", "field" "q3"},
+            "yc" {"signal" "plotWidth / 2"}}}}
+         {"type" "rect",
+          "from" {"data" "summary"},
+          "encode"
+          {"enter" {"fill" {"value" "black"}, "width" {"value" 2}, "height" {"value" 8}},
+           "update" {"x" {"scale" "xscale", "field" "median"}, "yc" {"signal" "plotWidth / 2"}}}}]}],
+      "scales"
+      [{"name" "layout",
+        "type" "band",
+        "range" "height",
+        "domain" {"data" "source", "field" ~dim}
+        "paddingOuter" 0.5}
+       ~(merge
+         {"name" "xscale",
+          "range" "width",
+          "round" true,
+          "domain" {"data" "source", "field" "feature_value"},
+                                        ;       "zero" false,
+          "nice" true
+          }
+         scale)
+       {"name" "hscale",
+        "type" "linear",
+        "range" [0 {"signal" "plotWidth"}],
+        "domain" {"data" "density", "field" "density"}}
+       {"name" "color",
+        "type" "ordinal",
+        "domain" {"data" "source", "field" ~dim},
+        "range" "category"}],
+      "axes"
+      [{"orient" "bottom", "scale" "xscale", "zindex" 1 :title ~(humanize feature)} ;TODO want metacluster in this
+       {"orient" "left", "scale" "layout", "tickCount" 5, "zindex" 1}],
+      "signals"
+      [{"name" "plotWidth", "value" 160}  ;controls fatness of violins
+       {"name" "height", "update" "(plotWidth + 10) * 3"}
+       {"name" "trim", "value" true, #_ "bind" #_ {"input" "checkbox"}}
+       ;; TODO this didn't work, so going out of Vega
+       #_ {"name" "xscales", "value" "linear" "bind"  {"input" "select" "options" ["linear" "log10" "log2" "sqrt"]}}
+       {"name" "bandwidth", "value" 0, #_ "bind" #_ {"input" "range", "min" 0, "max" 0.00002, "step" 0.000001}}], ;Note: very sensitive, was hard to find these values
+      "$schema" "https://vega.github.io/schema/vega/v5.json",
+      "data"
+      [{"name" "source",
+        "values" ~data}
+       {"name" "density",
+        "source" "source",
+        "transform"
+        [{"type" "kde",
+          "field" "feature_value",
+          "groupby" [~dim],
+          "bandwidth" {"signal" "bandwidth"}
+          "extent" {"signal" "trim ? null : [0.0003, 0.0005]"} ;TODO not sure what this does or how to adjust it propery
+          }]} 
+       {"name" "stats",
+        "source" "source",
+        "transform"
+        [{"type" "aggregate",
+          "groupby" [~dim],
+          "fields" ["feature_value" "feature_value" "feature_value"], ;??? do not understand why we need to repeat this three times, but it is important
+          "ops" ["q1" "median" "q3"],
+          "as" ["q1" "median" "q3"]}]}],
+      "description" "A violin plot example showing distributions for pengiun body mass."}))
 
 (defn boxplot
   [data dim]
-  {
-   :$schema "https://vega.github.io/schema/vega-lite/v5.json",
-   :data {:values data}
-   :mark {:type "boxplot" :tooltip true}, ; :extent "min-max"
-   :encoding {:y {:field "feature_value", :type "quantitative"
-                  :scale {:zero false}},
-              :x {:field dim :type "nominal"}
-              :color {:field dim :type "nominal", :legend nil}
-              }
-   }
-  )
+  (let [scale (interpret-scale @(rf/subscribe [:param :features :scale]))]
+    {
+     :$schema "https://vega.github.io/schema/vega-lite/v5.json",
+     :data {:values data}
+     :mark {:type "boxplot" :tooltip true}, ; :extent "min-max"
+     :encoding {:y {:field "feature_value", :type "quantitative"
+                    :scale scale},
+                :x {:field dim :type "nominal"}
+                :color {:field dim :type "nominal", :legend nil}
+                }
+     }))
 
 (def grouping-features [:final_diagnosis :who_grade :ROI :recurrence
                         :treatment :idh_status])
@@ -331,6 +344,10 @@
   [:div.my-3
    [:span.alert.alert-info.text-nowrap "↓  Next select a feature below ↓"]])
 
+(defn scale-chooser
+  []
+  [:span.hstack "Scale: " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])])
+
 (defn ui
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
@@ -349,8 +366,13 @@
           [tabs/tabs
            :uviz
            (array-map
-            :violin (fn [] [v/vega-view (violin data dim feature) data])
-            :boxplot (fn [] [v/vega-lite-view (boxplot data dim) data])
+            :violin (fn [] [:div
+                            [scale-chooser]
+                            [v/vega-view (violin data dim feature) data]
+                            ])
+            :boxplot (fn [] [:div.vstack
+                             [scale-chooser]
+                             [v/vega-lite-view (boxplot data dim) data]])
             ;; :heatmap (fn [] [heatmap data dim "site"])
             :heatmap (fn [] [heatmap dim])
             )]])]
@@ -367,11 +389,11 @@
        ]
       [:div.col-3
        [:h4 "Filter"
-              [:span.ms-2 [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal :filters {}])
-                                                                           (rf/dispatch [:set-param :universal :feature nil]))} "Clear"]]
+        [:span.ms-2 [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal :filters {}])
+                                                                     (rf/dispatch [:set-param :universal :feature nil]))} "Clear"]]
         ]
        [filter-text]                    ;TODO tweak
-        
+       
        (if dim
          [filter-ui dim]
          [dim-first-warning]) ]
