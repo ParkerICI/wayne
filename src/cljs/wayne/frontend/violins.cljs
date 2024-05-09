@@ -3,6 +3,7 @@
             ["vega-embed" :as ve]
             [wayne.frontend.data :as data]
             [way.web-utils :as wu]
+            [way.download :as download]
             [way.vega :as v]
             [way.tabs :as tab]
             [reagent.dom]
@@ -140,7 +141,7 @@
          "Feature")]
        [:li.nav-item.mx-2
         [:form
-         (wu/download-button @(rf/subscribe [:data :violin]) "wayne-export.tsv")
+         (download/button @(rf/subscribe [:data :violin]) "wayne-export.tsv")
          ]]
        ]]
      [v/vega-view (violin data "ROI") data]

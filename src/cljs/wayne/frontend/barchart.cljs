@@ -5,6 +5,7 @@
             [way.data :as wdata]
             [way.vega :as v]
             [way.api :as api]
+            [way.download :as download]
             [way.web-utils :as wu]
             [reagent.dom]
             [clojure.string :as str]
@@ -56,7 +57,7 @@
            "Feature")]
          [:li.nav-item.mx-2
           [:form
-           (wu/download-button @(rf/subscribe [:data :barchart]) "wayne-export.tsv")
+           (download/button @(rf/subscribe [:data :barchart]) "wayne-export.tsv")
            ]]]]]]
      [v/vega-lite-view (bar-spec data) data]   
      ]))

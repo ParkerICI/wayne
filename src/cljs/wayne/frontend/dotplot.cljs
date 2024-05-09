@@ -4,6 +4,7 @@
             [way.tabs :as tab]
             [way.data :as wdata]
             [way.vega :as v]
+            [way.download :as download]
             [way.web-utils :as wu]
             [reagent.dom]
             )
@@ -65,7 +66,7 @@
            "Feature")]
          [:li.nav-item.mx-2
           [:form
-           (wu/download-button data "wayne-export.tsv")
+           (download/button data "wayne-export.tsv")
            ]]]]]]
      [v/vega-lite-view (dot-spec data) data]
      ]))

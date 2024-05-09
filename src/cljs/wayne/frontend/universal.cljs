@@ -3,23 +3,17 @@
             ["vega-embed" :as ve]
             [clojure.string :as str]
             [wayne.frontend.data :as data]
+            [wayne.frontend.signup :as signup]
             [way.web-utils :as wu]
             [way.vega :as v]
             [way.tabs :as tabs]
+            [way.download :as download]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
             [wayne.frontend.fgrid :as fgrid]
             [wayne.frontend.feature-select :as fui]
             )
   )
-
-;;; TODO replace with way.web-utils cljc version
-(defn humanize
-  [term]
-  (when term
-    (-> term
-        name
-        (str/replace "_" " "))))
 
 (defn interpret-scale
   [scale]
@@ -109,7 +103,7 @@
         "domain" {"data" "source", "field" ~dim},
         "range" "category"}],
       "axes"
-      [{"orient" "bottom", "scale" "xscale", "zindex" 1 :title ~(humanize feature)} ;TODO want metacluster in this
+      [{"orient" "bottom", "scale" "xscale", "zindex" 1 :title ~(wu/humanize feature)} ;TODO want metacluster in this
        {"orient" "left", "scale" "layout", "tickCount" 5, "zindex" 1}],
       "signals"
       [{"name" "plotWidth", "value" 160}  ;controls fatness of violins
@@ -229,7 +223,7 @@
         [:label.form-check-label {:for id :class (when disabled? "text-muted")
                                                    ; text-decoration-line-through
                                   }
-         (humanize value) disabled?]])
+         (wu/humanize value) disabled?]])
      ]))
 
 (defn filter-ui
@@ -248,7 +242,7 @@
                                               :aria-controls collapse-id
                                               :class (if (= dim compare-dim) "bg-info")
                                               }
-          (humanize dim)
+          (wu/humanize dim)
           (when (= dim compare-dim) [:i.px-2 "(y-axis)"])]]
         ;; .show
         [:div.accordion-collapse.collapse {:id collapse-id
@@ -272,7 +266,7 @@
                                ; TODO :value ...
                                :id label
                                :on-click #(f feature)}]
-     [:label.form-check-label {:for label} (humanize feature)]])])
+     [:label.form-check-label {:for label} (wu/humanize feature)]])])
 
 (defn filter-text
   []
@@ -285,9 +279,9 @@
                  (when-not (empty? in-vals)
                    [:p
                     {:key (str "filter-text-" (name col))}
-                    (str (humanize (name col)) ": "
+                    (str (wu/humanize (name col)) ": "
                             (str/join ", "
-                                      (map humanize in-vals)))])))
+                                      (map wu/humanize in-vals)))])))
              filter)]))
 
 #_
@@ -361,7 +355,7 @@
          [:div
           ;; TODO pluralize
           [:span (str (count data) " rows")]   ; could do this but it is wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows"))
-          [:span.ms-2 (wu/download-button data "wayne-export.tsv")]
+          [:span.ms-2 (signup/with-signup (download/button data (str "bruce-export-" feature ".tsv")))]
           ;; TODO of course you might want to see these together, so tabs are not good design
           [tabs/tabs
            :uviz

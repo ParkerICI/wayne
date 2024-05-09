@@ -10,6 +10,25 @@
 
 ;;; Web utils
 
+;;; Kind of BRUCE specific?
+;;; CLJC
+(defn humanize
+  [term]
+  (when term
+    (-> term
+        name
+        (str/replace "_" " "))))
+
+;;; ⦿⦾⦿ local storage (browser) ⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿
+
+(defn get-local-storage
+  [key]
+  (.getItem js/localStorage key))
+
+(defn set-local-storage
+  [key value]
+  (.setItem js/localStorage key value))
+
 ;;; See https://material.io/resources/icons/
 (defn icon
   [icon tooltip handler & {:keys [class disabled?] :or {class "md-dark"}}]
@@ -285,45 +304,5 @@ setter #(let [value @(rf/subscribe [::edited-value key])]
          (intercalate (str/split s #"%s")
                       args)))
 
-;;; ⦿⦾⦿ download tsv ⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿⦾⦿
 
-;;; This lets you "download" directly from client data, no server call required
 
-;;; Rows is a seq of maps
-(defn data->tsv
-  [rows]
-  (let [cols (keys (first rows))]
-    (str/join
-     "\n" 
-     (map (partial str/join \tab)
-          (cons (map name cols)
-                (map (fn [row] (map (fn [col] (get row col)) cols))
-                     rows))))))
-
-(defn download-data-as-tsv [data export-name]
-  (let [data-blob (js/Blob. (clj->js [(data->tsv data)]) #js {:type "application/tsv"})
-        link (.createElement js/document "a")]
-    (set! (.-href link) (.createObjectURL js/URL data-blob))
-    (.setAttribute link "download" export-name)
-    (.appendChild (.-body js/document) link)
-    (.click link)
-    (.removeChild (.-body js/document) link)
-    nil))
-
-(defn download-button
-  [data-sub filename]
-  (when-not (empty? data-sub) ;TODO disable is better
-    [:button.btn.btn-outline-primary
-     {:on-click #(do
-                   (.preventDefault %)
-                   (download-data-as-tsv data-sub filename))}
-     "Download"]))
-
-;;; Kind of BRUCE specific?
-;;; CLJC
-(defn humanize
-  [term]
-  (when term
-    (-> term
-        name
-        (str/replace "_" " "))))
