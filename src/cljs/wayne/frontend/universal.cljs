@@ -217,8 +217,9 @@
           :checked (if checked? "checked" "")
           :on-change (fn [e]
                        (rf/dispatch
-                        [:set-param :universal [:filters dim value] (-> e .-target .-checked)]
-                        ))
+                        [:set-param :universal [:filters dim value] (-> e .-target .-checked)])
+                       (rf/dispatch
+                        [:set-param :heatmap [:filter dim value] (-> e .-target .-checked)]))
           }]
         [:label.form-check-label {:for id :class (when disabled? "text-muted")
                                                    ; text-decoration-line-through
@@ -284,22 +285,8 @@
                                       (map wu/humanize in-vals)))])))
              filter)]))
 
-#_
-(defn heatmap
-  [data dim1 dim2]
-  [v/vega-lite-view
-   {:mark :rect
-    :data {:values data}
-    :encoding {:y {:field dim1 :type "nominal"} 
-               :x {:field dim2 :type "nominal"}
-               :color {:aggregate :mean :field :feature_value}}
-    :config {:axis {:grid true :tickBand :extent}}
-    }
-   data])
-
 (defn heatmap
   [dim]
-  ;; Filters are automatically put on the query
   (let [data @(rf/subscribe [:data :heatmap])]
     [v/vega-lite-view
      {:mark :rect
@@ -384,6 +371,7 @@
       [:div.col-3
        [:h4 "Filter"
         [:span.ms-2 [:button.btn.btn-outline-primary {:on-click #(do (rf/dispatch [:set-param :universal :filters {}])
+                                                                     (rf/dispatch [:set-param :heatmap :filter {}])
                                                                      (rf/dispatch [:set-param :universal :feature nil]))} "Clear"]]
         ]
        [filter-text]                    ;TODO tweak

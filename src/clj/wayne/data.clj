@@ -197,7 +197,7 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
   [{:keys [dim filter]}]
   (when dim
     (-> (select "avg(feature_value) as mean, feature_variable, {dim} {from} 
- where feature_type = 'marker_intensity'
+ where feature_type = 'marker_intensity' and {where}
  group by feature_variable, {dim}"
                 :dim dim
                 :where (joint-where-clause filter))
