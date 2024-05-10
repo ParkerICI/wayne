@@ -4,49 +4,7 @@
   )
 
 ;;; Based on https://vega.github.io/vega/examples/tree-layout/
-
 ;;; TODO row/col annotations w colors and scales, see examples
-
-(def features1 ["EGFR_func_over_all_tumor_prop"
-                "GM2_GD2_func_over_all_tumor_prop"
-                "GPC2_func_over_all_tumor_prop"
-                "VISTA_func_over_all_tumor_prop"
-                "HER2_func_over_all_tumor_prop"
-                "B7H3_func_over_all_tumor_prop"
-                "NG2_func_over_all_tumor_prop"
-                ])
-
-
-(def recurrence1
-  ["Primary"
-   "Recurrence"
-   "Normal_brain"])
-
-(def samples
-  ["517" "513" "509" "521" "516" "520" "508" "512"])
-
-(def genes
-  ["ZBTB16"
-   "FAM107A"
-   "SPARCL1"
-   "CACNB2"
-   "HIF3A"
-   "TIMP4"
-   "WNT2"
-   "PRSS35"
-   "VCAM1"
-   "NEXN"
-   "DUSP1"
-   "MT2A"   
-   "STEAP2"
-   "DNM1"
-   "ADAM12"
-   "ACSS1"
-   "PDPN"
-   "MAOA"
-   "FGD4"
-   "DNAJB4"
-   ])
 
 (defn tree
   [url left?]
@@ -103,7 +61,8 @@
       }))
 
 
-(def spec
+(defn spec
+  [h-items v-items]
   {:description "A clustered heatmap with side-dendrograms",
    :width 600 :height 600
    :$schema "https://vega.github.io/schema/vega/v5.json",
@@ -113,8 +72,8 @@
            :url "sheatmap.json"}]
    :scales
    ;; TODO note the feature values inserted here. Alt would be to have them in the data somehow
-   [{:name "x" :type "band" :domain samples :range {:step 20} } ; {:data "hm" :field "sample"}
-    {:name "y" :type "band" :domain genes :range {:step 20}}  ; {:data "hm" :field "gene"}
+   [{:name "x" :type "band" :domain h-itmes  :range {:step 20} } ; {:data "hm" :field "sample"} (not ordered)
+    {:name "y" :type "band" :domain v-items :range {:step 20}}  ; {:data "hm" :field "gene"}
     {:name "color"
      :type "linear"
      :range {:scheme "BlueOrange"}
@@ -181,9 +140,35 @@
      }
     ]}) 
 
+(def samples
+  ["517" "513" "509" "521" "516" "520" "508" "512"])
+
+(def genes
+  ["ZBTB16"
+   "FAM107A"
+   "SPARCL1"
+   "CACNB2"
+   "HIF3A"
+   "TIMP4"
+   "WNT2"
+   "PRSS35"
+   "VCAM1"
+   "NEXN"
+   "DUSP1"
+   "MT2A"   
+   "STEAP2"
+   "DNM1"
+   "ADAM12"
+   "ACSS1"
+   "PDPN"
+   "MAOA"
+   "FGD4"
+   "DNAJB4"
+   ])
+
 (defn dendrogram
   []  
-  [v/vega-view spec []])
+  [v/vega-view (spec samples genes) []])
 
 (defn ui
   []

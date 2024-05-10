@@ -58,15 +58,6 @@
      (get-in db (concat [:params data-id] param))
      (get-in db [:params data-id param]))))
 
-;;; Slightly dekludged, needs to be a multimethod or something, and be in Wayne where it belongs TODO
-;;; Also totally wrong, doesn't deal with dependency issue! Probably should use subscribe
-(defn extra-params
-  [db data-id]
-  (case data-id
-    :heatmap {:filter (get-in db [:params :universal :filters] {})
-              :dim (get-in db [:params :universal :dim])}
-    {}))
-
 ;;; TODO get rid of this and just use a parameter map
 (defn label-params
   [data-id]
@@ -86,7 +77,6 @@
       "/api/v2/data"
       {:params (merge (get-in db [:params data-id])
                       event-params
-                      (extra-params db data-id)
                       {:data-id data-key} ;TODO fix terminology to be consistent
                       )
        :handler #(rf/dispatch [::loaded data-id %])
