@@ -136,10 +136,10 @@
 ;;; idcol: dimension to be clustered
 ;;; → multitool
 
-;;; For clarity, clustering rows by columns (but works on mapseqs so any field can be "row" or "column")
-;;; row-dim: 
-;;; colcol: the other dimension? (TODO better name)
-;;; valcol: field containing values to be clustered
+;;; For clarity, clustering rows by columns (but actually works on mapseqs so any field can be "row" or "column")
+;;; row-dim: the field containing the leaf clusters (rows)
+;;; col-dim: the other dimension (columns)
+;;; value-field: field containing values to be clustered
 (defn cluster
   [maps row-dim col-dim value-field]
   (let [indexed (index-by-transform
@@ -153,6 +153,7 @@
                                                (get indexed [row col]))
                                              cols)))
                                  rows))
+        ;; Initialize to the complete graph of inter-row distances
         distances (into {}
                         (u/forf [row1 rows row2 rows]
                           (when (u/<* row1 row2)
@@ -164,12 +165,12 @@
       (if (= 1 (count vectors))
         tree
         (let [[[row1 row2] _] (u/min-by second distances)
-              cluster-id (str row1 "-" row2) ;TODO These IDS are bigger than they need to be, but good for debugging
+              cluster-id (str row1 "-" row2) ;TODO These IDS are annoyingly large, good for debugging though
               vector (vector-mean (get vectors row1) (get vectors row2))]
-          (recur (-> vectors
+          (recur (-> vectors            ;replace merged (clustered) vectors with new one (mean).
                      (dissoc row1 row2)
                      (assoc cluster-id vector))
-                 (->> distances
+                 (->> distances         ;remove 
                       (u/dissoc-if (fn [[[xrow1 xrow2] _]]
                                      (or (= row1 xrow1) (= row1 xrow2)
                                          (= row2 xrow1) (= row2 xrow2))))
@@ -180,16 +181,16 @@
                  (conj tree [cluster-id row1 row2])
                  ))))))
 
-(defn write-clusters
-  [f clusters]
-  (let [invert (merge (u/index-by second clusters) (u/index-by #(nth % 2)  clusters))
-        root (last clusters)              ;TODO watch out
-        ]
-    (write-json-file f
-                     (cons {:id (first root)}
-                           (map (fn [[c [p _]]]
-                                  {:id c :parent p})
-                                invert)))))
+;;; Returns a mapseq of {:id :parent}, suitable for passing to vega tree.
+(defn cluster-data
+  [maps row-dim col-dim value-field]
+  (let [clusters (cluster maps row-dim col-dim value-field)
+        invert (merge (u/index-by second clusters) (u/index-by #(nth % 2)  clusters))
+        root (last clusters)]
+    (cons {:id (first root)}
+          (map (fn [[c [p _]]]
+                 {:id c :parent p})
+               invert))))
 
 
 ;;; https://github.com/lerouxrgd/clj-hclust

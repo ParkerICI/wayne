@@ -7,35 +7,24 @@
 ;;; TODO row/col annotations w colors and scales, see examples
 
 (defn tree
-  [url left?]
+  [cluster-data left?]
   (let [width-signal (if left? "dend_width" "hm_width")
         height-signal (if left? "hm_height" "dend_width")]
-
     `{:type "group"
       :style "cell"
       :data 
-      [{:name "tree",
-        :url ~url
-        :transform
-        [{:type "stratify", :key "id", :parentKey "parent"}
-         {:type "tree",
-          :method "cluster",
-          :size [{:signal ~(if left? "hm_height" "hm_width")} {:signal "dend_width"}],
-          :as ~(if left?
-                 ["y" "x" "depth" "children"]
-                 ["x" "y" "depth" "children"])}]}
+      [
        {:name "links",
-        :source "tree",
+        :source ~cluster-data,
         :transform
         [{:type "treelinks"}
          {:type "linkpath",
           :orient ~(if left? "horizontal" "vertical")
           :shape "orthogonal"}]}]
       :encoding {:width {:signal ~width-signal}, 
-                       :height {:signal ~height-signal}
-                       :strokeWidth {:value 0}
-                 
-               }
+                 :height {:signal ~height-signal}
+                 :strokeWidth {:value 0}
+                 }
       :marks [{:type "path",
                :from {:data "links"},
                :encode {:enter
@@ -61,84 +50,106 @@
       }))
 
 
+;;; Generates TWO data specs (for tree and filtered to leaves)
+(defn tree-data-spec
+  [name url left?]
+  `[{:name ~name,
+     :url ~url   ; :value s ~cluster-tree
+     :transform
+     [{:type "stratify", :key "id", :parentKey "parent"}
+      {:type "tree",
+       :method "cluster",
+       :size [{:signal ~(if left? "hm_height" "hm_width")} ;;  
+              {:signal "dend_width"}],
+       :as ~(if left?
+              ["y" "x" "depth" "children"]
+              ["x" "y" "depth" "children"])}]}
+    {:name ~(str name "-leaf")
+     :source ~name
+     :transform [{:type "filter" :expr "datum.children == 0"}]}]
+  )
+
+
 (defn spec
   [h-items v-items]
-  {:description "A clustered heatmap with side-dendrograms",
-   :width 600 :height 600
-   :$schema "https://vega.github.io/schema/vega/v5.json",
-   :layout {:align "each"
-            :columns 2}
-   :data [{:name "hm",
-           :url "sheatmap.json"}]
-   :scales
-   ;; TODO note the feature values inserted here. Alt would be to have them in the data somehow
-   [{:name "x" :type "band" :domain h-itmes  :range {:step 20} } ; {:data "hm" :field "sample"} (not ordered)
-    {:name "y" :type "band" :domain v-items :range {:step 20}}  ; {:data "hm" :field "gene"}
-    {:name "color"
-     :type "linear"
-     :range {:scheme "BlueOrange"}
-     :domain {:data "hm", :field "value"},
-     }]
-   :signals
-   [{:name "labels", :value true, :bind {:input "checkbox"}}
-    {:name "hm_width" :update "range('x')[1]"} ;TODO do these really need to be signals? They don't change
-    {:name "hm_height" :update "range('y')[1]"}
-    {:name "dend_width" :value 60}]
-   :padding 5,
-   :marks
-   [
-    {:type :group                       ;Empty quadrant
-     :style :cell
-     :encode {:enter {:width {:signal "dend_width"},
-                       :height {:signal "dend_width"} ;??? why does this affect the OTHER group???
+  `{:description "A clustered heatmap with side-dendrograms",
+    :width 600 :height 600
+    :$schema "https://vega.github.io/schema/vega/v5.json",
+    :layout {:align "each"
+             :columns 2}
+    :data [{:name "hm",
+            :url "sheatmap.json"}
+           ~@(tree-data-spec "ltree" "dend-real-g.json" true)
+           ~@(tree-data-spec "utree" "dend-real-s.json" false)
+           ]
+    :scales
+    ;; Note: min is because sorting apparently requires an aggregation? And there's no pickone
+    [{:name "sx" :type "band" :domain  {:data "utree-leaf" :field "id" :sort {:field "x" :op "min"}} :range {:step 20} } 
+     {:name "sy" :type "band" :domain  {:data "ltree-leaf" :field "id" :sort {:field "y" :op "min"}} :range {:step 20}} 
+     {:name "color"
+      :type "linear"
+      :range {:scheme "BlueOrange"}
+      :domain {:data "hm", :field "value"},
+      }]
+    :signals
+    [{:name "labels", :value true, :bind {:input "checkbox"}}
+     {:name "hm_width" :value ~(* 20 8)} ;TODO 20 x counts
+     {:name "hm_height" :value ~(* 20 20)}
+     {:name "dend_width" :value 60}]
+    :padding 5,
+    :marks
+    [
+     {:type :group                       ;Empty quadrant
+      :style :cell
+      :encode {:enter {:width {:signal "dend_width"},
+                       :height {:signal "dend_width"}
                        :strokeWidth {:value 0}
                        }
-              }
-     }
+               }
+      }
 
-    ;; V tree
-    (tree "dend-real-s.json" false)
+     ;; V tree
+     ~(tree "utree" false)
 
-    ;; H tree
-    (tree "dend-real-g.json" true)
+     ;; H tree
+     ~(tree "ltree" true)
 
-    ;; actual hmap 
-    {:type "group"
-     :name "heatmap"
-     :style "cell"
+     ;; actual hmap 
+     {:type "group"
+      :name "heatmap"
+      :style "cell"
+      :encode {
+               :update {
+                        :width {:signal "hm_width"}
+                        :height {:signal "hm_height"}
+                        }
+               },
 
-     :encode {
-              :update {
-                       :width {:signal "hm_width"}
-                       :height {:signal "hm_height"}
-                       }
-              },
+      :axes
+      [{:orient :right :scale :sy }     ;TODO titles
+       {:orient :bottom :scale :sx :labelAngle 90 :labelAlign "left"}]
 
-     :axes
-     [{:orient :right :scale :y :title "feature"} 
-      {:orient :bottom :scale :x :title "recurrence" :labelAngle 90 :labelAlign "left"}]
+      :legends
+      [{:fill :color
+        :type :gradient
+        ; :title "Median feature value"
+        :titleOrient "bottom"
+        :gradientLength {:signal "hm_height / 2"}
+        }]
 
-     :legends
-     [{:fill :color
-       :type :gradient
-       :title "Median feature value"
-       :titleOrient "bottom"
-       :gradientLength {:signal "hm_height"}
-       }]
-
-     :marks
-     [{:type "rect"
-       :from {:data "hm"}
-       :encode
-       {:enter
-        {:y {:field "gene" :scale "y"}
-         :x {:field "sample" :scale "x"}
-         :width {:value 19} :height {:value 19}
-         :fill {:field "value" :scale "color"}
-         }}}
-      ]
-     }
-    ]}) 
+      :marks
+      [{:type "rect"
+        :from {:data "hm"}
+        :encode
+        {:enter
+         {:y {:field "gene" :scale "sy"}
+          :x {:field "sample" :scale "sx"}
+          :width {:value 19} :height {:value 19}
+          :fill {:field "value" :scale "color"}
+          }}}
+       ]
+      }
+     ]}) 
 
 (def samples
   ["517" "513" "509" "521" "516" "520" "508" "512"])
