@@ -12,6 +12,7 @@
             [org.candelbio.multitool.core :as u]
             [wayne.frontend.fgrid :as fgrid]
             [wayne.frontend.feature-select :as fui]
+            [wayne.frontend.dendrogram :as dendro]
             )
   )
 
@@ -329,6 +330,13 @@
   []
   [:span.hstack "Scale: " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])])
 
+(defn dendrogram
+  [dim]
+  (dendro/dendrogram @(rf/subscribe [:data :heatmap])
+                     dim
+                     :feature_variable
+                     :mean))
+
 (defn ui
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
@@ -356,9 +364,11 @@
                              [v/vega-lite-view (boxplot data dim) data]])
             ;; :heatmap (fn [] [heatmap data dim "site"])
             :heatmap (fn [] [heatmap dim])
+            :dendrogram (fn [] [dendrogram dim])
             )]])]
       [:div.col-6
-       (when dim (fgrid/ui dim))]
+       ;; Temp off because it hides dendrogram
+       #_ (when dim (fgrid/ui dim))]
       ]
 
      [:div.row
@@ -366,7 +376,8 @@
        [:h4 "Compare"]
        [dim-chooser
         "compare"
-        #(rf/dispatch [:set-param :universal :dim %])]
+        #(do (rf/dispatch [:set-param :universal :dim %])
+             (rf/dispatch [:set-param :heatmap :dim %]))]
        ]
       [:div.col-3
        [:h4 "Filter"

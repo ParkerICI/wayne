@@ -73,84 +73,85 @@
 
 (defn spec
   [data h-field v-field value-field h-clusters v-clusters]
-  `{:description "A clustered heatmap with side-dendrograms",
-    :width 600 :height 600
-    :$schema "https://vega.github.io/schema/vega/v5.json",
-    :layout {:align "each"
-             :columns 2}
-    :data [{:name "hm",
-            :values ~data}
-           ~@(tree-data-spec "ltree" h-clusters true)
-           ~@(tree-data-spec "utree" v-clusters false)
-           ]
-    :scales
-    ;; Note: min is because sorting apparently requires an aggregation? And there's no pickone
-    [{:name "sx" :type "band" :domain  {:data "utree-leaf" :field "id" :sort {:field "x" :op "min"}} :range {:step 20} } 
-     {:name "sy" :type "band" :domain  {:data "ltree-leaf" :field "id" :sort {:field "y" :op "min"}} :range {:step 20}} 
-     {:name "color"
-      :type "linear"
-      :range {:scheme "BlueOrange"}
-      :domain {:data "hm", :field ~value-field},
-      }]
-    :signals
-    [{:name "labels", :value true, :bind {:input "checkbox"}}
-     {:name "hm_width" :value ~(* 20 8)} ;TODO 20 x counts
-     {:name "hm_height" :value ~(* 20 20)}
-     {:name "dend_width" :value 60}]
-    :padding 5,
-    :marks
-    [
-     {:type :group                       ;Empty quadrant
-      :style :cell
-      :encode {:enter {:width {:signal "dend_width"},
-                       :height {:signal "dend_width"}
-                       :strokeWidth {:value 0}
-                       }
-               }
-      }
-
-     ;; V tree
-     ~(tree "utree" false)
-
-     ;; H tree
-     ~(tree "ltree" true)
-
-     ;; actual hmap 
-     {:type "group"
-      :name "heatmap"
-      :style "cell"
-      :encode {
-               :update {
-                        :width {:signal "hm_width"}
-                        :height {:signal "hm_height"}
-                        }
-               },
-
-      :axes
-      [{:orient :right :scale :sy }     ;TODO titles
-       {:orient :bottom :scale :sx :labelAngle 90 :labelAlign "left"}]
-
-      :legends
-      [{:fill :color
-        :type :gradient
-        ; :title "Median feature value"
-        :titleOrient "bottom"
-        :gradientLength {:signal "hm_height / 2"}
+  (let [hsize (count (distinct (map h-field data))) ;wanted to this in vega but circularities are interfering
+        vsize (count (distinct (map v-field data)))]
+    `{:description "A clustered heatmap with side-dendrograms",
+      :$schema "https://vega.github.io/schema/vega/v5.json",
+      :layout {:align "each"
+               :columns 2}
+      :data [{:name "hm",
+              :values ~data}
+             ~@(tree-data-spec "ltree" h-clusters true)
+             ~@(tree-data-spec "utree" v-clusters false)
+             ]
+      :scales
+      ;; Note: min is because sorting apparently requires an aggregation? And there's no pickone
+      [{:name "sx" :type "band" :domain  {:data "utree-leaf" :field "id" :sort {:field "x" :op "min"}} :range {:step 20} } 
+       {:name "sy" :type "band" :domain  {:data "ltree-leaf" :field "id" :sort {:field "y" :op "min"}} :range {:step 20}} 
+       {:name "color"
+        :type "linear"
+        :range {:scheme "BlueOrange"}
+        :domain {:data "hm", :field ~value-field},
         }]
-
+      :signals
+      [{:name "labels", :value true, :bind {:input "checkbox"}}
+       {:name "hm_width" :value ~(* 20 vsize)} ; :update "length(data(\"utree-leaf\"))" } ;TODO 20 x counts
+       {:name "hm_height" :value ~(* 20 hsize)}
+       {:name "dend_width" :value 60}]
+      :padding 5,
       :marks
-      [{:type "rect"
-        :from {:data "hm"}
-        :encode
-        {:enter
-         {:y {:field ~h-field :scale "sy"}
-          :x {:field ~v-field :scale "sx"}
-          :width {:value 19} :height {:value 19}
-          :fill {:field ~value-field :scale "color"}
-          }}}
-       ]
-      }
-     ]}) 
+      [
+       {:type :group                       ;Empty quadrant
+        :style :cell
+        :encode {:enter {:width {:signal "dend_width"},
+                         :height {:signal "dend_width"}
+                         :strokeWidth {:value 0}
+                         }
+                 }
+        }
+
+       ;; V tree
+       ~(tree "utree" false)
+
+       ;; H tree
+       ~(tree "ltree" true)
+
+       ;; actual hmap 
+       {:type "group"
+        :name "heatmap"
+        :style "cell"
+        :encode {
+                 :update {
+                          :width {:signal "hm_width"}
+                          :height {:signal "hm_height"}
+                          }
+                 },
+
+        :axes
+        [{:orient :right :scale :sy :title ~h-field } 
+         {:orient :bottom :scale :sx :labelAngle 90 :labelAlign "left" :title ~v-field}]
+
+        :legends
+        [{:fill :color
+          :type :gradient
+          ;; :title "Median feature value"
+          :titleOrient "bottom"
+          :gradientLength {:signal "hm_height / 2"}
+          }]
+
+        :marks
+        [{:type "rect"
+          :from {:data "hm"}
+          :encode
+          {:enter
+           {:y {:field ~h-field :scale "sy"}
+            :x {:field ~v-field :scale "sx"}
+            :width {:value 19} :height {:value 19}
+            :fill {:field ~value-field :scale "color"}
+            }}}
+         ]
+        }
+       ]}) )
 
 (def data1
   '({:mean 5.435251712680062E-6, :feature_variable "VISTA", :final_diagnosis "GBM"}
