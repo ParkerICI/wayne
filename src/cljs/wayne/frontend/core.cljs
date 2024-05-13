@@ -11,21 +11,19 @@
    [way.modal :as modal]
 
    ;; TODO belongs in app probably oh well
-   [wayne.frontend.violins :as violins]
-   [wayne.frontend.patients :as patients]
+   ;; [wayne.frontend.violins :as violins]
+   ;; [wayne.frontend.patients :as patients]
 ;;   [wayne.frontend.sites :as sites]
    [wayne.frontend.cohort :as cohort]
    [wayne.frontend.samples :as samples]
-   [wayne.frontend.dotplot :as dotplot]
-   [wayne.frontend.barchart :as barchart]
+   ;; [wayne.frontend.dotplot :as dotplot]
+   ;; [wayne.frontend.barchart :as barchart]
    [wayne.frontend.universal :as universal]
-   [wayne.frontend.dendrogram :as dend]
-   [wayne.frontend.fgrid :as fgrid]
-   [wayne.frontend.feature-select :as fui]
+   ;; [wayne.frontend.dendrogram :as dend]
+   ;; [wayne.frontend.fgrid :as fgrid]
    [wayne.frontend.signup :as signup]
 
    [org.candelbio.multitool.core :as u]
-   [clojure.string :as str]
    [org.candelbio.multitool.browser :as browser]
    )) 
 
@@ -70,10 +68,8 @@
      ;; :dotplot dotplot/plot
      ;; :barchart barchart/plot
      :query universal/ui
-     ;; :dendrogram dend/ui
+     ;; :dendrogram dend/dev-ui
      ;; :data_grid fgrid/ui
-     ;; :feature_selector fui/ui
-
      )]
    #_ [footer]
    ])

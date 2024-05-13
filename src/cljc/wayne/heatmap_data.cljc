@@ -98,6 +98,7 @@
   [v1 v2]
   (reduce + (map (comp abs -) v1 v2)))
 
+;;; Not used
 (defn euclidean-distance
   [v1 v2]
   (Math/sqrt (reduce + (map (comp square -) v1 v2))))
@@ -117,10 +118,18 @@
        :clj (Double. v))
     ))
   
+;;; Allows string to be used (TODO Not really used yet)
+(defn field
+  [x]
+  (if (keyword x)
+    x
+    #(get % x )))
+
+;;; This works in clj but fails for unknown reason in cljs, so not using
 (defn index-by-transform 
   "Return a map of the elements of coll indexed by (f elt). Similar to group-by, but overwrites elts with same index rather than producing vectors. "
   [f xform coll]  
-  (zipmap (map f coll) (map xform coll)))
+  (zipmap (map (field f) coll) (map (field xform) coll)))
 
 ;;; Naive and inefficient algo
 ;;; maps: data as seq of maps
@@ -133,10 +142,9 @@
 ;;; value-field: field containing values to be clustered
 (defn cluster
   [maps row-dim col-dim value-field]
-  (let [indexed (index-by-transform
-                 (juxt row-dim col-dim)
+  (let [indexed (u/map-values
                  (comp coerce-numeric value-field)
-                 maps)            ;produces essentially a matrix, what clustring usually starts with
+                 (u/index-by (juxt row-dim col-dim) maps )) ;produces essentially a matrix, what clustring usually starts with
         rows (distinct (map row-dim maps))
         cols (distinct (map col-dim maps))
         vectors (zipmap rows (map (fn [row]
@@ -182,8 +190,4 @@
           (map (fn [[c [p _]]]
                  {:id c :parent p})
                invert))))
-
-
-;;; https://github.com/lerouxrgd/clj-hclust
-;;; https://github.com/tyler/clojure-cluster
 

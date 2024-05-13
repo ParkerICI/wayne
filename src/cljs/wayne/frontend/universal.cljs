@@ -1,12 +1,11 @@
 (ns wayne.frontend.universal
   (:require [re-frame.core :as rf]
-            ["vega-embed" :as ve]
             [clojure.string :as str]
-            [wayne.frontend.data :as data]
             [wayne.frontend.signup :as signup]
             [way.web-utils :as wu]
             [way.vega :as v]
             [way.tabs :as tabs]
+            way.data                    ;for sub handlers
             [way.download :as download]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]

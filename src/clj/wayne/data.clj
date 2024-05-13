@@ -4,8 +4,10 @@
             [way.debug :as debug]
             [taoensso.timbre :as log]
             [org.candelbio.multitool.core :as u]
+            [org.candelbio.multitool.cljcore :as ju]
             [org.candelbio.multitool.math :as mu]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [clojure.data.json :as json]))
 
 (defn query
   [q]
@@ -213,6 +215,11 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
        (select "distinct feature_variable {from} where bio_feature_type = '{bio_feature_type}'"
                :bio_feature_type bio_feature_type)))
 
+;;; TODO this looks like a massive security hole. Although what harm can parsing json do?
+(defn url-data
+  [{:keys [url]}]
+  (json/read-str (slurp url) :key-fn keyword))
+
 (defn data
   [{:keys [data-id] :as params}]
   (log/info :data params)
@@ -228,6 +235,8 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
         "universal-pop" (query1-pop2 (params-remap params))
         "heatmap" (heatmap (params-remap params))
         "features" (bio_feature_type-features (:bio_feature_type params))
+        ;; For debugging
+        ;; "url" (url-data params)
         )
       denil))                           ;TODO temp because nil is being used to mean no value on front-end...lazy
 
@@ -478,6 +487,9 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
 (comment
 (def features (select "distinct feature_variable, feature_type, cell_meta_cluster_final, feature_source, bio_feature_type, Feature {from} "))
 
+(def feature-names (set (map :feature_variable)))
+
+
 (map #(frequencies (map % features)) [:feature_type, :cell_meta_cluster_final, :feature_source, :bio_feature_type, :Feature])
 
 
@@ -598,6 +610,7 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
                             ]]
    ])
 
+#_
 (map (fn [a b] (map (fn [c] [c (take 3 (bio_feature_type-features c))]) b)) non-spatial-features-2-3)
 
 
@@ -633,8 +646,10 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
                  tokens))
              (range size))]))))
 
+#_
 (def bio-feature-classes (mapcat second non-spatial-features-2-3))
 
+#_
 (def ui-master (zipmap bio-feature-classes (map analyze-feature-class bio-feature-classes)))
 
 (defn split-further-one
