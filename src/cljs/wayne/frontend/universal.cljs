@@ -297,7 +297,7 @@
                          :type "quantitative"
                          :legend {:orient :top}
                          :title "mean feature value"
-                         }}   ;Note: mean computed on se rver
+                         }}   ;Note: mean computed on server
       :config {:axis {:grid true :tickBand :extent}}
       }
      data]))

@@ -1,11 +1,13 @@
 (ns wayne.frontend.dendrogram
   (:require [way.vega :as v]
             [wayne.heatmap-data :as hd]
+            [way.web-utils :as wu]
             [re-frame.core :as rf]
             )
   )
 
 ;;; TODO row/col annotations w colors and scales, see examples
+;;; TODO more parameterization incl option to have tree on right side
 
 (defn tree
   [cluster-data left?]
@@ -128,15 +130,15 @@
                  },
 
         :axes
-        [{:orient :right :scale :sy :title ~h-field } 
-         {:orient :bottom :scale :sx :labelAngle 90 :labelAlign "left" :title ~v-field}]
+        [{:orient :right :scale :sy :title ~(wu/humanize h-field) } 
+         {:orient :bottom :scale :sx :labelAngle 90 :labelAlign "left" :labelOffset 5 :title ~(wu/humanize v-field)}]
 
         :legends
         [{:fill :color
           :type :gradient
-          ;; :title "Median feature value"
+          :title ~(wu/humanize value-field)
           :titleOrient "bottom"
-          :gradientLength {:signal "hm_height / 2"}
+          :gradientLength {:signal "hm_height"} ;TODO was /2 but in Wayne, looks better this way
           }]
 
         :marks

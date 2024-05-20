@@ -3,6 +3,7 @@
             [re-frame.core :as rf]
             [re-frame.db :as rf-db]
             [cemerick.url :as url]
+            [org.candelbio.multitool.core :as u]
             #_ cljs-time.format
             #_ cljs-time.coerce
             )
@@ -289,20 +290,14 @@ setter #(let [value @(rf/subscribe [::edited-value key])]
   (let [win (.open js/window name)]
     (.assign (.-location win) url)))
 
-;;; → Multitool
-(defn intercalate [l1 l2]
-  (cond (empty? l1) l2
-        (empty? l2) l1
-        :else (cons (first l1) (cons (first l2) (intercalate (rest l1) (rest l2))))))
-
 ;;; Format for cljs
 ;;; → Multitool
 ;;; Not quite right eg if %s is at start or end
 (defn js-format
   [s & args]
   (apply str
-         (intercalate (str/split s #"%s")
-                      args)))
+         (u/intercalate (str/split s #"%s")
+                        args)))
 
 
 

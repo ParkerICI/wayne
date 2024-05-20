@@ -1,96 +1,9 @@
 (ns wayne.heatmap-data
   (:require [org.candelbio.multitool.core :as u]
-            [org.candelbio.multitool.math :as mu]
-            [clojure.string :as str]))
+            ))
 
 ;;; https://bioinformatics.ccr.cancer.gov/docs/btep-coding-club/CC2023/complex_heatmap_enhanced_volcano/
 ;;; https://en.wikipedia.org/wiki/Ward%27s_method
-
-;;; Not loaded in running system
-
-#_
-(defn write-json-file [f content]
-  (with-open [s (clojure.java.io/writer f)]
-    (clojure.data.json/write content s)))
-
-;;; TODO in multitool
-(defn median
-  [seq]
-  (let [sorted (sort seq)
-        count (count seq)]
-    (if (even? count)
-      (mu/mean [(nth sorted (/ count 2))
-               (nth sorted (dec (/ count 2)))])
-      (nth sorted (/ (dec count) 2)))))
-
-;;: TODO ??? What's wrong with multitool versions, argh. Context?
-(def ^:dynamic *side-walk-context* ())
-
-(defn side-walk
-  "Walks form, an arbitrary data structure, evaluating f on each element for side effects. Note: has nothing to do with the standard (functional) walker, and maybe should have a different name (traverse?)"
-  [f form]
-  (do 
-    (f form)
-    (binding [*side-walk-context* (cons form *side-walk-context*)]
-      (cond
-        (coll? form) (doseq [elt form] (side-walk f elt))
-        (map-entry? form)
-        (do (side-walk f (key form))
-            (side-walk f (val form)))))))
-
-(defn walk-reduce
-  "Walks form with an accumulator. f is a function of [accumulator elt], init is initial val of accumulator."
-  [f form init]
-  (let [acc (atom init)]          ;typically acc should be transient, but since they need special mutators can't be done in a general way. See walk-collect below
-    (side-walk
-     (fn [elt]
-       (swap! acc f elt))
-     form)
-    @acc))
-
-(defn walk-collect
-  "Walk f over thing and return a list of the non-nil returned values"
-  [f thing]
-  (persistent!
-   (walk-reduce (fn [acc elt]
-                 (if-let [it (f elt)]
-                   (conj! acc it)
-                   acc))
-               thing
-               (transient []))))
-
-(defn id-generator
-  []
-  (let [next (atom 0)                   ;I suppose should be just one atom
-        cache (atom {})]
-    (fn [thing]
-      (or (get @cache thing)
-          (do
-            (let [id (swap! next inc)]
-              (swap! cache assoc thing id)
-              id))))))
-
-
-;;; Replication baybe
-
-
-
-(defn rename-key
-  [old new map]
-  (-> map
-      (assoc new (get map old))
-      (dissoc old)))
-
-;;; Why am I doing this
-(defn unpivot
-  [rows idcol idcol2 colcol valcol]
-  (mapcat (fn [row]
-            (map (fn [[k v]] {idcol2 (get row idcol)
-                              colcol k
-                              valcol v})
-                 (dissoc row idcol)))
-          rows))
-
 
 (defn square [x] (* x x))
 
@@ -109,28 +22,7 @@
 
 (def vector-mean (u/vectorize (fn [a b] (/ (+ a b) 2))))
 
-;;; Seriously, the one in multitoool doesn't do E notatioN???
-(defn coerce-numeric
-  [v]
-  (if (double? v)
-    v
-    #?(:cljs (js/parseFloat v)
-       :clj (Double. v))
-    ))
   
-;;; Allows string to be used (TODO Not really used yet)
-(defn field
-  [x]
-  (if (keyword x)
-    x
-    #(get % x )))
-
-;;; This works in clj but fails for unknown reason in cljs, so not using
-(defn index-by-transform 
-  "Return a map of the elements of coll indexed by (f elt). Similar to group-by, but overwrites elts with same index rather than producing vectors. "
-  [f xform coll]  
-  (zipmap (map (field f) coll) (map (field xform) coll)))
-
 ;;; Naive and inefficient algo
 ;;; maps: data as seq of maps
 ;;; idcol: dimension to be clustered
@@ -143,7 +35,7 @@
 (defn cluster
   [maps row-dim col-dim value-field]
   (let [indexed (u/map-values
-                 (comp coerce-numeric value-field)
+                 (comp u/coerce-numeric value-field)
                  (u/index-by (juxt row-dim col-dim) maps )) ;produces essentially a matrix, what clustring usually starts with
         rows (distinct (map row-dim maps))
         cols (distinct (map col-dim maps))
