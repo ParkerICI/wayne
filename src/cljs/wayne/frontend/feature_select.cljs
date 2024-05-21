@@ -2,6 +2,7 @@
   (:require [re-frame.core :as rf]
             [clojure.string :as str]
             [wayne.frontend.data :as data]
+            [wayne.frontend.feature-names :as fn]
             [way.web-utils :as wu]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
@@ -230,7 +231,7 @@
 
 (defn feature-valid?
   [feature]
-  (contains? data/feature-names feature))
+  (contains? fn/feature-names feature))
 
 ;;; TODO propagate up into earlier guys
 ;;; TODO subfeature name not actually used, but could be a tooltip or something
