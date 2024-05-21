@@ -1,6 +1,6 @@
 (ns wayne.frontend.app
   (:require [re-frame.core :as rf]
-            [way.web-utils :as wu]
+            [hyperphor.way.web-utils :as wu]
             ))
 
 (defn header

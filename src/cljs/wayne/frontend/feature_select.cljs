@@ -3,7 +3,7 @@
             [clojure.string :as str]
             [wayne.frontend.data :as data]
             [wayne.frontend.feature-names :as fn]
-            [way.web-utils :as wu]
+            [hyperphor.way.web-utils :as wu]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
             )

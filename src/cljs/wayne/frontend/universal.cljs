@@ -5,11 +5,11 @@
             [hyperphor.way.web-utils :as wu]
             [hyperphor.way.vega :as v]
             [hyperphor.way.tabs :as tabs]
-            way.data                    ;for sub handlers  ; WAY
+            hyperphor.way.params
+            hyperphor.way.feeds
             [hyperphor.way.download :as download]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
-            [wayne.frontend.fgrid :as fgrid]
             [wayne.frontend.feature-select :as fui]
             [wayne.frontend.dendrogram :as dendro]
             )

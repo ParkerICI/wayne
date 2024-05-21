@@ -1,6 +1,6 @@
 (ns wayne.frontend.fgrid
-  (:require [way.vega :as v]
-            [way.web-utils :as wu]
+  (:require [hyperphor.way.vega :as v]
+            [hyperphor.way.web-utils :as wu]
             [org.candelbio.multitool.core :as u]
             )
   )

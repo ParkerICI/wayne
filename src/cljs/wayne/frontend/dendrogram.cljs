@@ -1,7 +1,7 @@
 (ns wayne.frontend.dendrogram
-  (:require [way.vega :as v]
+  (:require [hyperphor.way.vega :as v]
             [wayne.heatmap-data :as hd]
-            [way.web-utils :as wu]
+            [hyperphor.way.web-utils :as wu]
             [re-frame.core :as rf]
             )
   )
