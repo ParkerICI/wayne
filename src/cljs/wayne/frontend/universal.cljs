@@ -11,7 +11,7 @@
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
             [wayne.frontend.feature-select :as fui]
-            [wayne.frontend.dendrogram :as dendro]
+            [hyperphor.way.cheatmap :as dendro]
             )
   )
 
@@ -331,10 +331,10 @@
 
 (defn dendrogram
   [dim]
-  (dendro/dendrogram @(rf/subscribe [:data :heatmap])
-                     dim
-                     :feature_variable
-                     :mean))
+  (dendro/heatmap @(rf/subscribe [:data :heatmap])
+                  dim
+                  :feature_variable
+                  :mean))
 
 (defn ui
   []

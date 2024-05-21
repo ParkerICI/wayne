@@ -114,13 +114,13 @@
 ;;   (let [config (.build (QueryJobConfiguration/newBuilder sql))
 ;;         job-id (.build)
 
-
 (defn get-value
-  [thing]
-  (cond (and (seqable? thing) (not (string? thing)))
-        (map get-value thing)
-        (instance? FieldValue thing)
-        (get-value (.getValue thing))
+  [field thing]
+  (cond (instance? FieldValue thing)
+        (case (.name (.getType field))
+          "FLOAT" (.getDoubleValue thing)
+          ;; TODO fill this out
+          (.getValue thing))
         :else thing))
 
 ;;; Nevermind, simpler! Table is provided in select.
@@ -130,13 +130,15 @@
         results (.query (service project) config (make-array BigQuery$JobOption 0))
         fields (->> results
                     .getSchema
-                    .getFields
-                    (map #(keyword (.getName %))))
+                    .getFields)
+        field-names (->> fields
+                         (map #(keyword (.getName %))))
         rows (-> results
                  .getValues
                  .iterator
                  iterator-seq)]
-    (map (fn [row] (zipmap fields (get-value row))) rows)))
+    (map (fn [row] (zipmap field-names (map get-value fields row)))
+         rows)))
 
 ;;; use this for non-query queries like CREATE TABLE
 ;;; TODO  if result is class com.google.cloud.bigquery.EmptyTableResult 
