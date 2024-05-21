@@ -1,11 +1,9 @@
 (ns wayne.frontend.dotplot
   (:require [re-frame.core :as rf]
             [wayne.frontend.data :as data] ;temp
-            [way.tabs :as tab]
-            [way.data :as wdata]
-            [way.vega :as v]
-            [way.download :as download]
-            [way.web-utils :as wu]
+            [hyperphor.way.vega :as v]
+            [hyperphor.way.download :as download]
+            [hyperphor.way.web-utils :as wu]
             [reagent.dom]
             )
   )

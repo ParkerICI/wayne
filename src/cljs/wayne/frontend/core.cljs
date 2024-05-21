@@ -4,11 +4,11 @@
    [goog.dom :as gdom]
    [reagent.core :as r]
    [re-frame.core :as rf]
-   [way.tabs :as tabs]
+   [hyperphor.way.tabs :as tabs]
 
    [wayne.frontend.app :as app]   
-   [way.flash :as flash]
-   [way.modal :as modal]
+   [hyperphor.way.flash :as flash]
+   [hyperphor.way.modal :as modal]
 
    ;; TODO belongs in app probably oh well
    ;; [wayne.frontend.violins :as violins]

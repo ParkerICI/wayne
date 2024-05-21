@@ -1,9 +1,9 @@
 (ns wayne.frontend.cohort
   (:require [re-frame.core :as rf]
-            [way.tabs :as tab]
-            [way.vega :as v]
+            [hyperphor.way.tabs :as tab]
+            [hyperphor.way.vega :as v]
             [wayne.frontend.fgrid :as fgrid]
-            [way.web-utils :as wu]
+            [hyperphor.way.web-utils :as wu]
             [org.candelbio.multitool.core :as u]
             )
   )

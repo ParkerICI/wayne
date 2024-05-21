@@ -2,11 +2,11 @@
   (:require [re-frame.core :as rf]
             [clojure.string :as str]
             [wayne.frontend.signup :as signup]
-            [way.web-utils :as wu]
-            [way.vega :as v]
-            [way.tabs :as tabs]
-            way.data                    ;for sub handlers
-            [way.download :as download]
+            [hyperphor.way.web-utils :as wu]
+            [hyperphor.way.vega :as v]
+            [hyperphor.way.tabs :as tabs]
+            way.data                    ;for sub handlers  ; WAY
+            [hyperphor.way.download :as download]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
             [wayne.frontend.fgrid :as fgrid]

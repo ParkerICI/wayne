@@ -9,6 +9,7 @@
                  [org.clojure/data.json "2.5.0"]
                  [environ "1.2.0"]
                  [com.taoensso/timbre "6.3.1"]
+                 [hyperphor/way "0.1.0-SNAPSHOT"]
 
                  ;; Backend
                  [clj-http "3.12.3" :exclusions [commons-io]]

@@ -2,10 +2,10 @@
   (:require [re-frame.core :as rf]
             ["vega-embed" :as ve]
             [wayne.frontend.data :as data]
-            [way.web-utils :as wu]
-            [way.download :as download]
-            [way.vega :as v]
-            [way.tabs :as tab]
+            [hyperphor.way.web-utils :as wu]
+            [hyperphor.way.download :as download]
+            [hyperphor.way.vega :as v]
+            [hyperphor.way.tabs :as tab]
             [reagent.dom]
             )
   )
