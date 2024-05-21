@@ -37,6 +37,29 @@
    "Tumor_cells"
    "Unassigned"])
 
+;;; From Hadeesha TODO figure out how to use
+
+;;; Tumor cell types
+(def tumor_func_columns_core_simple
+  #{"B7H3_func", "EGFR_func", "GM2_GD2_func" , "GPC2_func" ,  "HER2_func","NG2_func","VISTA_func"})
+
+;;; Immune cell types
+(def cell_type_immune 
+  #{"Immune_other", "CD68_Myeloid", "CD163_Myeloid",
+    "CD8_Tcells", "CD141_Myeloid",
+    "Unknown", "CD14_Myeloid",
+    "Microglia", "APC", "CD206_Macrophages", "CD4_Tcells",
+    "CD11b_Myeloid", "FoxP3_Tcells", "CD123_DC", "Neutrophils",
+    "Neurons", "CD209_DC_Mac", "CD208_DC", "Bcells",
+    "Mast_Cells"})
+
+;;; Immune functional markers
+(def immune_func_marker
+  #{"TIM3", "CD38", "Tox", "iNOS", "CD86", "Ki67", "PDL1", "LAG3", "PD1", "ICOS", "IDO1", "GLUT1"}) 
+
+
+
+
 ;;; Defines chooses for level 2 and 3
 (def non-spatial-features-2-3
   [["marker_intensity" []]                ;special cased
@@ -135,15 +158,6 @@
       (let [tokens (distinct (map #(nth % i) tokenized))]
         tokens))))
 
-(defn segmented-selector
-  [features]
-  [:div.border.p-2 {:style { :display "inline-flex"}}
-   (u/for* [part (analyze-feature-class features)
-         i (range)]
-     (if (= 1 (count part))
-       [:span.mx-2.pt-2 (wu/humanize (first part))]   ;TODO note approximating alignment, not sure how to do it right
-       [select-widget-minimal (keyword (str "feature-seg-" i)) part]))])
-
 (defn subfeature-values
   [feature-type position]
   (-> data/feature-ui-master
@@ -151,11 +165,6 @@
       first                             ;this gets the first size entry, ideally those will go away
       second
       (nth position)))
-
-;;; In multitool
-(defn keyword-conc
-  [& parts]
-  (keyword (str/join "-" (map name parts))))
 
 (defn feature-template
   [feature-type]
@@ -171,8 +180,8 @@
   [feature-type params]
   (let [repeats (get @repeated-subfeatures feature-type)]
     (reduce (fn [m [k v]] (assoc m
-                                 (keyword-conc feature-type (str k))
-                                 (get params (keyword-conc feature-type (str v)))
+                                 (u/keyword-conc feature-type (str k))
+                                 (get params (u/keyword-conc feature-type (str v)))
                                  ))
             params
             repeats)))
@@ -188,7 +197,7 @@
         (map (fn [item i]
                (if (= 1 (count item))
                  (first item)                                             ;boilerplate
-                 (get feature-params (keyword-conc feature-type (str i))) ;a feature, read out of params
+                 (get feature-params (u/keyword-conc feature-type (str i))) ;a feature, read out of params
                  ))
              template (range))
         feature (str/join "_" elements)]
@@ -230,14 +239,14 @@
   (let [subfeatures (subfeature-values feature-type template-position)
         subfeatures (if nullable? (cons nil subfeatures) subfeatures)
         ;; Encodes the position in the parameter keyword for later extraction. Hacky but simple.
-        param-key (keyword-conc feature-type (str template-position))] ;  subfeature-name
+        param-key (u/keyword-conc feature-type (str template-position))] ;  subfeature-name
     (when-not (empty? subfeatures)
       (select-widget-minimal param-key subfeatures))))
 
 (defn subfeature-selector-literal
   [feature-type subfeature-name template-position subfeatures]
   (let [;subfeatures (subfeature-values feature-type template-position)
-        param-key (keyword-conc feature-type (str template-position))] ;  subfeature-name
+        param-key (u/keyword-conc feature-type (str template-position))] ;  subfeature-name
     (when-not (empty? subfeatures)
       ;; Encodes the position in the parameter keyword for later extraction. Hacky but simple.
       (select-widget-minimal param-key subfeatures))))
@@ -277,7 +286,7 @@
 
 (defn repeater
   [feature-type boss-pos flunky-pos]
-  (let [subfeature-param (keyword-conc feature-type (str boss-pos))]
+  (let [subfeature-param (u/keyword-conc feature-type (str boss-pos))]
     (swap! repeated-subfeatures assoc-in [feature-type flunky-pos] boss-pos)
     (boilerplate (wu/humanize @(rf/subscribe [:param :features subfeature-param])))))            ;TODO needs to get plugged into feature name generator somehow (pos 3))
 
@@ -334,16 +343,16 @@
 (defmethod feature-ui :immune_cell_functional_relative_to_all_tumor
   [_]
   [:div.border.p-2 {:style { :display "inline-flex"}}
-   (subfeature-selector :immune_cell_functional_relative_to_all_tumor :functional_marker 1)
    (subfeature-selector :immune_cell_functional_relative_to_all_tumor :cell-type 0)
+   (subfeature-selector :immune_cell_functional_relative_to_all_tumor :functional_marker 1)
    (boilerplate "over all tumor count")
-   (subfeature-selector :immune_cell_functional_relative_to_all_immune :cell-type 0)   ])
+   ])
 
 (defmethod feature-ui :immune_cell_func_tumor_antigen_fractions
   [_]
   [:div.border.p-2 {:style { :display "inline-flex"}}
-   (subfeature-selector :immune_cell_func_tumor_antigen_fractions :functional_marker 1)
    (subfeature-selector :immune_cell_func_tumor_antigen_fractions :cell-type 0)
+   (subfeature-selector :immune_cell_func_tumor_antigen_fractions :functional_marker 1)
    (boilerplate "over")
    (repeater :immune_cell_func_tumor_antigen_fractions 1 3)
    (boilerplate "plus")
@@ -374,23 +383,22 @@
    [subfeature-selector :immune_cell_fractions :cell-type-2 4]
    ])
 
-;;; TODO This one has 4 parts, but we have 2
-#_
+;;; Note: this has the inconsistent plus ordering problem
 (defmethod feature-ui :immune_functional_marker_fractions
   [_]
-  [:div.border.p-2 {:style { :display "inline-flex"}}
+  [:div.border.p-2 {:style {:display "inline-flex"}}
    [subfeature-selector :immune_functional_marker_fractions :cell-type-1 0]
-   [subfeature-selector :immune_functional_marker_fractions :functional-marker-1 2]
+   [subfeature-selector :immune_functional_marker_fractions :functional-marker-1 1]
    [boilerplate "over"]
-   [boilerplate @(rf/subscribe [:param :features :immune_functional_marker_fractions-0])]
-   [boilerplate @(rf/subscribe [:param :features :immune_functional_marker_fractions-2])]
+   [subfeature-selector :immune_functional_marker_fractions :cell-type-2 3]
+   [subfeature-selector :immune_functional_marker_fractions :functional-marker-2 4]
    [boilerplate "plus"]
-   [subfeature-selector :immune_functional_marker_fractions :cell-type-2 4]
-   ;; TODO needs breaking up
-   #_ [subfeature-selector :immune_functional_marker_fractions :functional-marker-1 5]
+   [repeater :immune_functional_marker_fractions 0 6]
+   [repeater :immune_functional_marker_fractions 1 7]
    ])
 
 ;;; 2 part version, works but not what was speced
+#_
 (defmethod feature-ui :immune_functional_marker_fractions
   [_]
   [:div.border.p-2 {:style { :display "inline-flex"}}
@@ -421,11 +429,15 @@
         [l3-feature]]
        ;; Not marker_intensity
        [:div
-        (select-widget :feature-bio-feature-type (get (into {} non-spatial-features-2-3) feature-l2))
+        (select-widget
+         :feature-bio-feature-type
+         (get (into {} non-spatial-features-2-3) feature-l2)
+         #(rf/dispatch [:set-param :heatmap :bio_feature_type %])
+         )
         (when-let [bio_feature_type @(rf/subscribe [:param :features :feature-bio-feature-type])]
            [row "feature" [feature-ui bio_feature_type]] )]))
    (let [feature @(rf/subscribe [:selected-feature])]
-     [:div.bg-warning
+     [:div
       [row "feature_variable"
        [:span
         feature 
