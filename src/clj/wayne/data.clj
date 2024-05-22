@@ -1,6 +1,5 @@
 (ns wayne.data
-  (:require [way.bigquery :as bq]
-            [way.utils :as wu]
+  (:require [wayne.bigquery :as bq]
             [way.debug :as debug]
             [taoensso.timbre :as log]
             [org.candelbio.multitool.core :as u]
@@ -115,7 +114,7 @@ where
 "
           :site (when site (format "and site = '%s'" site))
           :feature (when feature (format "and feature_variable = '%s' " feature))
-          :rois (when rois (str "and ROI IN " (wu/sql-lit-list rois)))))
+          :rois (when rois (str "and ROI IN " (bq/sql-lit-list rois)))))
 
 ;;; General trick to convert maps in get params back into their real form.
 ;;; → Way
@@ -147,7 +146,7 @@ where
              (let [vals (true-values (get values-map dim))]
                (if (empty? vals)
                  "1 = 1"
-                 (format "%s in %s" (name dim) (wu/sql-lit-list vals)))))))))
+                 (format "%s in %s" (name dim) (bq/sql-lit-list vals)))))))))
 
 
 ;;; TODO feature is misnomer, change to dim or something

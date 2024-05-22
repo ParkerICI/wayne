@@ -1,6 +1,7 @@
-(ns way.bigquery
+(ns wayne.bigquery
   (:require [org.candelbio.multitool.core :as u]
             [clojure.data.json :as json]
+            [clojure.string :as str]
             )
   (:import [com.google.cloud.bigquery BigQuery BigQueryOptions
             TableId
@@ -189,12 +190,9 @@
      (.build builder))))  
 
 
-
-
-
-
-    
-
-
-  
-
+;;; TODO probably wants to be a sql hacking library
+(defn sql-lit-list
+  [l]
+  (str "("
+       (str/join ", " (map #(str "'" % "'") l))
+       ")"))

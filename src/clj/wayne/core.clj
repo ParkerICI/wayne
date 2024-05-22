@@ -1,6 +1,6 @@
 (ns wayne.core
   (:gen-class)
-  (:require [way.server :as server]
+  (:require [hyperphor.way.server :as server]
             [wayne.handler :as handler]
             [org.candelbio.multitool.cljcore :as ju]
             [taoensso.timbre :as log]
