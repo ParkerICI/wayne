@@ -1,6 +1,5 @@
 (ns wayne.data
   (:require [wayne.bigquery :as bq]
-            [way.debug :as debug]
             [taoensso.timbre :as log]
             [org.candelbio.multitool.core :as u]
             [org.candelbio.multitool.cljcore :as ju]
@@ -157,7 +156,6 @@ where
 (defn query1-meta
   [{:keys [feature filters] :as params}]
   ;; TODO conditionalize to avoid prod errors
-  #_ (debug/view :query1-meta params)
   (when feature
     (select "distinct {dim} {from} 
 where {where}

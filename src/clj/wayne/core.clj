@@ -1,6 +1,7 @@
 (ns wayne.core
   (:gen-class)
   (:require [hyperphor.way.server :as server]
+            [hyperphor.way.config :as config]
             [wayne.handler :as handler]
             [org.candelbio.multitool.cljcore :as ju]
             [taoensso.timbre :as log]
@@ -14,6 +15,7 @@
 
 (defn -main
   [& args]
+  (config/read-config "config.edn")
   (let [port (or (first args) (env/env :port) )]
     (log/info "Starting server on port" port)
     (heroku-deploy-hack)
