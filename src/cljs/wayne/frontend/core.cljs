@@ -43,6 +43,9 @@
    [:p
     [:a {:href "https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit?usp=sharing"} "Design document"]
     ]
+   [:p
+    [:a {:href "munson/pages/query-builder.html"} "Munson Design"]
+    ]
    #_
    [:ul
     [:li ]

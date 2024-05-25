@@ -1,0 +1,62 @@
+@import url('main.css');
+
+#raw-data-access {
+  padding: 80px 0;
+  background-color: #fff
+}
+
+.raw-data-access-content{
+  margin-left: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.raw-data-access-content h1 {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 35.2px;
+  text-align: left;
+  color: #21272a;
+  margin-bottom: 48px;
+}
+
+.raw-data-access-content h3 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 20px;
+  letter-spacing: 1px;
+  text-align: left;
+  color: #001d6c;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.raw-data-access-content p {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 25.2px;
+  text-align: left;
+  color: #21272a;
+}
+
+.btn {
+  padding: 10px 20px;
+  margin-top: 64px;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  height: 56px;
+  width: 222px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-primary {
+  background-color: #0f62fe;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #0043ce;
+}

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BRUCE Data Portal</title>
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="container flex justify-between align-center">
+        <a class="logo" href="query-builder.html">
+          <img src="../assets/logo.svg" alt="BRUCE Data Portal" />
+        </a>
+        <nav>
+          <ul>
+            <li>
+              <a href="query-builder.html" class="active">Query Builder</a>
+            </li>
+            <li><a href="sample-info.html">Sample Info</a></li>
+            <li><a href="visualization.html">Visualization</a></li>
+            <li><a href="about-us.html">About Us</a></li>
+            <li><a href="raw-data-access.html">Raw Data Access</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <section class="hero">
+        <div
+          class="container flex justify-between align-center hero-content show"
+        >
+          <div class="headline-container">
+            <h1 class="headline">
+              Welcome to the <span class="semi-bold">BRUCE</span> data portal!
+            </h1>
+            <p class="sub-headline">
+              Where every day we're driven by our commitment to ending cancer
+              through groundbreaking research and compassionate care.
+            </p>
+          </div>
+          <div class="publications">
+            <div class="publication">
+              <div class="publication-header">
+                <img src="../assets/images/biorxiv-logo.png" />
+                <a href="#" class="button-link">
+                  Other Publications
+                  <img src="../assets/icons/arrow-square-up-right.svg" />
+                </a>
+              </div>
+              <dvi class="divider"></dvi>
+              <div class="publication-content">
+                <div class="publication-item">
+                  <img src="../assets/images/pub1.png" />
+                  <div>
+                    <p class="publication-title">
+                      Informational flyer for bioRxiv & medRxiv
+                    </p>
+                    <p class="publication-date">May 10, 2022</p>
+                  </div>
+                </div>
+                <div class="publication-item">
+                  <img src="../assets/images/pub2.png" />
+                  <div>
+                    <p class="publication-title">
+                      bioRxiv: the preprint server for biology
+                    </p>
+                    <p class="publication-date">May 10, 2022</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="featured-publication">
+              <h2>Carousel placeholder</h2>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="container">
+        <div id="info-tab-button-row" class="info-tab-button-row">
+          <img src="../assets/icons/layout-navbar-collapse.svg" />
+          Hide information
+        </div>
+      </div>
+
+      <section class="query-builder-section">
+        <div class="container">
+          <div class="query-builder-headline">
+            <h1>Query Builder</h1>
+            <p>
+              Run sensitivity analyses to explore insights in cancer research,
+              from clinical trials to innovative therapies.
+            </p>
+          </div>
+          <div class="query-builder-content">
+            <div class="filters-view">
+              <div class="dataset-selection">
+                <h3 class="mb-30">Selecting Dataset</h3>
+                <div class="dataset-tags">
+                  <div class="dataset-tag" data-icon="diagnosis">
+                    <img
+                      class="icon"
+                      src="../assets/icons/diagnosis-icon.svg"
+                      alt="Final Diagnosis"
+                    />Final Diagnosis
+                  </div>
+                  <div class="dataset-tag" data-icon="question">
+                    <img
+                      class="icon"
+                      src="../assets/icons/question-icon.svg"
+                      alt="Who"
+                    />Who grade
+                  </div>
+                  <div class="dataset-tag" data-icon="roi">
+                    <img
+                      class="icon"
+                      src="../assets/icons/roi-icon.svg"
+                      alt="ROI"
+                    />ROI
+                  </div>
+                  <div class="dataset-tag" data-icon="recurrence">
+                    <img
+                      class="icon"
+                      src="../assets/icons/recurrence-icon.svg"
+                      alt="Recurrence"
+                    />Recurrence
+                  </div>
+                  <div class="dataset-tag" data-icon="file-chart">
+                    <img
+                      class="icon"
+                      src="../assets/icons/file-chart-icon.svg"
+                      alt="IDH Status"
+                    />IDH Status
+                  </div>
+                  <div class="dataset-tag" data-icon="treatment">
+                    <img
+                      class="icon"
+                      src="../assets/icons/treatment-icon.svg"
+                      alt="Treatment"
+                    />Treatment
+                  </div>
+                </div>
+              </div>
+              <div class="divider mt-30 mb-30"></div>
+              <div class="filters">
+                <h3 class="mb-30">Filter</h3>
+                <div class="filter-list">
+                  <div class="accordian accordian-collapsed">
+                    <div class="accordian-title">
+                      <h3>Final diagnosis</h3>
+                      <img src="../assets/icons/minus.svg" />
+                    </div>
+                    <div class="accordian-panel">
+                      <label class="custom-checkbox">
+                        <input type="checkbox" hidden />
+                        <span class="checkmark"></span>
+                        Astrocytoma
+                      </label>
+                      <label class="custom-checkbox custom-checkbox-disabled">
+                        <input type="checkbox" disabled hidden />
+                        <span class="checkmark"></span>
+                        Ganglioglioma
+                      </label>
+                      <label class="custom-checkbox">
+                        <input type="checkbox" hidden />
+                        <span class="checkmark"></span>
+                        Oligodendroglioma
+                      </label>
+                      <label class="custom-checkbox">
+                        <input type="checkbox" hidden />
+                        <span class="checkmark"></span>
+                        pGBM
+                      </label>
+                    </div>
+                  </div>
+                  <div class="accordian">
+                    <h3>Who grade</h3>
+                    <img src="../assets/icons/plus.svg" />
+                  </div>
+                  <div class="accordian">
+                    <h3>ROI</h3>
+                    <img src="../assets/icons/plus.svg" />
+                  </div>
+                  <div class="accordian">
+                    <h3>Recurrence</h3>
+                    <img src="../assets/icons/plus.svg" />
+                  </div>
+                  <div class="accordian">
+                    <h3>Treatment</h3>
+                    <img src="../assets/icons/plus.svg" />
+                  </div>
+                  <div class="accordian">
+                    <h3>IDH Status</h3>
+                    <img src="../assets/icons/plus.svg" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="selected-filter-view">
+                <div class="filter-headline">
+                  <div class="flex align-center justify-content-between gap-8">
+                    <img src="../assets/icons/task-list.svg" alt="task-list" />
+                    <h3 id="active-tag-text"></h3>
+                  </div>
+                  <div class="flex align-center justify-content-between gap-16">
+                    <img
+                      src="../assets/icons/layout-navbar-expand-blue.svg"
+                      alt="navbar-cllapse"
+                    />
+                    <img
+                      src="../assets/icons/external-link.svg"
+                      alt="external-link"
+                    />
+                  </div>
+                </div>
+                <div class="selected-filter-list">
+                  <div class="tag">
+                    Final Diagnosis <img src="../assets/icons/close.svg" />
+                  </div>
+                  <div class="tag">
+                    Astrocytoma <img src="../assets/icons/close.svg" />
+                  </div>
+                  <div class="tag">
+                    Ganglioglima <img src="../assets/icons/close.svg" />
+                  </div>
+                  <button class="clear-all-button">Clear All</button>
+                </div>
+              </div>
+              <div class="data-view relative">
+                <div class="features-view">
+                  <div class="features-view-header">
+                    <div class="flex align-center flex-row gap-8">
+                      <img src="../assets/icons/chart-infographic.svg" />
+                      <h3>Featured Selection</h3>
+                    </div>
+                    <div class="custom-select-wrapper">
+                      <div class="custom-select">
+                        <select>
+                          <option value="EphA2" selected>EphA2</option>
+                          <option value="Option 1">Option 1</option>
+                          <option value="Option 2">Option 2</option>
+                          <option value="Option 3">Option 3</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="divider mb-24 mt-24"></div>
+                  <div class="visualization-header">
+                    <div class="flex gap-8 align-center">
+                      <img src="../assets/icons/graph.svg" />
+                      <h3>Visualization</h3>
+                    </div>
+                    <div class="flex gap-12">
+                      <img src="../assets/icons/download.svg" />
+                      <img
+                        src="../assets/icons/layout-navbar-collapse-grey.svg"
+                      />
+                    </div>
+                  </div>
+                  <div class="no-data">
+                    <img src="../assets/icons/empty-box.svg" />
+                    <h3>No Data Found</h3>
+                    <p>Enter or adjust your filters to see data.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="faq">
+        <div class="container">
+          <div class="faq-headline">
+            <h3>Frequently Asked questions</h3>
+            <h1>Answers to Common Queries</h1>
+          </div>
+          <div class="faq-content">
+            <div class="faq-list">
+              <div class="accordion">
+                <div class="accordion-item w-full">
+                  <div class="flex justify-between w-full accordion-item-group">
+                    <h3 class="accordion-header">What is Bruce Data Portal?</h3>
+                    <img
+                      src="../assets/icons/plus.svg"
+                      class="accordion-icon"
+                    />
+                  </div>
+                  <div class="accordion-content">
+                    <p>
+                      The Bruce Data Portal is a platform for managing and
+                      accessing data...
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion">
+                <div class="accordion-item w-full">
+                  <div class="flex justify-between w-full accordion-item-group">
+                    <h3 class="accordion-header">How we support our data?</h3>
+                    <img
+                      src="../assets/icons/plus.svg"
+                      class="accordion-icon"
+                    />
+                  </div>
+                  <div class="accordion-content">
+                    <p>
+                      The Bruce Data Portal is a platform for managing and
+                      accessing data...
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion">
+                <div class="accordion-item w-full">
+                  <div class="flex justify-between w-full accordion-item-group">
+                    <h3 class="accordion-header">Who we are?</h3>
+                    <img
+                      src="../assets/icons/plus.svg"
+                      class="accordion-icon"
+                    />
+                  </div>
+                  <div class="accordion-content">
+                    <p>
+                      The Bruce Data Portal is a platform for managing and
+                      accessing data...
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion">
+                <div class="accordion-item w-full">
+                  <div class="flex justify-between w-full accordion-item-group">
+                    <h3 class="accordion-header">Whats our mission?</h3>
+                    <img
+                      src="../assets/icons/plus.svg"
+                      class="accordion-icon"
+                    />
+                  </div>
+                  <div class="accordion-content">
+                    <p>
+                      The Bruce Data Portal is a platform for managing and
+                      accessing data...
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion">
+                <div class="accordion-item w-full">
+                  <div class="flex justify-between w-full accordion-item-group">
+                    <h3 class="accordion-header">How can we get in touch?</h3>
+                    <img
+                      src="../assets/icons/plus.svg"
+                      class="accordion-icon"
+                    />
+                  </div>
+                  <div class="accordion-content">
+                    <p>
+                      The Bruce Data Portal is a platform for managing and
+                      accessing data...
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <div class="container">
+        <div class="flex flex-row justify-between">
+          <p>BRUCE WEB PORTAL @ 2024. All rights reserved.</p>
+          <div class="footer-links flex gap-24">
+            <a href="#">Paper Support</a>
+            <a href="#">Who We Are</a>
+            <a href="#">Raw Data Access</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+  <script src="../js/script.js"></script>
+  <script src="../js/accordion.js"></script>
+</html>

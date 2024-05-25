@@ -1,0 +1,164 @@
+@import url('main.css');
+
+#mission-research .mission,
+#mission-research .research {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 58px 0;
+}
+
+#mission-research .mission-content,
+#mission-research .research-content {
+  display: flex;
+  align-items: center;
+  gap: 80px;
+}
+
+#mission-research .mission-content {
+  flex-direction: row;
+}
+
+#mission-research .research-content {
+  flex-direction: row-reverse;
+  background-color: #fff;
+}
+
+#mission-research .image-container img {
+  max-width: 100%;
+  height: auto;
+}
+
+#mission-research h2 {
+  font-size: 42px;
+  font-weight: 700;
+  margin-bottom: 32px;
+}
+
+#mission-research p {
+  font-size: 18px;
+  line-height: 25px;
+}
+
+#mission-research .mission-content .text-container,
+#mission-research .research-content .text-container {
+  flex: 1;
+}
+
+.research {
+  background-color: #fff;
+}
+
+#team {
+  padding: 80px 0;
+  background-color: #fff;
+}
+
+#team h1 {
+  font-size: 42px;
+  margin-bottom: 64px;
+}
+
+.team-list {
+  display: flex;
+  gap: 16px;
+}
+
+.team-member-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-member-image img {
+  width: 308px;
+  filter: grayscale(100%);
+  opacity: 0.4;
+  object-fit: cover;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-info h3 {
+  margin-top: 16px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 25.2px;
+  color: #21272a;
+}
+
+.profile-info p {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 25.2px;
+  text-align: center;
+  color: #697077;
+}
+
+.social-links {
+  display: flex;
+  margin-top: 16px;
+  gap: 16px;
+}
+
+.team-member-card .contact-button {
+  background-color: transparent;
+  width: 180px;
+  border: 2px solid #0f62fe;
+  color: #0f62fe;
+  padding: 10px 15px;
+  margin-top: 16px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.team-member-card .contact-button:hover {
+  background-color: #0f62fe;
+  color: #fff;
+}
+
+#get-involved {
+  padding: 64px 0;
+}
+
+.get-involved-content {
+  margin-left: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.get-involved-content h1 {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 35.2px;
+  text-align: left;
+  color: #21272a;
+  margin-bottom: 64px;
+}
+
+.get-involved-content h3 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 20px;
+  letter-spacing: 1px;
+  text-align: left;
+  color: #001d6c;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.get-involved-content p {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 25.2px;
+  text-align: left;
+  color: #21272a;
+}
