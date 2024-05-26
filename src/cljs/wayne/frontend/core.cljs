@@ -78,7 +78,7 @@
    ])
 
 (rf/reg-event-db
- ::initialize-db
+ :initialize-db
  (fn [_ _]
    {:app "wayne"
     }))
@@ -97,7 +97,7 @@
 (defn ^:export init
   [& user]
   (let [params (browser/url-params)]
-    (rf/dispatch-sync [::initialize-db])
+    (rf/dispatch-sync [:initialize-db])
     #_ (nav/start!)
     )
   (mount-root)

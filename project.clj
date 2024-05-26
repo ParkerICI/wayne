@@ -61,7 +61,7 @@
                        :compiler-options {:infer-externs true}
                        :output-dir "resources/public/cljs-out"
                        :asset-path "/cljs-out"         ;webserver path
-                       :modules {:dev-main {:entries [wayne.frontend.core]}}
+                       :modules {:dev-main {:entries [wayne.frontend.core wayne.frontend.munson]}}
                        :devtools {:preloads [day8.re-frame-10x.preload.react-18]}
                        :dev {:compiler-options
                              {:closure-defines

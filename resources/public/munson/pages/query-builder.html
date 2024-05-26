@@ -90,6 +90,20 @@
         </div>
       </div>
 
+      <section class="query-builder-dynamic">
+        <div class="container">
+          <div class="query-builder-headline">
+            <h1>Query Builder Dynamic</h1>
+            <p>
+              Run sensitivity analyses to explore insights in cancer research,
+              from clinical trials to innovative therapies.
+            </p>
+          </div>
+          <div id="app" class="query-builder-content">
+	  </div>
+      </section>
+
+
       <section class="query-builder-section">
         <div class="container">
           <div class="query-builder-headline">
@@ -102,7 +116,7 @@
           <div class="query-builder-content">
             <div class="filters-view">
               <div class="dataset-selection">
-                <h3 class="mb-30">Selecting Dataset</h3>
+                <h3 class="mb-30">Compare across</h3>
                 <div class="dataset-tags">
                   <div class="dataset-tag" data-icon="diagnosis">
                     <img
@@ -390,4 +404,7 @@
   </body>
   <script src="../js/script.js"></script>
   <script src="../js/accordion.js"></script>
+  <script src="/cljs-out/dev-main.js"></script>
+  <script>window.onload = function() { wayne.frontend.munson.init(); }</script>
+
 </html>
