@@ -336,6 +336,31 @@
                   :feature_variable
                   :mean))
 
+(defn visualization
+  [dim feature data]
+  (when dim
+    [:div
+     ;; TODO pluralize
+     [:span (str (count data) " rows")]   ; could do this but it is wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows"))
+     [:span.ms-2 (signup/with-signup (download/button data (str "bruce-export-" feature ".tsv")))]
+     ;; TODO of course you might want to see these together, so tabs are not good design
+     [tabs/tabs
+      :uviz
+      (array-map
+       :violin (fn [] [:div
+                       [scale-chooser]
+                       [v/vega-view (violin data dim feature) data]
+                       ])
+       :boxplot (fn [] [:div.vstack
+                        [scale-chooser]
+                        [v/vega-lite-view (boxplot data dim) data]])
+       ;; :heatmap (fn [] [heatmap data dim "site"])
+       :heatmap (fn [] [heatmap dim])
+       :dendrogram (fn [] [dendrogram dim])
+       )]])
+  )
+
+
 (defn ui
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
@@ -345,26 +370,7 @@
      [:div.row
       [:div.col-6
        [:h4 "Visualization"]
-       (when dim
-         [:div
-          ;; TODO pluralize
-          [:span (str (count data) " rows")]   ; could do this but it is wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows"))
-          [:span.ms-2 (signup/with-signup (download/button data (str "bruce-export-" feature ".tsv")))]
-          ;; TODO of course you might want to see these together, so tabs are not good design
-          [tabs/tabs
-           :uviz
-           (array-map
-            :violin (fn [] [:div
-                            [scale-chooser]
-                            [v/vega-view (violin data dim feature) data]
-                            ])
-            :boxplot (fn [] [:div.vstack
-                             [scale-chooser]
-                             [v/vega-lite-view (boxplot data dim) data]])
-            ;; :heatmap (fn [] [heatmap data dim "site"])
-            :heatmap (fn [] [heatmap dim])
-            :dendrogram (fn [] [dendrogram dim])
-            )]])]
+       [visualization dim feature data]]
       [:div.col-6
        ;; Temp off because it hides dendrogram
        #_ (when dim (fgrid/ui dim))]
