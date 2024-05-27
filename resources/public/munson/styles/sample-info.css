@@ -246,3 +246,15 @@ td {
 .btn-outline:hover {
   background-color: #e0f0ff;
 }
+
+/* Boostrap replacements TODO TEMP this is to make the feature selctor look semi-reasonable */
+
+.row {
+  display: flex;
+}
+.col-3 {
+  width: 160px;
+}
+.col-7 {
+  width: 440px;
+}

@@ -5,6 +5,7 @@
    [reagent.core :as r]
    [re-frame.core :as rf]
    [wayne.frontend.universal :as universal]
+   [wayne.frontend.feature-select :as fui]
 
    #_ [wayne.frontend.signup :as signup]
 
@@ -25,88 +26,89 @@
 
 (defn munsom-raw
   []
-  [:div.query-builder-content
-   [:div.filters-view
-    [:div.dataset-selection
-     [:h3.mb-30 "Compare across"]
-     [:div.dataset-tags
+  (let [dim @(rf/subscribe [:param :universal :dim])
+        feature @(rf/subscribe [:param :universal :feature])
+        data @(rf/subscribe [:data :universal])]
 
-      [dim-selector :final_diagnosis "Final Diagnosis" "../assets/icons/diagnosis-icon.svg"]
-      [dim-selector :who_grade "WHO grade" "../assets/icons/question-icon.svg"]
-      [dim-selector :ROI "ROI" "../assets/icons/roi-icon.svg"]
-      [dim-selector :recurrence "Recurrence" "../assets/icons/recurrence-icon.svg"]
-      [dim-selector :idb_status "IDH Status" "../assets/icons/file-chart-icon.svg"]
-      [dim-selector :treatment "Treatment" "../assets/icons/treatment-icon.svg"]
+    [:div.query-builder-content
+     [:div.filters-view
+      [:div.dataset-selection
+       [:h3.mb-30 "Compare across"]
+       [:div.dataset-tags
 
-      ]]
-    [:div.divider.mt-30.mb-30]
-    [:div.filters
-     [:h3.mb-30 "Filter"]
-     [:div.filter-list
-      [:div.accordian.accordian-collapsed
-       [:div.accordian-title [:h3 "Final diagnosis"] [:img {:src "../assets/icons/minus.svg"}]]
-       [:div.accordian-panel
-        [:label.custom-checkbox
-         [:input {:type "checkbox", :hidden "hidden", :_ "_"}]
-         [:span.checkmark]
-         "Astrocytoma"]
-        [:label.custom-checkbox.custom-checkbox-disabled
-         [:input {:disabled "disabled", :type "checkbox", :hidden "hidden", :_ "_"}]
-         [:span.checkmark]
-         "Ganglioglioma"]
-        [:label.custom-checkbox
-         [:input {:type "checkbox", :hidden "hidden", :_ "_"}]
-         [:span.checkmark]
-         "Oligodendroglioma"]
-        [:label.custom-checkbox
-         [:input {:type "checkbox", :hidden "hidden", :_ "_"}]
-         [:span.checkmark]
-         "pGBM"]]]
-      [:div.accordian [:h3 "Who grade"] [:img {:src "../assets/icons/plus.svg"}]]
-      [:div.accordian [:h3 "ROI"] [:img {:src "../assets/icons/plus.svg"}]]
-      [:div.accordian [:h3 "Recurrence"] [:img {:src "../assets/icons/plus.svg"}]]
-      [:div.accordian [:h3 "Treatment"] [:img {:src "../assets/icons/plus.svg"}]]
-      [:div.accordian [:h3 "IDH Status"] [:img {:src "../assets/icons/plus.svg"}]]]]]
-   [:div
-    [:div.selected-filter-view
-     [:div.filter-headline
-      [:div.flex.align-center.justify-content-between.gap-8
-       [:img {:src "../assets/icons/task-list.svg", :alt "task-list"}]
-       [:h3#active-tag-text]]
-      [:div.flex.align-center.justify-content-between.gap-16
-       [:img {:src "../assets/icons/layout-navbar-expand-blue.svg", :alt "navbar-cllapse"}]
-       [:img {:src "../assets/icons/external-link.svg", :alt "external-link"}]]]
-     [:div.selected-filter-list
-      [:div.tag "Final Diagnosis" [:img {:src "../assets/icons/close.svg"}]]
-      [:div.tag "Astrocytoma" [:img {:src "../assets/icons/close.svg"}]]
-      [:div.tag "Ganglioglima" [:img {:src "../assets/icons/close.svg"}]]
-      [:button.clear-all-button {:type "submit"} "Clear All"]]]
-    [:div.data-view.relative
-     [:div.features-view
-      [:div.features-view-header
-       [:div.flex.align-center.flex-row.gap-8
-        [:img {:src "../assets/icons/chart-infographic.svg"}]
-        [:h3 "Featured Selection"]]
-       [:div.custom-select-wrapper
-        [:div.custom-select
-         [:select
-          [:option {:selected "selected", :value "EphA2"} "EphA2"]
-          [:option {:value "Option 1"} "Option 1"]
-          [:option {:value "Option 2"} "Option 2"]
-          [:option {:value "Option 3"} "Option 3"]]]]]
-      [:div.divider.mb-24.mt-24]
-      [:div.visualization-header
-       [:div.flex.gap-8.align-center
-        [:img {:src "../assets/icons/graph.svg"}]
-        [:h3 "Visualization"]]
-       [:div.flex.gap-12
-        [:img {:src "../assets/icons/download.svg"}]
-        [:img {:src "../assets/icons/layout-navbar-collapse-grey.svg"}]]]
-      (let [dim @(rf/subscribe [:param :universal :dim])
-            feature @(rf/subscribe [:param :universal :feature])
-            data @(rf/subscribe [:data :universal])]
-        [universal/visualization dim feature data])]]]
-   ])
+        [dim-selector :final_diagnosis "Final Diagnosis" "../assets/icons/diagnosis-icon.svg"]
+        [dim-selector :who_grade "WHO grade" "../assets/icons/question-icon.svg"]
+        [dim-selector :ROI "ROI" "../assets/icons/roi-icon.svg"]
+        [dim-selector :recurrence "Recurrence" "../assets/icons/recurrence-icon.svg"]
+        [dim-selector :idh_status "IDH Status" "../assets/icons/file-chart-icon.svg"]
+        [dim-selector :treatment "Treatment" "../assets/icons/treatment-icon.svg"]
+
+        ]]
+      [:div.divider.mt-30.mb-30]
+      [:div.filters
+       [:h3.mb-30 "Filter"]
+       [:div.filter-list
+        [:div.accordian.accordian-collapsed
+         [:div.accordian-title [:h3 "Final diagnosis"] [:img {:src "../assets/icons/minus.svg"}]]
+         [:div.accordian-panel
+          [:label.custom-checkbox
+           [:input {:type "checkbox", :hidden "hidden", :_ "_"}]
+           [:span.checkmark]
+           "Astrocytoma"]
+          [:label.custom-checkbox.custom-checkbox-disabled
+           [:input {:disabled "disabled", :type "checkbox", :hidden "hidden", :_ "_"}]
+           [:span.checkmark]
+           "Ganglioglioma"]
+          [:label.custom-checkbox
+           [:input {:type "checkbox", :hidden "hidden", :_ "_"}]
+           [:span.checkmark]
+           "Oligodendroglioma"]
+          [:label.custom-checkbox
+           [:input {:type "checkbox", :hidden "hidden", :_ "_"}]
+           [:span.checkmark]
+           "pGBM"]]]
+        [:div.accordian [:h3 "Who grade"] [:img {:src "../assets/icons/plus.svg"}]]
+        [:div.accordian [:h3 "ROI"] [:img {:src "../assets/icons/plus.svg"}]]
+        [:div.accordian [:h3 "Recurrence"] [:img {:src "../assets/icons/plus.svg"}]]
+        [:div.accordian [:h3 "Treatment"] [:img {:src "../assets/icons/plus.svg"}]]
+        [:div.accordian [:h3 "IDH Status"] [:img {:src "../assets/icons/plus.svg"}]]]]]
+     [:div
+      [:div.selected-filter-view
+       [:div.filter-headline
+        [:div.flex.align-center.justify-content-between.gap-8
+         [:img {:src "../assets/icons/task-list.svg", :alt "task-list"}]
+         [:h3#active-tag-text]]
+        [:div.flex.align-center.justify-content-between.gap-16
+         [:img {:src "../assets/icons/layout-navbar-expand-blue.svg", :alt "navbar-cllapse"}]
+         [:img {:src "../assets/icons/external-link.svg", :alt "external-link"}]]]
+       [:div.selected-filter-list
+        [:div.tag "Final Diagnosis" [:img {:src "../assets/icons/close.svg"}]]
+        [:div.tag "Astrocytoma" [:img {:src "../assets/icons/close.svg"}]]
+        [:div.tag "Ganglioglima" [:img {:src "../assets/icons/close.svg"}]]
+        [:button.clear-all-button {:type "submit"} "Clear All"]]]
+      [:div.data-view.relative
+       [:div.features-view
+        [:div.features-view-header
+         [:div.flex.align-center.flex-row.gap-8
+          [:img {:src "../assets/icons/chart-infographic.svg"}]
+          [:h3 "Feature Selection"]]
+         (if dim
+           [:div {:style {:width "500px"}} ;TODO
+            (when-not feature
+              [universal/feature-second-warning])
+            [fui/ui]]
+           [universal/dim-first-warning])
+         ]
+        [:div.divider.mb-24.mt-24]
+        [:div.visualization-header
+         [:div.flex.gap-8.align-center
+          [:img {:src "../assets/icons/graph.svg"}]
+          [:h3 "Visualization"]]
+         [:div.flex.gap-12
+          [:img {:src "../assets/icons/download.svg"}]
+          [:img {:src "../assets/icons/layout-navbar-collapse-grey.svg"}]]]
+        [universal/visualization dim feature data]]]]
+     ]))
 
 
 (defn app-ui
@@ -130,6 +132,6 @@
 
 (defn ^:export init
   [& user]
-  (rf/dispatch-sync [::initialize-db])
+  (rf/dispatch-sync [:initialize-db])
   (mount-root)
   )
