@@ -114,7 +114,7 @@
   [:div
    ;; Stand in
    [munsom-raw]
-   [universal/ui]
+   #_ [universal/ui]
    ])
 
 (defn ^:dev/after-load mount-root

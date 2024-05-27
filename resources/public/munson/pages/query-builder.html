@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BRUCE Data Portal</title>
     <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="../styles/sample-info.css" /> <!-- for tabs TODO -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -93,7 +94,7 @@
       <section class="query-builder-dynamic">
         <div class="container">
           <div class="query-builder-headline">
-            <h1>Query Builder Dynamic</h1>
+            <h1>Query Builder</h1>
             <p>
               Run sensitivity analyses to explore insights in cancer research,
               from clinical trials to innovative therapies.
@@ -103,193 +104,6 @@
 	  </div>
       </section>
 
-
-      <section class="query-builder-section">
-        <div class="container">
-          <div class="query-builder-headline">
-            <h1>Query Builder</h1>
-            <p>
-              Run sensitivity analyses to explore insights in cancer research,
-              from clinical trials to innovative therapies.
-            </p>
-          </div>
-          <div class="query-builder-content">
-            <div class="filters-view">
-              <div class="dataset-selection">
-                <h3 class="mb-30">Compare across</h3>
-                <div class="dataset-tags">
-                  <div class="dataset-tag" data-icon="diagnosis">
-                    <img
-                      class="icon"
-                      src="../assets/icons/diagnosis-icon.svg"
-                      alt="Final Diagnosis"
-                    />Final Diagnosis
-                  </div>
-                  <div class="dataset-tag" data-icon="question">
-                    <img
-                      class="icon"
-                      src="../assets/icons/question-icon.svg"
-                      alt="Who"
-                    />Who grade
-                  </div>
-                  <div class="dataset-tag" data-icon="roi">
-                    <img
-                      class="icon"
-                      src="../assets/icons/roi-icon.svg"
-                      alt="ROI"
-                    />ROI
-                  </div>
-                  <div class="dataset-tag" data-icon="recurrence">
-                    <img
-                      class="icon"
-                      src="../assets/icons/recurrence-icon.svg"
-                      alt="Recurrence"
-                    />Recurrence
-                  </div>
-                  <div class="dataset-tag" data-icon="file-chart">
-                    <img
-                      class="icon"
-                      src="../assets/icons/file-chart-icon.svg"
-                      alt="IDH Status"
-                    />IDH Status
-                  </div>
-                  <div class="dataset-tag" data-icon="treatment">
-                    <img
-                      class="icon"
-                      src="../assets/icons/treatment-icon.svg"
-                      alt="Treatment"
-                    />Treatment
-                  </div>
-                </div>
-              </div>
-              <div class="divider mt-30 mb-30"></div>
-              <div class="filters">
-                <h3 class="mb-30">Filter</h3>
-                <div class="filter-list">
-                  <div class="accordian accordian-collapsed">
-                    <div class="accordian-title">
-                      <h3>Final diagnosis</h3>
-                      <img src="../assets/icons/minus.svg" />
-                    </div>
-                    <div class="accordian-panel">
-                      <label class="custom-checkbox">
-                        <input type="checkbox" hidden />
-                        <span class="checkmark"></span>
-                        Astrocytoma
-                      </label>
-                      <label class="custom-checkbox custom-checkbox-disabled">
-                        <input type="checkbox" disabled hidden />
-                        <span class="checkmark"></span>
-                        Ganglioglioma
-                      </label>
-                      <label class="custom-checkbox">
-                        <input type="checkbox" hidden />
-                        <span class="checkmark"></span>
-                        Oligodendroglioma
-                      </label>
-                      <label class="custom-checkbox">
-                        <input type="checkbox" hidden />
-                        <span class="checkmark"></span>
-                        pGBM
-                      </label>
-                    </div>
-                  </div>
-                  <div class="accordian">
-                    <h3>Who grade</h3>
-                    <img src="../assets/icons/plus.svg" />
-                  </div>
-                  <div class="accordian">
-                    <h3>ROI</h3>
-                    <img src="../assets/icons/plus.svg" />
-                  </div>
-                  <div class="accordian">
-                    <h3>Recurrence</h3>
-                    <img src="../assets/icons/plus.svg" />
-                  </div>
-                  <div class="accordian">
-                    <h3>Treatment</h3>
-                    <img src="../assets/icons/plus.svg" />
-                  </div>
-                  <div class="accordian">
-                    <h3>IDH Status</h3>
-                    <img src="../assets/icons/plus.svg" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div class="selected-filter-view">
-                <div class="filter-headline">
-                  <div class="flex align-center justify-content-between gap-8">
-                    <img src="../assets/icons/task-list.svg" alt="task-list" />
-                    <h3 id="active-tag-text"></h3>
-                  </div>
-                  <div class="flex align-center justify-content-between gap-16">
-                    <img
-                      src="../assets/icons/layout-navbar-expand-blue.svg"
-                      alt="navbar-cllapse"
-                    />
-                    <img
-                      src="../assets/icons/external-link.svg"
-                      alt="external-link"
-                    />
-                  </div>
-                </div>
-                <div class="selected-filter-list">
-                  <div class="tag">
-                    Final Diagnosis <img src="../assets/icons/close.svg" />
-                  </div>
-                  <div class="tag">
-                    Astrocytoma <img src="../assets/icons/close.svg" />
-                  </div>
-                  <div class="tag">
-                    Ganglioglima <img src="../assets/icons/close.svg" />
-                  </div>
-                  <button class="clear-all-button">Clear All</button>
-                </div>
-              </div>
-              <div class="data-view relative">
-                <div class="features-view">
-                  <div class="features-view-header">
-                    <div class="flex align-center flex-row gap-8">
-                      <img src="../assets/icons/chart-infographic.svg" />
-                      <h3>Featured Selection</h3>
-                    </div>
-                    <div class="custom-select-wrapper">
-                      <div class="custom-select">
-                        <select>
-                          <option value="EphA2" selected>EphA2</option>
-                          <option value="Option 1">Option 1</option>
-                          <option value="Option 2">Option 2</option>
-                          <option value="Option 3">Option 3</option>
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="divider mb-24 mt-24"></div>
-                  <div class="visualization-header">
-                    <div class="flex gap-8 align-center">
-                      <img src="../assets/icons/graph.svg" />
-                      <h3>Visualization</h3>
-                    </div>
-                    <div class="flex gap-12">
-                      <img src="../assets/icons/download.svg" />
-                      <img
-                        src="../assets/icons/layout-navbar-collapse-grey.svg"
-                      />
-                    </div>
-                  </div>
-                  <div class="no-data">
-                    <img src="../assets/icons/empty-box.svg" />
-                    <h3>No Data Found</h3>
-                    <p>Enter or adjust your filters to see data.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
       <section class="faq">
         <div class="container">
           <div class="faq-headline">

@@ -336,7 +336,23 @@
                   :feature_variable
                   :mean))
 
-(defn visualization
+
+(defn munson-tabs
+  "Define a set of tabs. id is a keyword, tabs is a map (array-map is best to preserve order) mapping keywords to ui fns "
+  [id tabs]
+  (let [active (or @(rf/subscribe [:active-tab id])
+                   (ffirst tabs))]      ;Default to first tab 
+    [:div {:id id}
+     [:div.tabs
+      (for [[name view] tabs]
+        ^{:key name}
+        [:button.tab {:class (when (= name active) "active")
+                      :on-click #(rf/dispatch [:choose-tab id name])
+                      } (wu/humanize name)])]
+     (when active
+       ((tabs active)))]))
+
+(defn visualization 
   [dim feature data]
   (when dim
     [:div
@@ -344,7 +360,7 @@
      [:span (str (count data) " rows")]   ; could do this but it is wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows"))
      [:span.ms-2 (signup/with-signup (download/button data (str "bruce-export-" feature ".tsv")))]
      ;; TODO of course you might want to see these together, so tabs are not good design
-     [tabs/tabs
+     [munson-tabs                       ;TODO need to split or be an arg or simething
       :uviz
       (array-map
        :violin (fn [] [:div
