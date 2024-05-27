@@ -16,13 +16,26 @@
 ;;; This is universal.cljs, but adapted to run in Munson website.
 
 
+(def dims
+  {:final_diagnosis "Final Diagnosis"
+   :who_grade "WHO grade"
+   :ROI "ROI"
+   :recurrence "Recurrence"
+   :idh_status "IDH Status"
+   :treatment "Treatment"
+   })
+
 (defn dim-selector
-  [dim text icon-url]
-  [:div.dataset-tag 
-   {;; :data-icon data-icon                ;not sure what this does
-    :on-click #(rf/dispatch [:set-param :universal :dim dim])}
-   [:img.icon {:src icon-url, :alt text}]
-   text])
+  [dim icon-url active-dim]
+  (let [text (get dims dim)]
+    [:div.dataset-tag 
+     {;; :data-icon data-icon
+      :class (when (= dim active-dim) "dataset-tag-active")
+      :on-click #(do
+                   (rf/dispatch [:set-param :universal :dim dim])
+                   (rf/dispatch [:set-param :heatmap :dim dim]))}
+     [:img.icon {:src icon-url, :alt text}]
+     text]))
 
 (defn munsom-raw
   []
@@ -36,12 +49,12 @@
        [:h3.mb-30 "Compare across"]
        [:div.dataset-tags
 
-        [dim-selector :final_diagnosis "Final Diagnosis" "../assets/icons/diagnosis-icon.svg"]
-        [dim-selector :who_grade "WHO grade" "../assets/icons/question-icon.svg"]
-        [dim-selector :ROI "ROI" "../assets/icons/roi-icon.svg"]
-        [dim-selector :recurrence "Recurrence" "../assets/icons/recurrence-icon.svg"]
-        [dim-selector :idh_status "IDH Status" "../assets/icons/file-chart-icon.svg"]
-        [dim-selector :treatment "Treatment" "../assets/icons/treatment-icon.svg"]
+        [dim-selector :final_diagnosis "../assets/icons/diagnosis-icon.svg" dim]
+        [dim-selector :who_grade "../assets/icons/question-icon.svg" dim]
+        [dim-selector :ROI "../assets/icons/roi-icon.svg" dim]
+        [dim-selector :recurrence "../assets/icons/recurrence-icon.svg" dim]
+        [dim-selector :idh_status "../assets/icons/file-chart-icon.svg" dim]
+        [dim-selector :treatment "../assets/icons/treatment-icon.svg" dim]
 
         ]]
       [:div.divider.mt-30.mb-30]
@@ -77,7 +90,7 @@
        [:div.filter-headline
         [:div.flex.align-center.justify-content-between.gap-8
          [:img {:src "../assets/icons/task-list.svg", :alt "task-list"}]
-         [:h3#active-tag-text]]
+         [:h3#active-tag-text (get dims @(rf/subscribe [:param :universal :dim]))]] 
         [:div.flex.align-center.justify-content-between.gap-16
          [:img {:src "../assets/icons/layout-navbar-expand-blue.svg", :alt "navbar-cllapse"}]
          [:img {:src "../assets/icons/external-link.svg", :alt "external-link"}]]]
@@ -131,7 +144,7 @@
   )
 
 (defn ^:export init
-  [& user]
+  []
   (rf/dispatch-sync [:initialize-db])
   (mount-root)
   )
