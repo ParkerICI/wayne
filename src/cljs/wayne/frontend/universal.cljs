@@ -329,7 +329,9 @@
 
 (defn scale-chooser
   []
-  [:div.hstack.flex "Scale: " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])])
+  [:div.hstack.flex
+   "Scale: " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])
+   ])
 
 (defn dendrogram
   [dim]
@@ -354,13 +356,23 @@
      (when active
        ((tabs active)))]))
 
+;;; I suppose this should be a sub?
+(defn trim-zeros?
+  []
+  (= "marker_intensity" @(rf/subscribe [:param :features :feature-type])))
+
 (defn visualization 
   [dim feature data]
   (when dim
     [:div
      ;; TODO pluralize
-     [:span (str (count data) " rows")]   ; could do this but it is wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows"))
-     [:span.ms-2 (signup/with-signup (download/button data (str "bruce-export-" feature ".tsv")))]
+     (if (empty? data)
+       "No data"
+       [:span
+        [:span.mx-2 (str (count data) " rows")]
+        (when (trim-zeros?)
+          [:span.badge.text-bg-info "Zeros omitted"])   ; could do this but it is wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows")
+        [:span.ms-2 (signup/with-signup (download/button data (str "bruce-export-" feature ".tsv")))]])
      ;; TODO of course you might want to see these together, so tabs are not good design
      [munson-tabs                       ;TODO need to split or be an arg or simething
       :uviz
@@ -429,11 +441,13 @@
      ]
     ))
 
+
+
 ;;; Omit zeros on marker_intensity (as per Hadeesha 5/28/2024).
 ;;; Might make more sense to do this on server, but easier here.
 (defmethod feeds/postload :universal
   [db _ data]
-  (if (= "marker-intensity" (get-in db [:params :features :feature-type]))
+  (if (trim-zeros?)
     (update-in db
                [:data :universal]
                (fn [rows]
