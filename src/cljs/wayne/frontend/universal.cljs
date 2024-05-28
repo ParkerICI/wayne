@@ -5,8 +5,8 @@
             [hyperphor.way.web-utils :as wu]
             [hyperphor.way.vega :as v]
             [hyperphor.way.tabs :as tabs]
+            [hyperphor.way.feeds :as feeds]
             hyperphor.way.params
-            hyperphor.way.feeds
             [hyperphor.way.download :as download]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
@@ -429,3 +429,14 @@
      ]
     ))
 
+;;; Omit zeros on marker_intensity (as per Hadeesha 5/28/2024).
+;;; Might make more sense to do this on server, but easier here.
+(defmethod feeds/postload :universal
+  [db _ data]
+  (if (= "marker-intensity" (get-in db [:params :features :feature-type]))
+    (update-in db
+               [:data :universal]
+               (fn [rows]
+                 (remove (fn [row] (= 0 (:feature_value row)))
+                         rows)))
+    db))
