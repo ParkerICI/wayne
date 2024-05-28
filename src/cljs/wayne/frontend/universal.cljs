@@ -142,9 +142,11 @@
      :$schema "https://vega.github.io/schema/vega-lite/v5.json",
      :data {:values data}
      :mark {:type "boxplot" :tooltip true}, ; :extent "min-max"
-     :encoding {:y {:field "feature_value", :type "quantitative"
+     :encoding {:x {:field "feature_value", :type "quantitative"
                     :scale scale},
-                :x {:field dim :type "nominal"}
+                :y {:field dim :type "nominal"}
+                ;; TODO this doesn't work, I think to get jitter you need to use Vega, in which case it really should be combined with violin plot I think
+                ;; :yc {:signal "80*(random() - 0.5)"}
                 :color {:field dim :type "nominal", :legend nil}
                 }
      }))
@@ -327,7 +329,7 @@
 
 (defn scale-chooser
   []
-  [:span.hstack "Scale: " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])])
+  [:div.hstack.flex "Scale: " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])])
 
 (defn dendrogram
   [dim]
