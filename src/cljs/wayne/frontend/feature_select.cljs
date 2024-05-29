@@ -442,8 +442,38 @@
       [row "feature_variable"
        [:span
         feature 
-        [:b (str " " (if (feature-valid? feature) "valid" "invalid") )]]]])
+        [:b (str " " (if (feature-valid? feature) "valid" "invalid") )]
+        (when (feature-valid? feature)
+          [:button.btn.btn-secondary
+           {:on-click #(rf/dispatch [:feature-list-add feature])}
+           "+"])
+        ]]
+      ;; TODO clear and/or lozenge UI
+      [row [:span "feature list " [:a {:href "#" :on-click #(rf/dispatch [:feature-list-clear])} "clear"]]
+       (str/join ", " @(rf/subscribe [:feature-list]))]])
    ])
+
+;;; → Multitool?
+(defn conjs
+  [coll thing]
+  (if (nil? coll)
+    #{thing}
+    (conj coll thing)))
+
+(rf/reg-event-db
+ :feature-list-add
+ (fn [db [_ feature]]
+   (update db :feature-list conjs feature)))
+
+(rf/reg-event-db
+ :feature-list-clear
+ (fn [db _]
+   (assoc db :feature-list #{})))
+
+(rf/reg-sub
+ :feature-list
+ (fn [db _]
+   (:feature-list db)))
 
 (defn ui
   []

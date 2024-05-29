@@ -132,7 +132,8 @@
    #_ [universal/ui]
    ])
 
-(defn ^:dev/after-load mount-root
+;;; Note: the dev/after-load interferes with regular app
+(defn mount-root ;  ^:dev/after-load
   []
   ;; The `:dev/after-load` metadata causes this function to be called
   ;; after shadow-cljs hot-reloads code.
