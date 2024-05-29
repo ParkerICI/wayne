@@ -304,6 +304,23 @@
       }
      data]))
 
+(defn heatmap2
+  [dim]
+  (let [data @(rf/subscribe [:data :heatmap2])]
+    [v/vega-lite-view
+     {:mark :rect
+      :data {:values data}
+      :encoding {:y {:field dim :type "nominal"} 
+                 :x {:field "feature_variable" :type "nominal"}
+                 :color {:field :mean
+                         :type "quantitative"
+                         :legend {:orient :top}
+                         :title "mean feature value"
+                         }}   ;Note: mean computed on server
+      :config {:axis {:grid true :tickBand :extent}}
+      }
+     data]))
+
 (rf/reg-event-db
  :vega-click
  (fn [db [_ value]]
@@ -386,6 +403,7 @@
                         [v/vega-lite-view (boxplot data dim) data]])
        ;; :heatmap (fn [] [heatmap data dim "site"])
        :heatmap (fn [] [heatmap dim])
+       :heatmap2 (fn [] [heatmap2 dim])
        :dendrogram (fn [] [dendrogram dim])
        )]])
   )
@@ -411,8 +429,10 @@
        [:h4 "Compare"]
        [dim-chooser
         "compare"
+        ;; TODO OK this is getting ridiculous
         #(do (rf/dispatch [:set-param :universal :dim %])
-             (rf/dispatch [:set-param :heatmap :dim %]))]
+             (rf/dispatch [:set-param :heatmap :dim %])
+             (rf/dispatch [:set-param :heatmap2 :dim %]))]
        ]
       [:div.col-3
        [:h4 "Filter"

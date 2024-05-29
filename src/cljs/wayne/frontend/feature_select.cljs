@@ -419,6 +419,13 @@
   []
   [:i "TBD"])
 
+;;; → Multitool?
+(defn conjs
+  [coll thing]
+  (if (nil? coll)
+    #{thing}
+    (conj coll thing)))
+
 (defn l2-nonspatial
   []
   [:div 
@@ -437,43 +444,34 @@
          )
         (when-let [bio_feature_type @(rf/subscribe [:param :features :feature-bio-feature-type])]
            [row "feature" [feature-ui bio_feature_type]] )]))
-   (let [feature @(rf/subscribe [:selected-feature])]
+   (let [feature @(rf/subscribe [:selected-feature])
+         feature-list @(rf/subscribe [:param :heatmap2 :feature-list])]
      [:div
       [row "feature_variable"
        [:span
         feature 
-        [:b (str " " (if (feature-valid? feature) "valid" "invalid") )]
+        [:b (str " " (if (feature-valid? feature) "valid " "invalid") )]
         (when (feature-valid? feature)
-          [:button.btn.btn-secondary
-           {:on-click #(rf/dispatch [:feature-list-add feature])}
-           "+"])
+          [:a #_ :button.btn.btn-sm.btn-secondary.mx-2
+           {:href "#"
+            :on-click #(rf/dispatch [:param-update :heatmap2 :feature-list conjs feature])}
+           "add"])
         ]]
-      ;; TODO clear and/or lozenge UI
-      [row [:span "feature list " [:a {:href "#" :on-click #(rf/dispatch [:feature-list-clear])} "clear"]]
-       (str/join ", " @(rf/subscribe [:feature-list]))]])
+      ;; TODO lozenge UI
+      [row
+       [:span "feature list "
+        (when-not (empty? feature-list)
+          [:a {:href "#" :on-click #(rf/dispatch [:set-param :heatmap2 :feature-list #{}])} "clear"])]
+       (str/join ", " feature-list)]])
    ])
 
-;;; → Multitool?
-(defn conjs
-  [coll thing]
-  (if (nil? coll)
-    #{thing}
-    (conj coll thing)))
 
+;;; → way/params
 (rf/reg-event-db
- :feature-list-add
- (fn [db [_ feature]]
-   (update db :feature-list conjs feature)))
-
-(rf/reg-event-db
- :feature-list-clear
- (fn [db _]
-   (assoc db :feature-list #{})))
-
-(rf/reg-sub
- :feature-list
- (fn [db _]
-   (:feature-list db)))
+ :param-update
+ (fn [db [_ data-id param f & args]]
+   (let [v (get-in db [:params data-id param])]
+     (hyperphor.way.params/set-param db [:foo data-id param (apply f v args)]))))
 
 (defn ui
   []

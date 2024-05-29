@@ -202,6 +202,19 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
                 :where (joint-where-clause filter))
         )))
 
+;;; Feature-list driven
+(defn heatmap2
+  [{:keys [dim feature-list filter]}]
+  (let [feature-list (read-string feature-list)] ;TODO shouldn't be necessary?
+    (when dim
+      (-> (select "avg(feature_value) as mean, feature_variable, {dim} {from} 
+ where feature_variable in {feature-list}  and {where}
+ group by feature_variable, {dim}"
+                  :feature-list (bq/sql-lit-list feature-list)
+                  :dim dim
+                  :where (joint-where-clause filter))
+          ))))
+
 (defn denil
   [thing]
   (if (nil? thing) [] thing))
@@ -231,6 +244,7 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
         "universal" (query1 (params-remap params))
         "universal-pop" (query1-pop2 (params-remap params))
         "heatmap" (heatmap (params-remap params))
+        "heatmap2" (heatmap2 (params-remap params))
         "features" (bio_feature_type-features (:bio_feature_type params))
         ;; For debugging
         ;; "url" (url-data params)
