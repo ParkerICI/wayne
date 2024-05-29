@@ -95,7 +95,7 @@
   )
 
 (defn ^:export init
-  [& user]
+  []
   (let [params (browser/url-params)]
     (rf/dispatch-sync [:initialize-db])
     #_ (nav/start!)

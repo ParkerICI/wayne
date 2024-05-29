@@ -449,7 +449,7 @@
      [:div
       [row "feature_variable"
        [:span
-        feature 
+        (wu/humanize feature)
         [:b (str " " (if (feature-valid? feature) "valid " "invalid") )]
         (when (feature-valid? feature)
           [:a #_ :button.btn.btn-sm.btn-secondary.mx-2
@@ -462,7 +462,7 @@
        [:span "feature list "
         (when-not (empty? feature-list)
           [:a {:href "#" :on-click #(rf/dispatch [:set-param :heatmap2 :feature-list #{}])} "clear"])]
-       (str/join ", " feature-list)]])
+       (str/join ", " (map wu/humanize feature-list))]])
    ])
 
 

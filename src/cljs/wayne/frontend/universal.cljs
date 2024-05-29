@@ -221,7 +221,7 @@
                        (rf/dispatch
                         [:set-param :universal [:filters dim value] (-> e .-target .-checked)])
                        (rf/dispatch
-                        [:set-param :heatmap [:filter dim value] (-> e .-target .-checked)]))
+                        [:set-param :heatmap2 [:filter dim value] (-> e .-target .-checked)])) ;NOTE: used to be :heatmap and needed for the older versions
           }]
         [:label.form-check-label {:for id :class (when disabled? "text-muted")
                                                    ; text-decoration-line-through
@@ -304,22 +304,32 @@
       }
      data]))
 
+;;; TODO use elsewhere. Or a different approach, but this works
+(defn humanize-features
+  [data]
+  (map (fn [{:keys [feature_variable] :as row}]
+         ;; Was adding :feature_human but then that shows up on axis lable
+         (assoc row :feature_variable (wu/humanize feature_variable)))
+       data))
+
+;;; TODO The "n rows, zeros omitted, Download" row doesn't really apply
 (defn heatmap2
   [dim]
-  (let [data @(rf/subscribe [:data :heatmap2])]
-    [v/vega-lite-view
-     {:mark :rect
-      :data {:values data}
-      :encoding {:y {:field dim :type "nominal"} 
-                 :x {:field "feature_variable" :type "nominal"}
-                 :color {:field :mean
-                         :type "quantitative"
-                         :legend {:orient :top}
-                         :title "mean feature value"
-                         }}   ;Note: mean computed on server
-      :config {:axis {:grid true :tickBand :extent}}
-      }
-     data]))
+  (let [data (humanize-features @(rf/subscribe [:data :heatmap2]))]
+    (if (empty? data)
+      [:div.alert.alert-info
+       "No data, you probably need to add some features to the feature list"]
+      (dendro/heatmap data
+                      dim
+                      :feature_variable
+                      :mean
+                      :color-scheme "redyellowblue"
+                      ;; TODO :overrides, angle x labels
+                      :cluster-rows? false
+                      ;; TODO labels should be on left in this case
+                      ;; TODO color scale is too small.
+                      )
+      )))
 
 (rf/reg-event-db
  :vega-click
@@ -375,8 +385,12 @@
 
 ;;; I suppose this should be a sub?
 (defn trim-zeros?
-  []
-  (= "marker_intensity" @(rf/subscribe [:param :features :feature-type])))
+  ([]
+   (= "marker_intensity" @(rf/subscribe [:param :features :feature-type])))
+  ;; this version can be called in more places
+  ([db]
+   (= "marker_intensity" (get-in db [:params :features :feature-type])))
+   )
 
 (defn visualization 
   [dim feature data]
@@ -401,10 +415,9 @@
        :boxplot (fn [] [:div.vstack
                         [scale-chooser]
                         [v/vega-lite-view (boxplot data dim) data]])
-       ;; :heatmap (fn [] [heatmap data dim "site"])
-       :heatmap (fn [] [heatmap dim])
-       :heatmap2 (fn [] [heatmap2 dim])
-       :dendrogram (fn [] [dendrogram dim])
+       ;; :heatmap (fn [] [heatmap dim])
+       :heatmap (fn [] [heatmap2 dim])
+       ;; :dendrogram (fn [] [dendrogram dim])
        )]])
   )
 
@@ -431,7 +444,7 @@
         "compare"
         ;; TODO OK this is getting ridiculous
         #(do (rf/dispatch [:set-param :universal :dim %])
-             (rf/dispatch [:set-param :heatmap :dim %])
+             #_ (rf/dispatch [:set-param :heatmap :dim %]) ; out of service
              (rf/dispatch [:set-param :heatmap2 :dim %]))]
        ]
       [:div.col-3
@@ -467,7 +480,7 @@
 ;;; Might make more sense to do this on server, but easier here.
 (defmethod feeds/postload :universal
   [db _ data]
-  (if (trim-zeros?)
+  (if (trim-zeros? db)
     (update-in db
                [:data :universal]
                (fn [rows]
