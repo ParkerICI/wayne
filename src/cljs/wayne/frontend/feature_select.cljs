@@ -102,25 +102,25 @@
         thing)))
 
 ;;; TODO nil should be option (could be in values
-;;; TODO extra-actions
+;;; NOTE used to use :set-param-if which didn't work well, I think that can be removed from Way
 (defn select-widget-minimal
   [id values & [extra-action]]
-  ;; TODO Something wrong, smelly about this. And doesn't always work
-  (when (not (empty? values))
-    ;; -if removal seems to fix things? This is wrong and breaks updates
-    (rf/dispatch [:set-param-if :features id (safe-name (first values))])) ;TODO smell? But need to initialize somewhere
-  (wu/select-widget
-   id
-   @(rf/subscribe [:param :features id])
+  (let [current-value @(rf/subscribe [:param :features id])]
+    (when (and (not (empty? values))
+               (not (contains? (set values) current-value)))
+      (rf/dispatch [:set-param :features id (safe-name (first values)) ])) 
+    (wu/select-widget
+     id
+     current-value
      #(do
         (rf/dispatch [:set-param :features id %])
         (when extra-action (extra-action %) )) ;ugn
-   (map (fn [v]
-          {:value v :label (if v (wu/humanize v)  "---")})
-         values)
-   nil
-   nil
-   {:display "inherit" :width "inherit" :margin-left "2px"})) ;TODO tooltips
+     (map (fn [v]
+            {:value v :label (if v (wu/humanize v)  "---")})
+          values)
+     nil
+     nil
+     {:display "inherit" :width "inherit" :margin-left "2px"}))) ;TODO tooltips
 
 (defn select-widget
   [id values & [extra-action]]
