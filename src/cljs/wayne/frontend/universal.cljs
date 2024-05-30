@@ -26,6 +26,7 @@
   [data dim feature]
   (let [dim (name dim)
         scale (interpret-scale @(rf/subscribe [:param :features :scale]))] ;TODO wee fui/ref below
+    ;; TODO keywordize
     `{"width" 700,
       "config" {"axisBand" {"bandPosition" 1, "tickExtra" true, "tickOffset" 0}},
       "padding" 5,
@@ -62,7 +63,7 @@
             "strokeWidth" {"value" 1},
             "stroke" {"value" "#000000"}
             "fill" {"value" "#000000"}
-            "opacity" {"value" "0.3"}
+            "opacity" {"signal" "points ? 0.3 : 0"}
             }
            }
           }
@@ -109,6 +110,7 @@
       [{"name" "plotWidth", "value" 160}  ;controls fatness of violins
        {"name" "height", "update" "(plotWidth + 10) * 3"}
        {"name" "trim", "value" true, #_ "bind" #_ {"input" "checkbox"}}
+       {"name" "points", "value" true, "bind" {"input" "checkbox"}}
        ;; TODO this didn't work, so going out of Vega
        #_ {"name" "xscales", "value" "linear" "bind"  {"input" "select" "options" ["linear" "log10" "log2" "sqrt"]}}
        {"name" "bandwidth", "value" 0, #_ "bind" #_ {"input" "range", "min" 0, "max" 0.00002, "step" 0.000001}}], ;Note: very sensitive, was hard to find these values
@@ -409,12 +411,13 @@
       :uviz
       (array-map
        :violin (fn [] [:div
-                       [scale-chooser]
                        [v/vega-view (violin data dim feature) data]
+                       [scale-chooser]
                        ])
        :boxplot (fn [] [:div.vstack
+                        [v/vega-lite-view (boxplot data dim) data]
                         [scale-chooser]
-                        [v/vega-lite-view (boxplot data dim) data]])
+                        ])
        ;; :heatmap (fn [] [heatmap dim])
        :heatmap (fn [] [heatmap2 dim])
        ;; :dendrogram (fn [] [dendrogram dim])
