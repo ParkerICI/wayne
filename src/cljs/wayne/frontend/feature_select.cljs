@@ -482,7 +482,7 @@
   [:div
    [:div.row
     [:div.col-10
-     [select-widget :feature-supertype [:non-spatial :spatial]]
+     [select-widget :feature-supertype ["non-spatial" "spatial"]]
      (if (= "non-spatial" @(rf/subscribe [:param :features :feature-supertype]))
        [l2-nonspatial]
        [l2-spatial])
