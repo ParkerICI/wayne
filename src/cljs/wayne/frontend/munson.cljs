@@ -33,7 +33,7 @@
       :class (when (= dim active-dim) "dataset-tag-active")
       :on-click #(do
                    (rf/dispatch [:set-param :universal :dim dim])
-                   (rf/dispatch [:set-param :heatmap :dim dim]))}
+                   (rf/dispatch [:set-param :heatmap2 :dim dim]))}
      [:img.icon {:src icon-url, :alt text}]
      text]))
 

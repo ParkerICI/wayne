@@ -455,7 +455,8 @@
       [:span
        (wu/humanize feature)
        [:b (str " " (if (feature-valid? feature) "present " "ND") )] ;TODO EnJun wants to wordsmith these
-       (when (feature-valid? feature)
+       (when (and (feature-valid? feature)
+                  (not (contains? feature-list feature)))
          [:a #_ :button.btn.btn-sm.btn-secondary.mx-2
           {:href "#"
            :on-click #(rf/dispatch [:param-update :heatmap2 :feature-list conjs feature])}
