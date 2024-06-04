@@ -444,26 +444,30 @@
          )
         (when-let [bio_feature_type @(rf/subscribe [:param :features :feature-bio-feature-type])]
            [row "feature" [feature-ui bio_feature_type]] )]))
-   (let [feature @(rf/subscribe [:selected-feature])
-         feature-list @(rf/subscribe [:param :heatmap2 :feature-list])]
-     [:div
-      [row "feature_variable"
-       [:span
-        (wu/humanize feature)
-        [:b (str " " (if (feature-valid? feature) "valid " "invalid") )]
-        (when (feature-valid? feature)
-          [:a #_ :button.btn.btn-sm.btn-secondary.mx-2
-           {:href "#"
-            :on-click #(rf/dispatch [:param-update :heatmap2 :feature-list conjs feature])}
-           "add"])
-        ]]
-      ;; TODO lozenge UI
-      [row
-       [:span "feature list "
-        (when-not (empty? feature-list)
-          [:a {:href "#" :on-click #(rf/dispatch [:set-param :heatmap2 :feature-list #{}])} "clear"])]
-       (str/join ", " (map wu/humanize feature-list))]])
    ])
+
+(defn feature-list-ui
+  []
+  (let [feature @(rf/subscribe [:selected-feature])
+        feature-list @(rf/subscribe [:param :heatmap2 :feature-list])]
+    [:div
+     [row "feature_variable"
+      [:span
+       (wu/humanize feature)
+       [:b (str " " (if (feature-valid? feature) "present " "ND") )] ;TODO EnJun wants to wordsmith these
+       (when (feature-valid? feature)
+         [:a #_ :button.btn.btn-sm.btn-secondary.mx-2
+          {:href "#"
+           :on-click #(rf/dispatch [:param-update :heatmap2 :feature-list conjs feature])}
+          "add"])
+       ]]
+     ;; TODO lozenge UI
+     [row
+      [:span "feature list "
+       (when-not (empty? feature-list)
+         [:a {:href "#" :on-click #(rf/dispatch [:set-param :heatmap2 :feature-list #{}])} "clear"])]
+      (str/join ", " (map wu/humanize feature-list))]]))
+
 
 
 ;;; → way/params

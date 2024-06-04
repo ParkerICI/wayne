@@ -331,22 +331,25 @@
 (defn heatmap2
   [dim]
   (let [data (humanize-features @(rf/subscribe [:data :heatmap2]))]
-    (if (empty? data)
-      [:div.alert.alert-info
-       "No data, you probably need to add some features to the feature list"]
-      (let [data (z-transform-columns data :mean :feature_variable)]
-        ;; TODO the title or something should indicate z-score applied
-        (dendro/heatmap data
+    [:div
+     (if (empty? data)
+       [:div.alert.alert-info
+        "No data, you probably need to add some features to the feature list"]
+       (let [data (z-transform-columns data :mean :feature_variable)]
+         ;; TODO the title or something should indicate z-score applied
+         (dendro/heatmap data
                         dim
                         :feature_variable
                         :mean
-                        :color-scheme "redyellowblue"
+                        :color-scheme "magma"
                         ;; TODO :overrides, angle x labels
                         ;; :cluster-rows? false
                         ;; TODO labels should be on left in this case
                         ;; TODO color scale is too small.
                         )
-        ))))
+         ))
+     [fui/feature-list-ui]
+     ]))
 
 (rf/reg-event-db
  :vega-click
