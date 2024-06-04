@@ -10,6 +10,7 @@
             [hyperphor.way.download :as download]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
+            [org.candelbio.multitool.math :as um]
             [wayne.frontend.feature-select :as fui]
             [hyperphor.way.cheatmap :as dendro]
             )
@@ -311,6 +312,21 @@
          (assoc row :feature_variable (wu/humanize feature_variable)))
        data))
 
+(defn z-transform
+  [ds field]
+  (let [values (map field ds)
+        mean (um/mean values)
+        std (um/standard-deviation values)
+        xvalues (map #(/ (- % mean) std) values)]
+    (map (fn [row xformed] (assoc row field xformed))
+         ds xvalues)))
+
+;;; TODO belongs in way
+(defn z-transform-columns
+  [ds field column-field]
+  (mapcat #(z-transform % field)
+          (vals (group-by column-field ds))))
+
 ;;; TODO The "n rows, zeros omitted, Download" row doesn't really apply
 (defn heatmap2
   [dim]
@@ -318,17 +334,19 @@
     (if (empty? data)
       [:div.alert.alert-info
        "No data, you probably need to add some features to the feature list"]
-      (dendro/heatmap data
-                      dim
-                      :feature_variable
-                      :mean
-                      :color-scheme "redyellowblue"
-                      ;; TODO :overrides, angle x labels
-                      :cluster-rows? false
-                      ;; TODO labels should be on left in this case
-                      ;; TODO color scale is too small.
-                      )
-      )))
+      (let [data (z-transform-columns data :mean :feature_variable)]
+        ;; TODO the title or something should indicate z-score applied
+        (dendro/heatmap data
+                        dim
+                        :feature_variable
+                        :mean
+                        :color-scheme "redyellowblue"
+                        ;; TODO :overrides, angle x labels
+                        ;; :cluster-rows? false
+                        ;; TODO labels should be on left in this case
+                        ;; TODO color scale is too small.
+                        )
+        ))))
 
 (rf/reg-event-db
  :vega-click
