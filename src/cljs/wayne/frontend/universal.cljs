@@ -346,6 +346,9 @@
                         ;; :cluster-rows? false
                         ;; TODO labels should be on left in this case
                         ;; TODO color scale is too small.
+                        :aggregate-fn :mean
+                        :patches [[{:orient :bottom :scale :sx}
+                                   {:labelAngle 45}]]
                         )
          ))
      [fui/feature-list-ui]

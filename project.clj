@@ -5,11 +5,11 @@
   :min-lein-version "2.0.0"
   :plugins [[lein-shadow "0.4.1"]]
   :dependencies [[org.clojure/clojure "1.11.1"]
-                 [org.candelbio/multitool "0.1.5"]
+                 [org.candelbio/multitool "0.1.6"]
                  [org.clojure/data.json "2.5.0"]
                  [environ "1.2.0"]
                  [com.taoensso/timbre "6.3.1"]
-                 [hyperphor/way "0.1.0-SNAPSHOT"]
+                 [hyperphor/way "0.1.0-SNAPSHOT"] ;TODO npm dependencies
 
                  ;; Backend
                  [clj-http "3.12.3" :exclusions [commons-io]]
