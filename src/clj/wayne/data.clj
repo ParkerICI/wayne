@@ -4,6 +4,7 @@
             [org.candelbio.multitool.core :as u]
             [org.candelbio.multitool.cljcore :as ju]
             [org.candelbio.multitool.math :as mu]
+            [hyperphor.way.data :as wd]
             [clojure.string :as str]
             [clojure.data.json :as json]))
 
@@ -22,54 +23,16 @@
              :key-fn keyword)))
 
 
-
-;;; includes samples and aggregates into vector when necessary
-;;; Note: this is a big pain, might want to generate it from a schema
-(defn patient-table
-  []
-  (select "patient_id,
-ANY_VALUE(site) as site, 
-ANY_VALUE(`group`) as `group`, 
-ANY_VALUE(cohort) as cohort, 
-ANY_VALUE(immunotherapy) as immunotherapy, 
-array_agg(distinct(who_grade)) as who_grade, 
-array_agg(distinct(final_diagnosis)) as final_diagnosis, 
-ANY_VALUE(recurrence) as recurrence, 
-ANY_VALUE(progression) as progression, 
-array_agg(distinct(sample_id)) as samples,
-array_agg(distinct(fov)) as fovs
-{from}
-group by patient_id"))
-
-;;; Sites
-
-(defn site-table
-  []
-  (select "site,
-count(distinct(patient_id)) as patients,
-count(distinct(sample_id)) as samples,
-count(distinct(feature_variable)) as features
-{from} group by site"))
-
-
-(defn cohort-table
-  []
+(defmethod wd/data :cohort
+  [_]
   (select "final_diagnosis,
 count(distinct(patient_id)) as patients,
 count(distinct(sample_id)) as samples,
 count(distinct(feature_variable)) as features
 {from} group by final_diagnosis"))
 
-
-;;; Cohorts
-
-(comment 
-  (query "select cohort, count(distinct(patient_id)) as patients, count(distinct(sample_id)) as samples from `pici-internal.bruce_external.feature_table` group by cohort")
-  )
-
-;;;; Samples
-(defn sample-table
-  []
+(defmethod wd/data :samples
+  [_]
   (select "sample_id, 
 any_value(patient_id) as patient_id, 
 any_value(who_grade) as who_grade,
@@ -79,41 +42,10 @@ any_value(immunotherapy) as immunotherapy,
 {from}
 group by sample_id"))
 
-; count(distinct(feature_variable)) as features
-; count(1) as values, 
-; any_value(fov) as fov, 
-
 (defn clean-data
   [d]
   (map (fn [x] (update x :feature_value (fn [v] (if (= v "NA") nil (u/coerce-numeric v)))))
        d))
-
-#_
-(defn query0
-  [{:keys [site feature]}]
-  (select "ROI, immunotherapy, feature_value {from} 
-where 
-site = '{site}' 
-and final_diagnosis = 'GBM' 
-and feature_variable = '{feature}' 
-and ROI IN ('INFILTRATING_TUMOR', 'SOLID_TUMOR')
-" :site site :feature feature))
-
-
-;;; This currently handles data for both Violin and Scatter panes
-
-(defn query0
-  [{:keys [site feature rois]}]
-  (select "site, ROI, immunotherapy, feature_value, patient_id, sample_id, cell_meta_cluster_final, fov, feature_variable {from} 
-where 
-1 = 1
-{site}
-{feature}
-{rois}
-"
-          :site (when site (format "and site = '%s'" site))
-          :feature (when feature (format "and feature_variable = '%s' " feature))
-          :rois (when rois (str "and ROI IN " (bq/sql-lit-list rois)))))
 
 ;;; General trick to convert maps in get params back into their real form.
 ;;; → Way
@@ -148,21 +80,7 @@ where
                  (format "%s in %s" (name dim) (bq/sql-lit-list vals)))))))))
 
 
-;;; TODO feature is misnomer, change to dim or something
-;;; TODO hopefull obso
-;;; Yes there is no need for this specifiuc thing, wasn't there something that
-;;; got POPULATED values????
-;;; Not actively used
-(defn query1-meta
-  [{:keys [feature filters] :as params}]
-  ;; TODO conditionalize to avoid prod errors
-  (when feature
-    (select "distinct {dim} {from} 
-where {where}
-"
-            :dim (name feature)
-            :where (joint-where-clause (dissoc filters (keyword feature))))
-    ))
+
 
 (defn query1
   [{:keys [feature dim filters]}]
@@ -176,7 +94,7 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
 
 ;;; Allowable feature values for a single dim, given feature and filters
 ;;; TODO should delete dim from filters, here or upstream
-(defn query1-pop2
+(defn query1-pop
   [{:keys [dim feature filters] :as params}]
   (when dim
     (->>
@@ -186,11 +104,6 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
                     :where (joint-where-clause (dissoc filters (keyword dim)))))
      (map (comp second first))
      set)))
-
-(defn data0
-  [params]
-  (-> (query0 params)
-      clean-data))
 
 (defn heatmap
   [{:keys [dim filter]}]
@@ -226,10 +139,12 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
                :bio_feature_type bio_feature_type)))
 
 ;;; TODO this looks like a massive security hole. Although what harm can parsing json do?
+#_
 (defn url-data
   [{:keys [url]}]
   (json/read-str (slurp url) :key-fn keyword))
 
+#_
 (defn data
   [{:keys [data-id] :as params}]
   (log/info :data params)
@@ -242,7 +157,7 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
         "barchart" (data0 params)
         "violin" (data0 params)
         "universal" (query1 (params-remap params))
-        "universal-pop" (query1-pop2 (params-remap params))
+        "universal-pop" (query1-pop (params-remap params))
         "heatmap" (heatmap (params-remap params))
         "heatmap2" (heatmap2 (params-remap params))
         "features" (bio_feature_type-features (:bio_feature_type params))
@@ -255,6 +170,27 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
 
 ;;; TODO version that includes frequences
 ;;; TODO do these dynamically, incorporating constraints
+
+(defmethod wd/data :universal
+  [params]
+  (query1 (params-remap params)))
+
+(defmethod wd/data :universal-pop
+  [params]
+  (query1-pop (params-remap params)))
+
+(defmethod wd/data :features
+  [params]
+  (bio_feature_type-features (:bio_feature_type params)))
+
+(defmethod wd/data :heatmap
+  [params]
+  (heatmap (params-remap params)))
+
+(defmethod wd/data :heatmap2
+  [params]
+  (heatmap2 (params-remap params)))
+
 
 (defn values
   [field]
@@ -414,19 +350,6 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
      (for [row rows]
        (cons row
              (map (fn [col] (get-in data [[row col] :mean_value])) cols))))))
-
-#_
-(ju/write-tsv-rows "data/heatmap.tsv" (write-matrix ))
-
-;;; I read this into R and messed with it, see /opt/client/pici/bruce/r-heatmap-transcript
-;;; bruce <- read.table("/opt/mt/repos/pici/wayne/data/heatmap.tsv", header = T)
-
-;;; Generate a map of filter dims and values, pasted by hand into front end for now
-(defn generate-filters
-  []
-  (zipmap grouping-features
-          (map #(sort (map (comp second first) (query1-meta {:feature % :filters {}})))
-               grouping-features)))
 
 
 ;;; For filter-feature table

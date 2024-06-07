@@ -338,18 +338,18 @@
        (let [data (z-transform-columns data :mean :feature_variable)]
          ;; TODO the title or something should indicate z-score applied
          (dendro/heatmap data
-                        dim
-                        :feature_variable
-                        :mean
-                        :color-scheme "magma"
-                        ;; TODO :overrides, angle x labels
-                        ;; :cluster-rows? false
-                        ;; TODO labels should be on left in this case
-                        ;; TODO color scale is too small.
-                        :aggregate-fn :mean
-                        :patches [[{:orient :bottom :scale :sx}
-                                   {:labelAngle 45}]]
-                        )
+                         dim
+                         :feature_variable
+                         :mean
+                         {:color-scheme "magma"
+                          ;; TODO :overrides, angle x labels
+                          ;; :cluster-rows? false
+                          ;; TODO labels should be on left in this case
+                          ;; TODO color scale is too small.
+                          :aggregate-fn :mean
+                          :patches [[{:orient :bottom :scale :sx}
+                                     {:labelAngle 45}]]}
+                         )
          ))
      [fui/feature-list-ui]
      ]))
@@ -388,7 +388,8 @@
   (dendro/heatmap @(rf/subscribe [:data :heatmap])
                   dim
                   :feature_variable
-                  :mean))
+                  :mean
+                  {}))
 
 
 (defn munson-tabs

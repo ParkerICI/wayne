@@ -19,7 +19,7 @@
   (let [port (or (first args) (env/env :port) )]
     (log/info "Starting server on port" port)
     (heroku-deploy-hack)
-    (server/start (Integer. port) handler/app)
+    (server/start (Integer. port) (handler/app))
     ;; Smart enough to be a no-op on server
     (ju/open-url (format "http://localhost:%s" port))
     ))
