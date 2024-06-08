@@ -44,7 +44,5 @@
   )
 
 
-;;; Copied oout of middleware
-
 (def app wh/app)
 
