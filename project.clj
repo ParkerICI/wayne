@@ -48,7 +48,7 @@
   :main ^:skip-aot wayne.core
   :target-path "target/%s"
   :source-paths ["src/cljc" "src/clj" "src/cljs"] 
-  :clean-targets [".shadow-cljs"]
+  :clean-targets ^{:protect false} [".shadow-cljs" "resources/public/cljs-out"]
   :repl-options {:init-ns wayne.core}
   :profiles {:uberjar {:aot :all
                        :omit-source true

@@ -13,10 +13,7 @@
    [:h3 "Samples"]
    (let [samples @(rf/subscribe [:data :samples])]
      [ag/ag-table 
-      :samples
-      (keys (first samples))
       samples
-      {}
       :col-defs data/col-defs
       ])])
 
