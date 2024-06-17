@@ -31,11 +31,12 @@
      :$schema "https://vega.github.io/schema/vega/v5.json",
      :width 700,
      :signals
-     [{:name "blobWidth", :value 200, :bind {:input :range, :min 100, :max 1000}} ;controls fatness of violins  
-      {:name "blobSpace" :value 750 :bind {:input :range, :min 100, :max 2000}}
-      {:name "height", :update "blobSpace"}
+     [{:name "box", :value false, :bind {:input "checkbox"}}
       {:name "points", :value true, :bind {:input "checkbox"}}
       {:name "jitter" :value 50 :bind {:input :range, :min 0, :max 200}}
+      {:name "blobWidth", :value 200, :bind {:input :range, :min 100, :max 1000}} ;controls fatness of violins  
+      {:name "blobSpace" :value 750 :bind {:input :range, :min 100, :max 2000}}
+      {:name "height", :update "blobSpace"}
       {:name "trim", :value true, :bind {:input "checkbox"}}
 
       ;; TODO this didn't work, so going out of Vega
@@ -57,9 +58,9 @@
        :transform
        [{:type "aggregate",
          :groupby [dim],
-         :fields ["feature_value" "feature_value" "feature_value"],
-         :ops ["q1" "median" "q3"],
-         :as ["q1" "median" "q3"]}]}]
+         :fields ["feature_value" "feature_value" "feature_value" "feature_value" "feature_value"],
+         :ops ["min" "q1" "median" "q3" "max"],
+         :as  ["min" "q1" "median" "q3" "max"]}]}]
 
      :config {:axisBand {:bandPosition 1, :tickExtra true, :tickOffset 0}},
      :axes
@@ -92,13 +93,14 @@
        {:update
         {:yc {:scale "layout", :field dim, :band 0.5},
          :height {:signal "blobWidth"},
-         :width {:signal "width"}}},
+         :width {:signal "width"}
+         }},
        :data
        [{:name "summary",
          :source "stats",
          :transform [{:type "filter", :expr (wu/js-format "datum.%s === parent.%s" dim dim)}]}],
        :marks
-       [{:type "symbol",
+       [{:type "symbol",                ;Points
          :from {:data "source"},
          :encode
          {:enter {:fill "black", :y {:value 0}},
@@ -112,27 +114,56 @@
            :opacity {:signal "points ? 0.3 : 0"},
            :shape {:value "circle"},
            :x {:scale "xscale", :field "feature_value"}}}}
-        {:type "area",
+
+        {:type "area",                  ;Violins
          :from {:data "violin"},
          :encode
          {:enter {:fill {:scale "color", :field {:parent dim}}},
           :update
           {:x {:scale "xscale", :field "value"},
            :yc {:signal "blobWidth / 2"},
+           :opacity {:signal "box ? 0 : 1"}
            :height {:scale "hscale", :field "density"}}}}
-        {:type "rect",
+        
+        {:type "rect",                  ;Box
          :from {:data "summary"},
          :encode
-         {:enter {:fill {:value "black"}, :height {:value 2}},
+         {:enter {:cornerRadius {:value 4} },
           :update
           {:x {:scale "xscale", :field "q1"},
            :x2 {:scale "xscale", :field "q3"},
-           :yc {:signal "blobWidth / 2"}}}}
-        {:type "rect",
+           :height {:signal "blobWidth / 10"}
+           :yc {:signal "blobWidth / 2"}
+           :fill {:scale "color", :field {:parent dim}}
+           }}}
+        {:type "rect",                  ;Box outline
          :from {:data "summary"},
          :encode
-         {:enter {:fill {:value "black"}, :width {:value 2}, :height {:value 8}},
-          :update {:x {:scale "xscale", :field "median"}, :yc {:signal "blobWidth / 2"}}}}]}],
+         {:enter {:stroke {:value "gray"}
+                  :cornerRadius {:value 4}}
+          :update
+          {:x {:scale "xscale", :field "q1"},
+           :x2 {:scale "xscale", :field "q3"},
+           :height {:signal "blobWidth / 10"}
+           :yc {:signal "blobWidth / 2"}
+           :fill {:scale "color", :field {:parent dim}}
+           }}}
+        {:type "rect",                  ;Midpoint
+         :from {:data "summary"},
+         :encode
+         {:enter {:fill {:value "white"}, :width {:value 2}, :height {:value 20}},
+          :update {:x {:scale "xscale", :field "median"}, :yc {:signal "blobWidth / 2"}}}}
+
+        {:type "rect",                  ;Whisker
+         :from {:data "summary"},
+         :encode
+         {:enter {:fill {:value "black"}, :width {:value 2}, :height {:value 2}},
+          :update {:x {:scale "xscale", :field "min"},
+                   :x2 {:scale "xscale", :field "max"}
+                   :yc {:signal "blobWidth / 2"}}}}
+
+
+        ]}],
      }))
 
 (defn boxplot
@@ -423,11 +454,11 @@
      ;; TODO pluralize
      (if (empty? data)
        "No data"
-       [:span
+       [:div.m-1
         [:span.mx-2 (str (count data) " rows")]
         (when (trim-zeros?)
           [:span.badge.text-bg-info "Zeros omitted"])   ; could do this but it is  wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows")
-        [:span.ms-2 (signup/with-signup (download/button data (str "bruce-export-" feature ".tsv")))]])
+        [:span.m-2 (signup/with-signup (download/button data (str "bruce-export-" feature ".tsv")))]])
      ;; TODO of course you might want to see these together, so tabs are not good design
      [munson-tabs                       ;TODO need to split or be an arg or simething
       :uviz
