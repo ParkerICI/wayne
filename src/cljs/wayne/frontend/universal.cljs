@@ -482,7 +482,7 @@
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
         feature @(rf/subscribe [:param :universal :feature])
-        data @(rf/subscribe [:data [:universal]])] 
+        data @(rf/subscribe [:data [:universal {:feature feature}]])] 
     [:div
      [:div.row
       [:div.col-6
@@ -529,8 +529,6 @@
        ]]
      ]
     ))
-
-
 
 ;;; Omit zeros on marker_intensity (as per Hadeesha 5/28/2024).
 ;;; Might make more sense to do this on server, but easier here.

@@ -177,6 +177,7 @@
 
 (def repeated-subfeatures (atom {}))
 
+;;; This adds the repeated subfeatures to params, for feature generation 
 (defn extend-params
   [feature-type params]
   (let [repeats (get @repeated-subfeatures feature-type)]
@@ -210,6 +211,8 @@
     nil
     v))
 
+;;; This does the work of computing the feature based on the various selectors
+;;; via compute-feature-variable (multimethod)
 (rf/reg-sub
  :selected-feature
  (fn [db _]
@@ -219,9 +222,9 @@
            (if (= "marker_intensity" (get-in db [:params :features :feature-type]))
              (get-in db [:params :features :feature-feature])
              (let [feature-type (keyword (get-in db [:params :features :feature-bio-feature-type]))
-                   feature-params (get-in db [:params :features])
-                   feature-params (u/map-values clean-select-value feature-params)
-                   feature-params (extend-params feature-type feature-params)]
+                   feature-params (->> (get-in db [:params :features])
+                                       (u/map-values clean-select-value)
+                                       (extend-params feature-type))]
                (when (and feature-type feature-params)
                  (compute-feature-variable feature-type feature-params))))] ;methodized
        ;; NOTE Connects up to query machinery. Not completely sure if this is kosher, but it seems to work
@@ -443,7 +446,7 @@
          #(rf/dispatch [:set-param :heatmap :bio_feature_type %])
          )
         (when-let [bio_feature_type @(rf/subscribe [:param :features :feature-bio-feature-type])]
-           [row "feature" [feature-ui bio_feature_type]] )]))
+          [row "feature" [feature-ui bio_feature_type]] )]))
    ])
 
 (defn feature-list-ui
@@ -459,7 +462,7 @@
                   (not (contains? feature-list feature)))
          [:a #_ :button.btn.btn-sm.btn-secondary.mx-2
           {:href "#"
-           :on-click #(rf/dispatch [:param-update :heatmap2 :feature-list conjs feature])}
+           :on-click #(rf/dispatch [:update-param :heatmap2 :feature-list conjs feature])}
           "add"])
        ]]
      ;; TODO lozenge UI
@@ -468,15 +471,6 @@
        (when-not (empty? feature-list)
          [:a {:href "#" :on-click #(rf/dispatch [:set-param :heatmap2 :feature-list #{}])} "clear"])]
       (str/join ", " (map wu/humanize feature-list))]]))
-
-
-
-;;; → way/params
-(rf/reg-event-db
- :param-update
- (fn [db [_ data-id param f & args]]
-   (let [v (get-in db [:params data-id param])]
-     (hyperphor.way.params/set-param db [:foo data-id param (apply f v args)]))))
 
 (defn ui
   []
@@ -487,6 +481,14 @@
      (if (= "non-spatial" @(rf/subscribe [:param :features :feature-supertype]))
        [l2-nonspatial]
        [l2-spatial])
+     ;; Note: if this is omitted, initial plot doesn't load. So if people don't liek it, keep it but hide it
+     (when-let [feature @(rf/subscribe [:selected-feature])]
+       [row "feature_variable"
+        [:span
+         (wu/humanize feature)
+         [:b (str " " (if (feature-valid? feature) "present " "ND") )] ;TODO EnJun wants to wordsmith these
+
+         ]])     
      ]]
    ])
 

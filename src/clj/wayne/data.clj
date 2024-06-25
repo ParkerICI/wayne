@@ -115,7 +115,10 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
 ;;; Feature-list driven
 (defn heatmap2
   [{:keys [dim feature-list filter]}]
-  (let [feature-list (and feature-list (read-string feature-list))] ;TODO shouldn't be necessary?
+  (let [feature-list (cond
+                       (string? feature-list) (vector feature-list)
+                       (vector? feature-list) feature-list
+                       :else [])]
     (when (and dim (not (empty? feature-list)))
       (-> (select "avg(feature_value) as mean, feature_variable, {dim} {from} 
  where feature_variable in {feature-list}  and {where}
