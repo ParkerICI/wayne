@@ -232,7 +232,7 @@
         filters @(rf/subscribe [:param :universal [:filters]])
         ;; TODO this ends up accumulating a lot in the db, I don't think its fatal but
         ;; TODO also filter needs to be cleaned/regularized for matching
-        in-values @(rf/subscribe [:data [:universal-pop dim feature filters]])
+        in-values @(rf/subscribe [:data [:universal-pop {:dim dim :feature feature :filters filters}]])
         ] 
     [:div
      (for [value all-values
@@ -320,7 +320,7 @@
 
 (defn heatmap
   [dim]
-  (let [data @(rf/subscribe [:data :heatmap])]
+  (let [data @(rf/subscribe [:data [:heatmap]])]
     [v/vega-lite-view
      {:mark :rect
       :data {:values data}
@@ -361,7 +361,7 @@
 ;;; TODO The "n rows, zeros omitted, Download" row doesn't really apply
 (defn heatmap2
   [dim]
-  (let [data (humanize-features @(rf/subscribe [:data :heatmap2]))]
+  (let [data (humanize-features @(rf/subscribe [:data [:heatmap2]]))]
     [:div
      (if (empty? data)
        [:div.alert.alert-info
@@ -416,7 +416,7 @@
 
 (defn dendrogram
   [dim]
-  (dendro/heatmap @(rf/subscribe [:data :heatmap])
+  (dendro/heatmap @(rf/subscribe [:data [:heatmap]])
                   dim
                   :feature_variable
                   :mean
@@ -482,7 +482,7 @@
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
         feature @(rf/subscribe [:param :universal :feature])
-        data @(rf/subscribe [:data :universal])] 
+        data @(rf/subscribe [:data [:universal]])] 
     [:div
      [:div.row
       [:div.col-6
@@ -538,8 +538,10 @@
   [db _ data]
   (if (trim-zeros? db)
     (update-in db
-               [:data :universal]
+               [:data [:universal]]
                (fn [rows]
                  (remove (fn [row] (= 0 (:feature_value row)))
                          rows)))
     db))
+
+
