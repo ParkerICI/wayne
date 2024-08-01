@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>
             <input type="checkbox">
         </td>
-        <td><a href="#">${item.document_id}</a></td>
+        <td>${item.document_id}</td>
         <td>${item.title1}</td>
         <td>${item.title2}</td>
         <td>${item.title3}</td>

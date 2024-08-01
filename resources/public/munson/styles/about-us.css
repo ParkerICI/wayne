@@ -1,11 +1,21 @@
 @import url('main.css');
 
-#mission-research .mission,
+#mission-research {
+  background-color: #fff;
+}
+
+#mission-research .mission{
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 78px 0 52px;
+}
+
 #mission-research .research {
   display: flex;
   flex-direction: row;
   gap: 20px;
-  padding: 58px 0;
+  padding: 52px 0 102px;
 }
 
 #mission-research .mission-content,
@@ -31,13 +41,14 @@
 
 #mission-research h2 {
   font-size: 42px;
-  font-weight: 700;
+  font-weight: 400;
   margin-bottom: 32px;
 }
 
 #mission-research p {
   font-size: 18px;
   line-height: 25px;
+  color: #21272A;
 }
 
 #mission-research .mission-content .text-container,
@@ -51,53 +62,61 @@
 
 #team {
   padding: 80px 0;
-  background-color: #fff;
+  background-color: #F2F2F2;
+}
+
+#team h2 {
+  font-size: 20px;
+  color: #02B192;
+  font-weight: 400;
+  text-transform: uppercase;
 }
 
 #team h1 {
-  font-size: 42px;
-  margin-bottom: 64px;
+  font-size: 48px;
+  font-weight: 400;
 }
 
 .team-list {
   display: flex;
   gap: 16px;
+  align-items: baseline;
+  margin-top: 64px;
 }
 
 .team-member-card {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
   justify-content: center;
 }
 
 .team-member-image img {
   width: 308px;
-  filter: grayscale(100%);
-  opacity: 0.4;
   object-fit: cover;
 }
 
 .profile-info {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
 }
 
 .profile-info h3 {
   margin-top: 16px;
-  font-size: 18px;
+  font-size: 26px;
   font-weight: 400;
   line-height: 25.2px;
   color: #21272a;
 }
 
 .profile-info p {
+  margin-top: 8px;
   font-size: 18px;
   font-weight: 400;
   line-height: 25.2px;
-  text-align: center;
-  color: #697077;
+  text-align: left;
+  color: #ABAEB1;
 }
 
 .social-links {
@@ -126,6 +145,7 @@
 
 #get-involved {
   padding: 64px 0;
+  background-color: #000;
 }
 
 .get-involved-content {
@@ -136,12 +156,13 @@
 }
 
 .get-involved-content h1 {
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 35.2px;
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 48px;
   text-align: left;
-  color: #21272a;
+  color: #fff;
   margin-bottom: 64px;
+  width: 590px;
 }
 
 .get-involved-content h3 {
@@ -150,7 +171,7 @@
   line-height: 20px;
   letter-spacing: 1px;
   text-align: left;
-  color: #001d6c;
+  color: #02B192;
   margin-bottom: 8px;
   text-transform: uppercase;
 }
@@ -160,5 +181,32 @@
   font-weight: 400;
   line-height: 25.2px;
   text-align: left;
-  color: #21272a;
+  color: #fff;
 }
+
+.get-involved-content-text span:first-child {
+  color: #fff
+}
+
+.get-involved-content-text span {
+  color: #9E9E9E
+}
+
+.page-tag {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 12px
+}
+
+.page-tag p {
+  font-size: 14px
+}
+
+.line {
+  width: 43px;
+  height: 13px;
+  background-color: #02B192
+}
+

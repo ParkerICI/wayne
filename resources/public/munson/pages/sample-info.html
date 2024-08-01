@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
    
     <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet"
     />
   </head>
@@ -24,7 +24,7 @@
             <li>
               <a href="query-builder.html">Query Builder</a>
             </li>
-            <li><a href="sample-info.html" class="active">Sample Info</a></li>
+            <li><a href="sample-info.html" class="active-sampleInfo">Sample Info</a></li>
             <li><a href="visualization.html">Visualization</a></li>
             <li><a href="about-us.html">About Us</a></li>
             <li><a href="raw-data-access.html">Raw Data Access</a></li>
@@ -33,9 +33,13 @@
       </div>
     </header>
     <main>
-      <section class="sample-info">
+      <section id="sample-info">
         <div class="container">
           <div class="sample-info-headline">
+            <div class="page-tag">
+              <div class="line"></div>
+              <p>BRUCE DATA PORTAL</p>
+            </div>
             <h1>Sample Info</h1>
             <p>
               Enhance the clarity and reach of your work, ultimately advancing
@@ -94,7 +98,7 @@
           </div>
         </div>
       </section>
-      <section class="sample-data">
+      <section id="sample-data">
         <div class="container">
           <div class="graph-list flex gap-24">
             <div class="graph-sample"></div>
@@ -102,6 +106,11 @@
             <div class="graph-sample"></div>
             <div class="graph-sample"></div>
           </div>
+          
+        </div>
+      </section>
+      <section id="data-table">
+        <div class="container">
           <div class="sample-data-table">
             <div class="tabs">
               <button class="tab active" onclick="openTab(event, 'patients')">
@@ -148,6 +157,10 @@
               <p>Sample data goes here...</p>
             </div>
           </div>
+          <div class="divider-container mt-86">
+            <div class="divider-red"></div>
+            <div class="divider-long-lg"></div>
+          </div>
         </div>
       </section>
       <section class="paper-support">
@@ -156,8 +169,8 @@
             <img src="../assets/images/image-placeholder.png" />
             <div class="paper-support-content">
               <h3>Paper Support</h3>
-              <h2 class="mb-48 mt-8">
-                Genetic Signature May Help Tailor Treatment for Meningioma
+              <h2 class="mb-32 mt-8">
+                Genetic Signature May<br /> Help Tailor Treatment for<br /> Meningioma
               </h2>
               <p>
                 You can’t judge a book by its cover. And, more and more,
@@ -170,7 +183,7 @@
               </p>
               <div class="button-container">
                 <button class="btn btn-primary">Query builder</button>
-                <button class="btn btn-outline">Download Report</button>
+                <button class="btn btn-outlined">Download Report</button>
             </div>
             </div>
           </div>
@@ -276,10 +289,19 @@
       </section>
     </main>
     <footer class="footer">
+      <div class="container mb-32">
+        <div class="flex flex-row justify-between">
+          <img src="../assets/logo.svg" alt="BRUCE Data Portal" />
+          <div class="footer-images">
+            <img src="../assets/images/pici.png" alt="pici"/>
+            <img src="../assets/images/stanford.png" alt="stanford" />
+          </div>
+        </div>
+      </div>
       <div class="container">
         <div class="flex flex-row justify-between">
           <p>BRUCE WEB PORTAL @ 2024. All rights reserved.</p>
-          <div class="footer-links flex gap-24">
+          <div class="footer-images flex gap-24">
             <a href="#">Paper Support</a>
             <a href="#">Who We Are</a>
             <a href="#">Raw Data Access</a>

@@ -50,13 +50,33 @@
   width: 222px;
   border-radius: 4px;
   transition: background-color 0.3s ease, color 0.3s ease;
+  border-radius: 30px;
 }
 
 .btn-primary {
-  background-color: #0f62fe;
+  background-color: #000;
   color: #fff;
 }
 
 .btn-primary:hover {
-  background-color: #0043ce;
+  opacity: 0.8;
+  background-color: #000;
+}
+
+.page-tag {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 12px
+}
+
+.page-tag p {
+  font-size: 14px
+}
+
+.line {
+  width: 43px;
+  height: 13px;
+  background-color: #4586FF
 }

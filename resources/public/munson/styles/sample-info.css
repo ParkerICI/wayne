@@ -1,9 +1,15 @@
 @import url('main.css');
 
-.sample-info {
+#sample-info {
   padding-top: 38px;
   padding-bottom: 38px;
-  background-color: #fff;
+  height: 648px;
+  display: flex;
+  align-items: flex-end;
+  background-image: url('../assets/images/sample-info.jpg');
+  background-repeat: no-repeat;
+  width: 100%;
+  background-size: cover;
 }
 
 .sample-info-headline {
@@ -15,9 +21,10 @@
 
 .sample-info-headline h1 {
   font-size: 43px;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 47.3px;
   text-align: left;
+  color: #fff
 }
 
 .sample-info-headline p {
@@ -25,6 +32,7 @@
   font-weight: 400;
   line-height: 25.2px;
   text-align: left;
+  color: #fff
 }
 
 .sample-info-content {
@@ -33,9 +41,11 @@
 }
 
 .sample-info-graph {
-  width: 535px;
-  height: 272px;
-  border: 1px solid var(--cool-grey-20);
+  height: 284px;
+  background-image: url('../assets/images/sample-graph.jpg');
+  background-repeat: no-repeat;
+  width: 543px;
+  background-size: cover;
 }
 
 .sample-info-data {
@@ -49,17 +59,18 @@
 .sample-info-data-card {
   width: 320px;
   height: 80px;
-  border: 1px solid #dde1e6;
+  border-bottom: 4px solid #DDE1E6;
   display: flex;
   padding: 16px;
   align-items: center;
   gap: 16px;
+  background: #000;
 }
 
 .sample-info-card-media {
   width: 48px;
   height: 48px;
-  background: #dde1e6;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,19 +78,21 @@
 
 .sample-info-card-number {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: 400;
   line-height: 26.4px;
+  color: #FC8084;
 }
 
 .sample-info-card-label {
   font-size: 16px;
   font-weight: 400;
   line-height: 22.4px;
-  color: #697077;
+  color: #fff;
 }
 
-.sample-data {
-  padding-bottom: 58px;
+#sample-data {
+  padding: 40px 0;
+  background-color: #000;
 }
 
 .graph-list {
@@ -91,6 +104,12 @@
   height: 218px;
   border: 1px solid #dde1e6;
   background-color: #fff;
+}
+
+#data-table {
+  padding-top: 58px;
+  padding-bottom: 32px;
+  background-color: #fff
 }
 
 .sample-data-table {
@@ -116,14 +135,16 @@
   transition: background-color 0.3s ease;
   border-bottom: 4px solid transparent;
   font-size: 16px;
+  color: #697077;
+  text-transform: uppercase;
 }
 .tab:hover {
   background-color: transparent;
 }
 .tab.active {
   background-color: transparent;
-  border-bottom: 4px solid #0f62fe !important;
-  color: #0f62fe;
+  border-bottom: 4px solid #000 !important;
+  color: #000;
 }
 
 .tab-content {
@@ -150,9 +171,9 @@ td {
 }
 
 th {
-  background-color: #f2f4f8;
+  background-color: #000;
   font-size: 14px;
-  color: #121619;
+  color: #fff;
   font-weight: 500;
   height: 48px;
 }
@@ -179,8 +200,8 @@ td {
 
 .page-btn:hover,
 .page-btn.active {
-  background-color: #a6c8ff;
-  color: #001d6c;
+  background-color: #000;
+  color: #fff;
 }
 
 .paper-support {
@@ -193,14 +214,15 @@ td {
 }
 .paper-support-content h3 {
   font-size: 20px;
-  color: #001d6c;
+  font-weight: 400;
+  color: #F65157;
   text-transform: uppercase;
 }
 
 .paper-support-content h2 {
-  font-size: 32px;
-  font-weight: 700;
-  line-height: 35.2px;
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 48px;
   color: #21272a;
   margin-top: 8px;
 }
@@ -224,28 +246,51 @@ td {
   cursor: pointer;
   font-size: 20px;
   height: 56px;
+  width: 222px;
   border-radius: 4px;
   transition: background-color 0.3s ease, color 0.3s ease;
+  border-radius: 30px;
 }
 
 .btn-primary {
-  background-color: #0f62fe;
+  background-color: #000;
   color: #fff;
 }
 
 .btn-primary:hover {
-  background-color: #0043ce;
+  opacity: 0.8;
+  background-color: #000;
 }
 
-.btn-outline {
-  background-color: #fff;
-  color: #0f62fe;
-  border: 2px solid #0f62fe;
+.btn-outlined {
+  background: transparent;
+  border: 2px solid #000;
+  font-size: 20px;
+  height: 56px;
 }
 
-.btn-outline:hover {
-  background-color: #e0f0ff;
+.btn-outlined:hover {
+  opacity: 0.7;
+  background: transparent;
 }
+
+.page-tag {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px
+}
+
+.page-tag p {
+  font-size: 14px
+}
+
+.line {
+  width: 43px;
+  height: 13px;
+  background-color: #F65157
+}
+
 
 /* Boostrap replacements TODO TEMP this is to make the feature selctor look semi-reasonable */
 

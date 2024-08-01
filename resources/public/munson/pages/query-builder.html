@@ -6,12 +6,6 @@
     <title>BRUCE Data Portal</title>
     <link rel="stylesheet" href="../styles/main.css" />
     <link rel="stylesheet" href="../styles/sample-info.css" /> <!-- for tabs TODO -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
     <header>
@@ -22,7 +16,7 @@
         <nav>
           <ul>
             <li>
-              <a href="query-builder.html" class="active">Query Builder</a>
+              <a href="query-builder.html" class="active-qb">Query Builder</a>
             </li>
             <li><a href="sample-info.html">Sample Info</a></li>
             <li><a href="visualization.html">Visualization</a></li>
@@ -35,11 +29,16 @@
     <main>
       <section class="hero">
         <div
-          class="container flex justify-between align-center hero-content show"
+          class="container flex justify-between align-center hero-content show mt-64"
         >
           <div class="headline-container">
+            <div class="page-tag-qb">
+              <div class="line-qb"></div>
+              <p>BRUCE DATA PORTAL</p>
+            </div>
             <h1 class="headline">
-              Welcome to the <span class="semi-bold">BRUCE</span> data portal!
+              Welcome to the <span class="headline-blue">BRUCE</span> Data
+              Portal
             </h1>
             <p class="sub-headline">
               Where every day we're driven by our commitment to ending cancer
@@ -49,26 +48,25 @@
           <div class="publications">
             <div class="publication">
               <div class="publication-header">
-                <img src="../assets/images/biorxiv-logo.png" />
+                <p>Latest News</p>
                 <a href="#" class="button-link">
-                  Other Publications
                   <img src="../assets/icons/arrow-square-up-right.svg" />
                 </a>
               </div>
-              <dvi class="divider"></dvi>
               <div class="publication-content">
                 <div class="publication-item">
                   <img src="../assets/images/pub1.png" />
-                  <div>
+                  <div class="publication-text-wrapper">
                     <p class="publication-title">
                       Informational flyer for bioRxiv & medRxiv
                     </p>
                     <p class="publication-date">May 10, 2022</p>
                   </div>
                 </div>
+                <div class="divider"></div>
                 <div class="publication-item">
                   <img src="../assets/images/pub2.png" />
-                  <div>
+                  <div class="publication-text-wrapper">
                     <p class="publication-title">
                       bioRxiv: the preprint server for biology
                     </p>
@@ -77,29 +75,19 @@
                 </div>
               </div>
             </div>
-            <div class="featured-publication">
-              <h2>Carousel placeholder</h2>
-            </div>
           </div>
+          <div class="featured-publication-carousel"></div>
         </div>
       </section>
 
       <div class="container">
         <div id="info-tab-button-row" class="info-tab-button-row">
-          <img src="../assets/icons/layout-navbar-collapse.svg" />
-          Hide information
+          <img src="../assets/icons/merge-horizontal.svg" />
+          Hide overview
         </div>
       </div>
 
       <section class="query-builder-dynamic">
-        <div class="container">
-          <div class="query-builder-headline">
-            <h1>Query Builder</h1>
-            <p>
-              Run sensitivity analyses to explore insights in cancer research,
-              from clinical trials to innovative therapies.
-            </p>
-          </div>
           <div id="app" class="query-builder-content">
 	  </div>
       </section>
@@ -204,10 +192,19 @@
       </section>
     </main>
     <footer class="footer">
+      <div class="container mb-32">
+        <div class="flex flex-row justify-between">
+          <img src="../assets/logo.svg" alt="BRUCE Data Portal" />
+          <div class="footer-images">
+            <img src="../assets/images/pici.png" alt="pici"/>
+            <img src="../assets/images/stanford.png" alt="stanford" />
+          </div>
+        </div>
+      </div>
       <div class="container">
         <div class="flex flex-row justify-between">
           <p>BRUCE WEB PORTAL @ 2024. All rights reserved.</p>
-          <div class="footer-links flex gap-24">
+          <div class="footer-images flex gap-24">
             <a href="#">Paper Support</a>
             <a href="#">Who We Are</a>
             <a href="#">Raw Data Access</a>
@@ -215,10 +212,9 @@
         </div>
       </div>
     </footer>
-  </body>
-  <script src="../js/script.js"></script>
-  <script src="../js/accordion.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="../js/accordion.js"></script>
   <script src="/cljs-out/dev-main.js"></script>
   <script>window.onload = function() { wayne.frontend.munson.init(); }</script>
-
+  </body>
 </html>
