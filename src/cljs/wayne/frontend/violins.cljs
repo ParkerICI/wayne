@@ -119,7 +119,7 @@
 
 (defn violins
   []
-  (let [data @(rf/subscribe [:data :violin])] 
+  (let [data @(rf/subscribe [:data :violin])] ;TODO obso
     [:div
      [:nav.navbar.navbar-expand-lg
       [:ul.navbar-nav.mr-auto

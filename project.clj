@@ -7,7 +7,7 @@
                  [org.clojure/data.json "2.5.0"]
                  [environ "1.2.0"]
                  [com.taoensso/timbre "6.3.1"]
-                 [hyperphor/way "0.1.1-SNAPSHOT"] ;TODO npm dependencies
+                 [hyperphor/way "0.1.3"] ;TODO npm dependencies
                  ;;; Dev only (TODO use profiles)
                  [seesaw "1.5.0"]
 

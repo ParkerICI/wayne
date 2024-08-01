@@ -39,7 +39,7 @@
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
         feature @(rf/subscribe [:param :universal :feature])
-        data @(rf/subscribe [:data :universal])]
+        data @(rf/subscribe [:data [:universal {:feature feature}]])]
 
     [:div.query-builder-content
      [:div.filters-view
