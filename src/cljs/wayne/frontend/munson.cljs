@@ -130,6 +130,23 @@
          [filter-values-ui dim]
          ]))]])
 
+(defn filter-view
+  []
+  [:div.selected-filter-list
+   (u/mapf (fn [[col vals]]
+             (let [in-vals (u/mapf (fn [[v in]]
+                                     (if in v))
+                                   vals)]
+               ;; TODO :span not quite right, and maybe we want to show col/dim?
+               ;; TODO implement close icon
+               [:span (map (fn [v] [:div.tag (wu/humanize v) [:img {:src "../assets/icons/close.svg"}]]) in-vals)]))
+           @(rf/subscribe [:param :universal [:filters]]))
+   [:button.clear-all-button {:type "submit"
+                              :on-click #(do (rf/dispatch [:set-param :universal :filters {}])
+                                             (rf/dispatch [:set-param :heatmap :filter {}])
+                                             (rf/dispatch [:set-param :universal :feature nil]))
+                              } "Clear All"]])
+
 
 (defn munson-new
   []
@@ -167,15 +184,7 @@
            {:src "../assets/icons/merge-horizontal-grey.svg", :alt "navbar-cllapse"}]
           [:img {:src "../assets/icons/external-link.svg", :alt "external-link"}]]]
         [:div#selectedFilterView
-         [:div.selected-filter-list
-          [:div.tag "Final Diagnosis" [:img {:src "../assets/icons/close.svg"}]]
-          [:div.tag "Astrocytoma" [:img {:src "../assets/icons/close.svg"}]]
-          [:div.tag "Ganglioglima" [:img {:src "../assets/icons/close.svg"}]]
-          [:button.clear-all-button {:type "submit"
-                                     :on-click #(do (rf/dispatch [:set-param :universal :filters {}])
-                                                    (rf/dispatch [:set-param :heatmap :filter {}])
-                                                    (rf/dispatch [:set-param :universal :feature nil]))
-                                     } "Clear All"]]
+         [filter-view]
          [:div.divider.mb-24.mt-24]
          ;; Static heatmap
          #_ [:img {:src "../assets/images/graph-frame.png"}]]]
