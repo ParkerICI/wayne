@@ -11,7 +11,7 @@
   []
   [:div
    [:h3 "Patients"]
-   (let [patients @(rf/subscribe [:data :patients])]
+   (let [patients @(rf/subscribe [:data :patients])] ;OBSO?
      [ag/ag-table 
       :patients
       (keys (first patients))

@@ -5,7 +5,7 @@
    [reagent.core :as r]
    [re-frame.core :as rf]
    [hyperphor.way.tabs :as tabs]
-
+   [hyperphor.way.ui.init :as init]
    [wayne.frontend.app :as app]   
    [hyperphor.way.flash :as flash]
    [hyperphor.way.modal :as modal]
@@ -43,6 +43,9 @@
    [:p
     [:a {:href "https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit?usp=sharing"} "Design document"]
     ]
+   [:p
+    [:a {:href "munson/pages/query-builder.html"} "Munson Design"]
+    ]
    #_
    [:ul
     [:li ]
@@ -74,29 +77,7 @@
    #_ [footer]
    ])
 
-(rf/reg-event-db
- ::initialize-db
- (fn [_ _]
-   {:app "wayne"
-    }))
-
-(defn ^:dev/after-load mount-root
-  []
-  ;; The `:dev/after-load` metadata causes this function to be called
-  ;; after shadow-cljs hot-reloads code.
-  ;; This function is called implicitly by its annotation.
-  (rf/clear-subscription-cache!)
-  (let [root (createRoot (gdom/getElement "app"))]
-    (.render root (r/as-element [app-ui]))
-    )
-  )
-
 (defn ^:export init
-  [& user]
-  (let [params (browser/url-params)]
-    (rf/dispatch-sync [::initialize-db])
-    #_ (nav/start!)
-    )
-  (mount-root)
-  )
+  []
+  (init/init app-ui nil))
 

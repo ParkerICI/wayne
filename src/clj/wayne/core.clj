@@ -3,6 +3,7 @@
   (:require [hyperphor.way.server :as server]
             [hyperphor.way.config :as config]
             [wayne.handler :as handler]
+            wayne.data                  ;for the defmethods
             [org.candelbio.multitool.cljcore :as ju]
             [taoensso.timbre :as log]
             [environ.core :as env]))

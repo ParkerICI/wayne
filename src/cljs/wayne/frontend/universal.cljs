@@ -5,11 +5,12 @@
             [hyperphor.way.web-utils :as wu]
             [hyperphor.way.vega :as v]
             [hyperphor.way.tabs :as tabs]
+            [hyperphor.way.feeds :as feeds]
             hyperphor.way.params
-            hyperphor.way.feeds
             [hyperphor.way.download :as download]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
+            [org.candelbio.multitool.math :as um]
             [wayne.frontend.feature-select :as fui]
             [hyperphor.way.cheatmap :as dendro]
             )
@@ -26,114 +27,144 @@
   [data dim feature]
   (let [dim (name dim)
         scale (interpret-scale @(rf/subscribe [:param :features :scale]))] ;TODO wee fui/ref below
-    `{"width" 700,
-      "config" {"axisBand" {"bandPosition" 1, "tickExtra" true, "tickOffset" 0}},
-      "padding" 5,
-      "marks"
-      [{"type" "group",
-        "from" {"facet" {"data" "density", "name" "violin", "groupby" ~dim}},
-        "encode"
-        {"enter"
-         {"yc" {"scale" "layout", "field" ~dim, "band" 0.5},
-          "height" {"signal" "plotWidth"},
-          "width" {"signal" "width"}}},
-        "data"
-        [{"name" "summary",
-          "source" "stats",
-          "transform" [{"type" "filter", "expr" ~(wu/js-format "datum.%s === parent.%s" dim dim)}]}],
-        "marks"
-        [{"type" "area",
-          "from" {"data" "violin"},
-          "encode"
-          {"enter" {"fill" {"scale" "color", "field" {"parent" ~dim}}},
-           "update"
-           {"x" {"scale" "xscale", "field" "value"},
-            "yc" {"signal" "plotWidth / 2"},
-            "height" {"scale" "hscale", "field" "density"}}}}
-         {"type" "symbol"
-          "from" {"data" "source"}
-          "encode"
-          {"enter" {"fill" "black" "y" {"value" 0}},
-           "update"
-           {"x" {"scale" "xscale", "field" "feature_value"},
-            "yc" {"signal" "plotWidth / 2 + 80*(random() - 0.5)"}, ;should scale with fatness
-            "size" {"value" 25},
-            "shape" {"value" "circle"},
-            "strokeWidth" {"value" 1},
-            "stroke" {"value" "#000000"}
-            "fill" {"value" "#000000"}
-            "opacity" {"value" "0.3"}
-            }
-           }
-          }
-         {"type" "rect",
-          "from" {"data" "summary"},
-          "encode"
-          {"enter" {"fill" {"value" "black"}, "height" {"value" 2}},
-           "update"
-           {"x" {"scale" "xscale", "field" "q1"},
-            "x2" {"scale" "xscale", "field" "q3"},
-            "yc" {"signal" "plotWidth / 2"}}}}
-         {"type" "rect",
-          "from" {"data" "summary"},
-          "encode"
-          {"enter" {"fill" {"value" "black"}, "width" {"value" 2}, "height" {"value" 8}},
-           "update" {"x" {"scale" "xscale", "field" "median"}, "yc" {"signal" "plotWidth / 2"}}}}]}],
-      "scales"
-      [{"name" "layout",
-        "type" "band",
-        "range" "height",
-        "domain" {"data" "source", "field" ~dim}
-        "paddingOuter" 0.5}
-       ~(merge
-         {"name" "xscale",
-          "range" "width",
-          "round" true,
-          "domain" {"data" "source", "field" "feature_value"},
-                                        ;       "zero" false,
-          "nice" true
-          }
-         scale)
-       {"name" "hscale",
-        "type" "linear",
-        "range" [0 {"signal" "plotWidth"}],
-        "domain" {"data" "density", "field" "density"}}
-       {"name" "color",
-        "type" "ordinal",
-        "domain" {"data" "source", "field" ~dim},
-        "range" "category"}],
-      "axes"
-      [{"orient" "bottom", "scale" "xscale", "zindex" 1 :title ~(wu/humanize feature)} ;TODO want metacluster in this
-       {"orient" "left", "scale" "layout", "tickCount" 5, "zindex" 1}],
-      "signals"
-      [{"name" "plotWidth", "value" 160}  ;controls fatness of violins
-       {"name" "height", "update" "(plotWidth + 10) * 3"}
-       {"name" "trim", "value" true, #_ "bind" #_ {"input" "checkbox"}}
-       ;; TODO this didn't work, so going out of Vega
-       #_ {"name" "xscales", "value" "linear" "bind"  {"input" "select" "options" ["linear" "log10" "log2" "sqrt"]}}
-       {"name" "bandwidth", "value" 0, #_ "bind" #_ {"input" "range", "min" 0, "max" 0.00002, "step" 0.000001}}], ;Note: very sensitive, was hard to find these values
-      "$schema" "https://vega.github.io/schema/vega/v5.json",
-      "data"
-      [{"name" "source",
-        "values" ~data}
-       {"name" "density",
-        "source" "source",
-        "transform"
-        [{"type" "kde",
-          "field" "feature_value",
-          "groupby" [~dim],
-          "bandwidth" {"signal" "bandwidth"}
-          "extent" {"signal" "trim ? null : [0.0003, 0.0005]"} ;TODO not sure what this does or how to adjust it propery
-          }]} 
-       {"name" "stats",
-        "source" "source",
-        "transform"
-        [{"type" "aggregate",
-          "groupby" [~dim],
-          "fields" ["feature_value" "feature_value" "feature_value"], ;??? do not understand why we need to repeat this three times, but it is important
-          "ops" ["q1" "median" "q3"],
-          "as" ["q1" "median" "q3"]}]}],
-      "description" "A violin plot example showing distributions for pengiun body mass."}))
+    {:description "A violin plot example showing distributions for pengiun body mass.",
+     :$schema "https://vega.github.io/schema/vega/v5.json",
+     :width 700,
+     :signals
+     [{:name "box", :value false, :bind {:input "checkbox"}}
+      {:name "points", :value true, :bind {:input "checkbox"}}
+      {:name "jitter" :value 50 :bind {:input :range, :min 0, :max 200}}
+      {:name "blobWidth", :value 200, :bind {:input :range, :min 100, :max 1000}} ;controls fatness of violins  
+      {:name "blobSpace" :value 750 :bind {:input :range, :min 100, :max 2000}}
+      {:name "height", :update "blobSpace"}
+      {:name "trim", :value true, :bind {:input "checkbox"}}
+
+      ;; TODO this didn't work, so going out of Vega
+      #_ {"name" "xscales", "value" "linear" "bind"  {"input" "select" "options" ["linear" "log10" "log2" "sqrt"]}}
+      {:name "bandwidth", :value 0, :bind {:input "range", :min 0, :max 1.0E-4, :step 1.0E-6}}],
+     :data
+     [{:name "source", :values data}
+      {:name "density",
+       :source "source",
+       :transform
+       [{:type "kde",                   ; Kernel Density Estimation, see https://vega.github.io/vega/docs/transforms/kde/
+         :field "feature_value",
+         :groupby [dim],
+         :bandwidth {:signal "bandwidth"},
+         :resolve "shared"
+         #_ :extent #_ {:signal "trim ? null : [0.0003, 0.0005]"}}]}
+      {:name "stats",
+       :source "source",
+       :transform
+       [{:type "aggregate",
+         :groupby [dim],
+         :fields ["feature_value" "feature_value" "feature_value" "feature_value" "feature_value"],
+         :ops ["min" "q1" "median" "q3" "max"],
+         :as  ["min" "q1" "median" "q3" "max"]}]}]
+
+     :config {:axisBand {:bandPosition 1, :tickExtra true, :tickOffset 0}},
+     :axes
+     [{:orient "bottom", :scale "xscale", :zindex 1, :title (wu/humanize feature)} ;TODO want metacluster in this
+      {:orient "left", :scale "layout", :tickCount 5, :zindex 1}],
+
+     :scales
+     [{:name "layout",
+       :type "band",
+       :range "height",
+       :domain {:data "source", :field dim},
+       :paddingOuter 0.5}
+      (merge
+       {:name "xscale",
+        :range "width",
+        :round true,
+        :domain {:data "source", :field "feature_value"},
+        :nice true}
+       scale)
+      {:name "hscale",
+       :type "linear",
+       :range [0 {:signal "blobWidth"}],
+       :domain {:data "density", :field "density"}}
+      {:name "color", :type "ordinal", :domain {:data "source", :field dim}, :range "category"}],
+     :padding 5,
+     :marks
+     [{:type "group",
+       :from {:facet {:data "density", :name "violin", :groupby dim}},
+       :encode
+       {:update
+        {:yc {:scale "layout", :field dim, :band 0.5},
+         :height {:signal "blobWidth"},
+         :width {:signal "width"}
+         }},
+       :data
+       [{:name "summary",
+         :source "stats",
+         :transform [{:type "filter", :expr (wu/js-format "datum.%s === parent.%s" dim dim)}]}],
+       :marks
+       [{:type "symbol",                ;Points
+         :from {:data "source"},
+         :encode
+         {:enter {:fill "black", :y {:value 0}},
+          :update
+          {:stroke {:value "#000000"},
+           :fill {:value "#000000"},
+           :size {:value 25},
+           :z {:value 1000000},
+           :yc {:signal "blobWidth / 2 + jitter*(random() - 0.5)"}, ;should scale with fatness
+           :strokeWidth {:value 1},
+           :opacity {:signal "points ? 0.3 : 0"},
+           :shape {:value "circle"},
+           :x {:scale "xscale", :field "feature_value"}}}}
+
+        {:type "area",                  ;Violins
+         :from {:data "violin"},
+         :encode
+         {:enter {:fill {:scale "color", :field {:parent dim}}},
+          :update
+          {:x {:scale "xscale", :field "value"},
+           :yc {:signal "blobWidth / 2"},
+           :opacity {:signal "box ? 0 : 1"}
+           :height {:scale "hscale", :field "density"}}}}
+        
+        {:type "rect",                  ;Box
+         :from {:data "summary"},
+         :encode
+         {:enter {:cornerRadius {:value 4} },
+          :update
+          {:x {:scale "xscale", :field "q1"},
+           :x2 {:scale "xscale", :field "q3"},
+           :height {:signal "blobWidth / 10"}
+           :yc {:signal "blobWidth / 2"}
+           :fill {:scale "color", :field {:parent dim}}
+           }}}
+        {:type "rect",                  ;Box outline
+         :from {:data "summary"},
+         :encode
+         {:enter {:stroke {:value "gray"}
+                  :cornerRadius {:value 4}}
+          :update
+          {:x {:scale "xscale", :field "q1"},
+           :x2 {:scale "xscale", :field "q3"},
+           :height {:signal "blobWidth / 10"}
+           :yc {:signal "blobWidth / 2"}
+           :fill {:scale "color", :field {:parent dim}}
+           }}}
+        {:type "rect",                  ;Midpoint
+         :from {:data "summary"},
+         :encode
+         {:enter {:fill {:value "white"}, :width {:value 2}, :height {:value 20}},
+          :update {:x {:scale "xscale", :field "median"}, :yc {:signal "blobWidth / 2"}}}}
+
+        {:type "rect",                  ;Whisker
+         :from {:data "summary"},
+         :encode
+         {:enter {:fill {:value "black"}, :width {:value 2}, :height {:value 2}},
+          :update {:x {:scale "xscale", :field "min"},
+                   :x2 {:scale "xscale", :field "max"}
+                   :yc {:signal "blobWidth / 2"}}}}
+
+
+        ]}],
+     }))
 
 (defn boxplot
   [data dim]
@@ -142,9 +173,11 @@
      :$schema "https://vega.github.io/schema/vega-lite/v5.json",
      :data {:values data}
      :mark {:type "boxplot" :tooltip true}, ; :extent "min-max"
-     :encoding {:y {:field "feature_value", :type "quantitative"
+     :encoding {:x {:field "feature_value", :type "quantitative"
                     :scale scale},
-                :x {:field dim :type "nominal"}
+                :y {:field dim :type "nominal"}
+                ;; TODO this doesn't work, I think to get jitter you need to use Vega, in which case it really should be combined with violin plot I think
+                ;; :yc {:signal "80*(random() - 0.5)"}
                 :color {:field dim :type "nominal", :legend nil}
                 }
      }))
@@ -199,7 +232,7 @@
         filters @(rf/subscribe [:param :universal [:filters]])
         ;; TODO this ends up accumulating a lot in the db, I don't think its fatal but
         ;; TODO also filter needs to be cleaned/regularized for matching
-        in-values @(rf/subscribe [:data [:universal-pop dim feature filters]])
+        in-values @(rf/subscribe [:data [:universal-pop {:dim dim :feature feature :filters filters}]])
         ] 
     [:div
      (for [value all-values
@@ -219,7 +252,7 @@
                        (rf/dispatch
                         [:set-param :universal [:filters dim value] (-> e .-target .-checked)])
                        (rf/dispatch
-                        [:set-param :heatmap [:filter dim value] (-> e .-target .-checked)]))
+                        [:set-param :heatmap2 [:filter dim value] (-> e .-target .-checked)])) ;NOTE: used to be :heatmap and needed for the older versions
           }]
         [:label.form-check-label {:for id :class (when disabled? "text-muted")
                                                    ; text-decoration-line-through
@@ -287,7 +320,7 @@
 
 (defn heatmap
   [dim]
-  (let [data @(rf/subscribe [:data :heatmap])]
+  (let [data @(rf/subscribe [:data [:heatmap]])]
     [v/vega-lite-view
      {:mark :rect
       :data {:values data}
@@ -301,6 +334,56 @@
       :config {:axis {:grid true :tickBand :extent}}
       }
      data]))
+
+;;; TODO use elsewhere. Or a different approach, but this works
+(defn humanize-features
+  [data]
+  (map (fn [{:keys [feature_variable] :as row}]
+         ;; Was adding :feature_human but then that shows up on axis lable
+         (assoc row :feature_variable (wu/humanize feature_variable)))
+       data))
+
+(defn z-transform
+  [ds field]
+  (let [values (map field ds)
+        mean (um/mean values)
+        std (um/standard-deviation values)
+        xvalues (map #(/ (- % mean) std) values)]
+    (map (fn [row xformed] (assoc row field xformed))
+         ds xvalues)))
+
+;;; TODO belongs in way
+(defn z-transform-columns
+  [ds field column-field]
+  (mapcat #(z-transform % field)
+          (vals (group-by column-field ds))))
+
+;;; TODO The "n rows, zeros omitted, Download" row doesn't really apply
+(defn heatmap2
+  [dim]
+  (let [data (humanize-features @(rf/subscribe [:data [:heatmap2]]))]
+    [:div
+     (if (empty? data)
+       [:div.alert.alert-info
+        "No data, you probably need to add some features to the feature list"]
+       (let [data (z-transform-columns data :mean :feature_variable)]
+         ;; TODO the title or something should indicate z-score applied
+         (dendro/heatmap data
+                         dim
+                         :feature_variable
+                         :mean
+                         {:color-scheme "magma"
+                          ;; TODO :overrides, angle x labels
+                          ;; :cluster-rows? false
+                          ;; TODO labels should be on left in this case
+                          ;; TODO color scale is too small.
+                          :aggregate-fn :mean
+                          :patches [[{:orient :bottom :scale :sx}
+                                     {:labelAngle 45}]]}
+                         )
+         ))
+     [fui/feature-list-ui]
+     ]))
 
 (rf/reg-event-db
  :vega-click
@@ -327,44 +410,84 @@
 
 (defn scale-chooser
   []
-  [:span.hstack "Scale: " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])])
+  [:div.hstack.flex
+   "Scale: " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])
+   ])
 
 (defn dendrogram
   [dim]
-  (dendro/heatmap @(rf/subscribe [:data :heatmap])
+  (dendro/heatmap @(rf/subscribe [:data [:heatmap]])
                   dim
                   :feature_variable
-                  :mean))
+                  :mean
+                  {}))
+
+
+(defn munson-tabs
+  "Define a set of tabs. id is a keyword, tabs is a map (array-map is best to preserve order) mapping keywords to ui fns "
+  [id tabs]
+  (let [active (or @(rf/subscribe [:active-tab id])
+                   (ffirst tabs))]      ;Default to first tab 
+    [:div {:id id}
+     [:div.tabs
+      (for [[name view] tabs]
+        ^{:key name}
+        [:button.tab {:class (when (= name active) "active")
+                      :on-click #(rf/dispatch [:choose-tab id name])
+                      } (wu/humanize name)])]
+     (when active
+       ((tabs active)))]))
+
+;;; I suppose this should be a sub?
+(defn trim-zeros?
+  ([]
+   (= "marker_intensity" @(rf/subscribe [:param :features :feature-type])))
+  ;; this version can be called in more places
+  ([db]
+   (= "marker_intensity" (get-in db [:params :features :feature-type])))
+   )
+
+(defn visualization 
+  [dim feature data]
+  (when dim
+    [:div
+     ;; TODO pluralize
+     (if (empty? data)
+       "No data"
+       [:div.m-1
+        [:span.mx-2 (str (count data) " rows")]
+        (when (trim-zeros?)
+          [:span.badge.text-bg-info "Zeros omitted"])   ; could do this but it is  wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows")
+        [:span.m-2 (signup/with-signup (download/button data (str "bruce-export-" feature ".tsv")))]])
+     ;; TODO of course you might want to see these together, so tabs are not good design
+     [munson-tabs                       ;TODO need to split or be an arg or simething
+      :uviz
+      (array-map
+       :violin (fn [] [:div
+                       [v/vega-view (violin data dim feature) data]
+                       [scale-chooser]
+                       ])
+       :boxplot (fn [] [:div.vstack
+                        [v/vega-lite-view (boxplot data dim) data]
+                        [scale-chooser]
+                        ])
+       ;; :heatmap (fn [] [heatmap dim])
+       :heatmap (fn [] [heatmap2 dim])
+       ;; :dendrogram (fn [] [dendrogram dim])
+       )]])
+  )
+
 
 (defn ui
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
         feature @(rf/subscribe [:param :universal :feature])
-        data @(rf/subscribe [:data :universal])] 
+        data @(rf/subscribe [:data [:universal {:feature feature}]])] 
     [:div
      [:div.row
       [:div.col-6
        [:h4 "Visualization"]
-       (when dim
-         [:div
-          ;; TODO pluralize
-          [:span (str (count data) " rows")]   ; could do this but it is wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows"))
-          [:span.ms-2 (signup/with-signup (download/button data (str "bruce-export-" feature ".tsv")))]
-          ;; TODO of course you might want to see these together, so tabs are not good design
-          [tabs/tabs
-           :uviz
-           (array-map
-            :violin (fn [] [:div
-                            [scale-chooser]
-                            [v/vega-view (violin data dim feature) data]
-                            ])
-            :boxplot (fn [] [:div.vstack
-                             [scale-chooser]
-                             [v/vega-lite-view (boxplot data dim) data]])
-            ;; :heatmap (fn [] [heatmap data dim "site"])
-            :heatmap (fn [] [heatmap dim])
-            :dendrogram (fn [] [dendrogram dim])
-            )]])]
+       [visualization dim feature data]]
       [:div.col-6
        ;; Temp off because it hides dendrogram
        #_ (when dim (fgrid/ui dim))]
@@ -375,8 +498,10 @@
        [:h4 "Compare"]
        [dim-chooser
         "compare"
+        ;; TODO OK this is getting ridiculous
         #(do (rf/dispatch [:set-param :universal :dim %])
-             (rf/dispatch [:set-param :heatmap :dim %]))]
+             #_ (rf/dispatch [:set-param :heatmap :dim %]) ; out of service
+             (rf/dispatch [:set-param :heatmap2 :dim %]))]
        ]
       [:div.col-3
        [:h4 "Filter"
@@ -404,4 +529,17 @@
        ]]
      ]
     ))
+
+;;; Omit zeros on marker_intensity (as per Hadeesha 5/28/2024).
+;;; Might make more sense to do this on server, but easier here.
+(defmethod feeds/postload :universal
+  [db _ data]
+  (if (trim-zeros? db)
+    (update-in db
+               [:data [:universal]]
+               (fn [rows]
+                 (remove (fn [row] (= 0 (:feature_value row)))
+                         rows)))
+    db))
+
 

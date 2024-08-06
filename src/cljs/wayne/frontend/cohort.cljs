@@ -1,10 +1,7 @@
 (ns wayne.frontend.cohort
   (:require [re-frame.core :as rf]
-            [hyperphor.way.tabs :as tab]
             [hyperphor.way.vega :as v]
             [wayne.frontend.fgrid :as fgrid]
-            [hyperphor.way.web-utils :as wu]
-            [org.candelbio.multitool.core :as u]
             )
   )
 
@@ -27,17 +24,12 @@
            }}
    })
 
-
-(defmethod tab/set-tab [:tab :about]
-  [id tab db]
-  (rf/dispatch [:fetch-once :cohort]))
-
 (defn ui
   []
   [:div
    [:h3 "About the cohort and analysis"]
    ;; Debug
-   (let [cohorts @(rf/subscribe [:data :cohort])]
+   (let [cohorts @(rf/subscribe [:data [:cohort]])]
      [:div
       [v/vega-lite-view (bar-spec cohorts) cohorts]
       [fgrid/ui]

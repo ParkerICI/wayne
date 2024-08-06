@@ -1,0 +1,212 @@
+@import url('main.css');
+
+#mission-research {
+  background-color: #fff;
+}
+
+#mission-research .mission{
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 78px 0 52px;
+}
+
+#mission-research .research {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 52px 0 102px;
+}
+
+#mission-research .mission-content,
+#mission-research .research-content {
+  display: flex;
+  align-items: center;
+  gap: 80px;
+}
+
+#mission-research .mission-content {
+  flex-direction: row;
+}
+
+#mission-research .research-content {
+  flex-direction: row-reverse;
+  background-color: #fff;
+}
+
+#mission-research .image-container img {
+  max-width: 100%;
+  height: auto;
+}
+
+#mission-research h2 {
+  font-size: 42px;
+  font-weight: 400;
+  margin-bottom: 32px;
+}
+
+#mission-research p {
+  font-size: 18px;
+  line-height: 25px;
+  color: #21272A;
+}
+
+#mission-research .mission-content .text-container,
+#mission-research .research-content .text-container {
+  flex: 1;
+}
+
+.research {
+  background-color: #fff;
+}
+
+#team {
+  padding: 80px 0;
+  background-color: #F2F2F2;
+}
+
+#team h2 {
+  font-size: 20px;
+  color: #02B192;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+#team h1 {
+  font-size: 48px;
+  font-weight: 400;
+}
+
+.team-list {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  margin-top: 64px;
+}
+
+.team-member-card {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+}
+
+.team-member-image img {
+  width: 308px;
+  object-fit: cover;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+.profile-info h3 {
+  margin-top: 16px;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 25.2px;
+  color: #21272a;
+}
+
+.profile-info p {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 25.2px;
+  text-align: left;
+  color: #ABAEB1;
+}
+
+.social-links {
+  display: flex;
+  margin-top: 16px;
+  gap: 16px;
+}
+
+.team-member-card .contact-button {
+  background-color: transparent;
+  width: 180px;
+  border: 2px solid #0f62fe;
+  color: #0f62fe;
+  padding: 10px 15px;
+  margin-top: 16px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.team-member-card .contact-button:hover {
+  background-color: #0f62fe;
+  color: #fff;
+}
+
+#get-involved {
+  padding: 64px 0;
+  background-color: #000;
+}
+
+.get-involved-content {
+  margin-left: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.get-involved-content h1 {
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 48px;
+  text-align: left;
+  color: #fff;
+  margin-bottom: 64px;
+  width: 590px;
+}
+
+.get-involved-content h3 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 20px;
+  letter-spacing: 1px;
+  text-align: left;
+  color: #02B192;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.get-involved-content p {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 25.2px;
+  text-align: left;
+  color: #fff;
+}
+
+.get-involved-content-text span:first-child {
+  color: #fff
+}
+
+.get-involved-content-text span {
+  color: #9E9E9E
+}
+
+.page-tag {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 12px
+}
+
+.page-tag p {
+  font-size: 14px
+}
+
+.line {
+  width: 43px;
+  height: 13px;
+  background-color: #02B192
+}
+

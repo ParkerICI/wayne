@@ -1,0 +1,305 @@
+@import url('main.css');
+
+#sample-info {
+  padding-top: 38px;
+  padding-bottom: 38px;
+  height: 648px;
+  display: flex;
+  align-items: flex-end;
+  background-image: url('../assets/images/sample-info.jpg');
+  background-repeat: no-repeat;
+  width: 100%;
+  background-size: cover;
+}
+
+.sample-info-headline {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.sample-info-headline h1 {
+  font-size: 43px;
+  font-weight: 400;
+  line-height: 47.3px;
+  text-align: left;
+  color: #fff
+}
+
+.sample-info-headline p {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 25.2px;
+  text-align: left;
+  color: #fff
+}
+
+.sample-info-content {
+  display: flex;
+  gap: 40px;
+}
+
+.sample-info-graph {
+  height: 284px;
+  background-image: url('../assets/images/sample-graph.jpg');
+  background-repeat: no-repeat;
+  width: 543px;
+  background-size: cover;
+}
+
+.sample-info-data {
+  display: flex;
+  flex-flow: column;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  height: 272px;
+}
+
+.sample-info-data-card {
+  width: 320px;
+  height: 80px;
+  border-bottom: 4px solid #DDE1E6;
+  display: flex;
+  padding: 16px;
+  align-items: center;
+  gap: 16px;
+  background: #000;
+}
+
+.sample-info-card-media {
+  width: 48px;
+  height: 48px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sample-info-card-number {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 26.4px;
+  color: #FC8084;
+}
+
+.sample-info-card-label {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 22.4px;
+  color: #fff;
+}
+
+#sample-data {
+  padding: 40px 0;
+  background-color: #000;
+}
+
+.graph-list {
+  padding: 20px 0;
+}
+
+.graph-sample {
+  width: 313px;
+  height: 218px;
+  border: 1px solid #dde1e6;
+  background-color: #fff;
+}
+
+#data-table {
+  padding-top: 58px;
+  padding-bottom: 32px;
+  background-color: #fff
+}
+
+.sample-data-table {
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #dde1e6;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 2px solid #dde1e6;
+  height: 58px;
+}
+
+.tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #fff;
+  border: none;
+  outline: none;
+  transition: background-color 0.3s ease;
+  border-bottom: 4px solid transparent;
+  font-size: 16px;
+  color: #697077;
+  text-transform: uppercase;
+}
+.tab:hover {
+  background-color: transparent;
+}
+.tab.active {
+  background-color: transparent;
+  border-bottom: 4px solid #000 !important;
+  color: #000;
+}
+
+.tab-content {
+  display: none;
+  padding: 20px 0;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  border: 1px solid #dde1e6;
+}
+
+th,
+td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #dde1e6;
+}
+
+th {
+  background-color: #000;
+  font-size: 14px;
+  color: #fff;
+  font-weight: 500;
+  height: 48px;
+}
+
+td {
+  font-size: 14px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-btn {
+  padding: 8px 12px;
+  margin: 0 2px;
+  cursor: pointer;
+  border: none;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+  color: #0f62fe;
+}
+
+.page-btn:hover,
+.page-btn.active {
+  background-color: #000;
+  color: #fff;
+}
+
+.paper-support {
+  padding: 60px 0;
+  background-color: #fff;
+}
+
+.paper-support-content {
+  margin-left: 80px;
+}
+.paper-support-content h3 {
+  font-size: 20px;
+  font-weight: 400;
+  color: #F65157;
+  text-transform: uppercase;
+}
+
+.paper-support-content h2 {
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 48px;
+  color: #21272a;
+  margin-top: 8px;
+}
+.paper-support-content p {
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 25.2px;
+  color: #21272a;
+  margin-top: 8px;
+}
+
+.button-container {
+  display: flex;
+  gap: 16px;
+  margin-top: 64px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  height: 56px;
+  width: 222px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border-radius: 30px;
+}
+
+.btn-primary {
+  background-color: #000;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  opacity: 0.8;
+  background-color: #000;
+}
+
+.btn-outlined {
+  background: transparent;
+  border: 2px solid #000;
+  font-size: 20px;
+  height: 56px;
+}
+
+.btn-outlined:hover {
+  opacity: 0.7;
+  background: transparent;
+}
+
+.page-tag {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px
+}
+
+.page-tag p {
+  font-size: 14px
+}
+
+.line {
+  width: 43px;
+  height: 13px;
+  background-color: #F65157
+}
+
+
+/* Boostrap replacements TODO TEMP this is to make the feature selctor look semi-reasonable */
+
+.row {
+  display: flex;
+}
+.col-3 {
+  width: 160px;
+}
+.col-7 {
+  width: 440px;
+}

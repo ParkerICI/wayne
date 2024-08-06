@@ -102,25 +102,25 @@
         thing)))
 
 ;;; TODO nil should be option (could be in values
-;;; TODO extra-actions
+;;; NOTE used to use :set-param-if which didn't work well, I think that can be removed from Way
 (defn select-widget-minimal
   [id values & [extra-action]]
-  ;; TODO Something wrong, smelly about this. And doesn't always work
-  (when (not (empty? values))
-    ;; -if removal seems to fix things? This is wrong and breaks updates
-    (rf/dispatch [:set-param-if :features id (safe-name (first values))])) ;TODO smell? But need to initialize somewhere
-  (wu/select-widget
-   id
-   @(rf/subscribe [:param :features id])
+  (let [current-value @(rf/subscribe [:param :features id])]
+    (when (and (not (empty? values))
+               (not (contains? (set values) current-value)))
+      (rf/dispatch [:set-param :features id (safe-name (first values)) ])) 
+    (wu/select-widget
+     id
+     current-value
      #(do
         (rf/dispatch [:set-param :features id %])
         (when extra-action (extra-action %) )) ;ugn
-   (map (fn [v]
-          {:value v :label (if v (wu/humanize v)  "---")})
-         values)
-   nil
-   nil
-   {:display "inherit" :width "inherit" :margin-left "2px"})) ;TODO tooltips
+     (map (fn [v]
+            {:value v :label (if v (wu/humanize v)  "---")})
+          values)
+     nil
+     nil
+     {:display "inherit" :width "inherit" :margin-left "2px"}))) ;TODO tooltips
 
 (defn select-widget
   [id values & [extra-action]]
@@ -177,6 +177,7 @@
 
 (def repeated-subfeatures (atom {}))
 
+;;; This adds the repeated subfeatures to params, for feature generation 
 (defn extend-params
   [feature-type params]
   (let [repeats (get @repeated-subfeatures feature-type)]
@@ -210,6 +211,8 @@
     nil
     v))
 
+;;; This does the work of computing the feature based on the various selectors
+;;; via compute-feature-variable (multimethod)
 (rf/reg-sub
  :selected-feature
  (fn [db _]
@@ -219,9 +222,9 @@
            (if (= "marker_intensity" (get-in db [:params :features :feature-type]))
              (get-in db [:params :features :feature-feature])
              (let [feature-type (keyword (get-in db [:params :features :feature-bio-feature-type]))
-                   feature-params (get-in db [:params :features])
-                   feature-params (u/map-values clean-select-value feature-params)
-                   feature-params (extend-params feature-type feature-params)]
+                   feature-params (->> (get-in db [:params :features])
+                                       (u/map-values clean-select-value)
+                                       (extend-params feature-type))]
                (when (and feature-type feature-params)
                  (compute-feature-variable feature-type feature-params))))] ;methodized
        ;; NOTE Connects up to query machinery. Not completely sure if this is kosher, but it seems to work
@@ -419,6 +422,13 @@
   []
   [:i "TBD"])
 
+;;; → Multitool?
+(defn conjs
+  [coll thing]
+  (if (nil? coll)
+    #{thing}
+    (conj coll thing)))
+
 (defn l2-nonspatial
   []
   [:div 
@@ -436,24 +446,49 @@
          #(rf/dispatch [:set-param :heatmap :bio_feature_type %])
          )
         (when-let [bio_feature_type @(rf/subscribe [:param :features :feature-bio-feature-type])]
-           [row "feature" [feature-ui bio_feature_type]] )]))
-   (let [feature @(rf/subscribe [:selected-feature])]
-     [:div
-      [row "feature_variable"
-       [:span
-        feature 
-        [:b (str " " (if (feature-valid? feature) "valid" "invalid") )]]]])
+          [row "feature" [feature-ui bio_feature_type]] )]))
    ])
+
+(defn feature-list-ui
+  []
+  (let [feature @(rf/subscribe [:selected-feature])
+        feature-list @(rf/subscribe [:param :heatmap2 :feature-list])]
+    [:div
+     [row "feature_variable"
+      [:span
+       (wu/humanize feature)
+       [:b (str " " (if (feature-valid? feature) "present " "ND") )] ;TODO EnJun wants to wordsmith these
+       (when (and (feature-valid? feature)
+                  (not (contains? feature-list feature)))
+         [:a #_ :button.btn.btn-sm.btn-secondary.mx-2
+          {:href "#"
+           :on-click #(rf/dispatch [:update-param :heatmap2 :feature-list conjs feature])}
+          "add"])
+       ]]
+     ;; TODO lozenge UI
+     [row
+      [:span "feature list "
+       (when-not (empty? feature-list)
+         [:a {:href "#" :on-click #(rf/dispatch [:set-param :heatmap2 :feature-list #{}])} "clear"])]
+      (str/join ", " (map wu/humanize feature-list))]]))
 
 (defn ui
   []
   [:div
    [:div.row
     [:div.col-10
-     [select-widget :feature-supertype [:non-spatial :spatial]]
+     [select-widget :feature-supertype ["non-spatial" "spatial"]]
      (if (= "non-spatial" @(rf/subscribe [:param :features :feature-supertype]))
        [l2-nonspatial]
        [l2-spatial])
+     ;; Note: if this is omitted, initial plot doesn't load. So if people don't liek it, keep it but hide it
+     (when-let [feature @(rf/subscribe [:selected-feature])]
+       [row "feature_variable"
+        [:span
+         (wu/humanize feature)
+         [:b (str " " (if (feature-valid? feature) "present " "ND") )] ;TODO EnJun wants to wordsmith these
+
+         ]])     
      ]]
    ])
 
