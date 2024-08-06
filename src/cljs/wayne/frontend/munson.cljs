@@ -80,7 +80,7 @@
      "pHGG")})
 
 (defn filter-values-ui
-  [dim]
+  [id dim]
   (let [all-values (get filter-features dim)
         feature @(rf/subscribe [:param :universal [:feature]])
         filters @(rf/subscribe [:param :universal [:filters]])
@@ -88,7 +88,7 @@
         ;; TODO also filter needs to be cleaned/regularized for matching
         in-values @(rf/subscribe [:data [:universal-pop {:dim dim :feature feature :filters filters}]])
         ] 
-    [:div.accordian-panel
+    [:div.accordian-panel {:id id}
      (for [value all-values
            :let [id (str "dim" (name dim) "-" value)
                  checked? (get-in filters [dim value])
@@ -115,6 +115,13 @@
      ]))
 
 
+
+;;; Very non-re-frame sue me
+(defn toggle
+  [id class]
+  (let [elt (.getElementById js/document id)]
+    (.toggle (.-classList elt) class)))
+
 (defn filter-ui
   []
   [:div.filters
@@ -126,8 +133,10 @@
         [:div.accordian.accordian-collapsed ;TODO collapsed maybe not
          [:div.accordian-title
           [:h3 (wu/humanize dim)]
-          [:img {:src "../assets/icons/minus-grey.svg"}]] ;TODO
-         [filter-values-ui dim]
+          [:img {:src "../assets/icons/minus-grey.svg"
+                 :on-click #(toggle collapse-id "select-form-group") ;Note: using this css style for display: none;
+                 }]] ;TODO
+         [filter-values-ui collapse-id dim]
          ]))]])
 
 (defn filter-view
@@ -148,81 +157,77 @@
                               } "Clear All"]])
 
 
+
+;;; There's this thing abstraction, you probably haven't heard of it.
+(defn collapse-panel
+  [title content]
+  (let [id (str "collapser-" (u/dehumanize title))]
+    [:div.featured-view.relative
+     [:div.features-view
+      [:div.features-view-header
+       [:div.flex.align-center.flex-row.gap-8 [:h3 title]]
+       [:div.flex.gap-16
+        [:img#toggleSelectForm {:src "../assets/icons/merge-horizontal-grey.svg"
+                                :on-click #(toggle id "select-form-group")
+                                }]
+        ;; TODO prob don't want this
+        [:img {:src "../assets/icons/download.svg"}]]]
+      [:div.select-form-group.mt-24 {:id id}
+       content
+       ]]]))
+
 (defn munson-new
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
         feature @(rf/subscribe [:param :universal :feature])
         data @(rf/subscribe [:data [:universal {:feature feature}]])]
-  [:section.query-builder-section
-   [:div.container
-    [:div.query-builder-content
-     [:div.filters-view
-      [:div.query-builder-content-headline [:h1 "Query Builder"]]
-      [:div.dataset-selection
-       [:h3.mb-30.font-bold "Compare across"]
-       [:div.dataset-tags
-        [dim-selector :final_diagnosis "../assets/icons/diagnosis-icon.svg" dim]
-        [dim-selector :who_grade "../assets/icons/question-icon.svg" dim]
-        [dim-selector :ROI "../assets/icons/roi-icon.svg" dim]
-        [dim-selector :recurrence "../assets/icons/recurrence-icon.svg" dim]
-        [dim-selector :idh_status "../assets/icons/file-chart-icon.svg" dim]
-        [dim-selector :treatment "../assets/icons/treatment-icon.svg" dim]
-        ]]
-      [:div.divider.mt-30.mb-30]
-      [filter-ui]]
-     [:div.pt-20
-      [:p.query-builder-section-subheadline
-       "Run sensitivity analyses to explore insights in cancer research,\n                from clinical"
-       [:br {:clear "none"}]
-       "trials to innovative therapies."]
-      [:div.selected-filter-wrapper
-       [:div.selected-filter-view
-        [:div.filter-headline
-         [:div.flex.align-center.justify-content-between.gap-8 [:h3#active-tag-text (get dims @(rf/subscribe [:param :universal :dim]))]]
-         [:div.flex.align-center.justify-content-between.gap-16
-          [:img#toggleSelectedFilterView
-           {:src "../assets/icons/merge-horizontal-grey.svg", :alt "navbar-cllapse"}]
-          [:img {:src "../assets/icons/external-link.svg", :alt "external-link"}]]]
-        [:div#selectedFilterView
-         [filter-view]
-         [:div.divider.mb-24.mt-24]
-         ;; Static heatmap
-         #_ [:img {:src "../assets/images/graph-frame.png"}]]]
-       [:div.featured-view.relative
-        [:div.features-view
-         [:div.features-view-header
-          [:div.flex.align-center.flex-row.gap-8 [:h3 "Feature Selection"]]
+    [:section.query-builder-section
+     [:div.container
+      [:div.query-builder-content
+       [:div.filters-view
+        [:div.query-builder-content-headline [:h1 "Query Builder"]]
+        [:div.dataset-selection
+         [:h3.mb-30.font-bold "Compare across"]
+         [:div.dataset-tags
+          [dim-selector :final_diagnosis "../assets/icons/diagnosis-icon.svg" dim]
+          [dim-selector :who_grade "../assets/icons/question-icon.svg" dim]
+          [dim-selector :ROI "../assets/icons/roi-icon.svg" dim]
+          [dim-selector :recurrence "../assets/icons/recurrence-icon.svg" dim]
+          [dim-selector :idh_status "../assets/icons/file-chart-icon.svg" dim]
+          [dim-selector :treatment "../assets/icons/treatment-icon.svg" dim]
+          ]]
+        [:div.divider.mt-30.mb-30]
+        [filter-ui]]
+       [:div.pt-20
+        [:p.query-builder-section-subheadline
+         "Run sensitivity analyses to explore insights in cancer research, from clinical trials to innovative therapies."]
+        [:div.selected-filter-wrapper
+         [collapse-panel (get dims @(rf/subscribe [:param :universal :dim])) 
+          [:div#selectedFilterView
+           [filter-view]
+           [:div.divider.mb-24.mt-24]
+           ;; Static heatmap
+           #_ [:img {:src "../assets/images/graph-frame.png"}]
+           ]
+         ]
+
+         [collapse-panel "Feature Selection"
           (if dim
             [:div {:style {:width "500px"}} ;TODO
              (when-not feature
                [universal/feature-second-warning])
              [fui/ui]]
-            [universal/dim-first-warning])
-          [:div.flex.gap-16
-           [:img#toggleSelectForm {:src "../assets/icons/merge-horizontal-grey.svg"}]
-           [:img {:src "../assets/icons/download.svg"}]]]
-         [:div.select-form-group.mt-24
-          [:div.custom-select-wrapper
-           [:div.custom-select
-            [:select
-             [:option {:selected "selected", :value "EphA2"} "EphA2"]
-             [:option {:value "Option 1"} "Option 1"]
-             [:option {:value "Option 2"} "Option 2"]
-             [:option {:value "Option 3"} "Option 3"]]]]]]]
-       [:div.data-view.relative
-        [:div.visualization-header
-         [:div.flex.gap-8.align-center [:h3 "Visualization"]]
-         [:div.flex.gap-16
-          [:img#toggleVisualization {:src "../assets/icons/merge-horizontal-grey.svg"}]
-          [:img {:src "../assets/icons/download.svg"}]]]
-        [:div#visualization.visualization-container
-         [:div
-          [universal/visualization dim feature data]
-          #_
-          [:div.no-data.text-center
-           [:img {:src "../assets/icons/empty-box.svg"}]
-           [:h3 "No Data Found"]
-           [:p "Enter or adjust your filters to see data."]]]]]]]]]])
+            [universal/dim-first-warning])]
+
+         [collapse-panel "Visualization"
+          [:div#visualization.visualization-container
+           [:div
+            [universal/visualization dim feature data]
+            #_
+            [:div.no-data.text-center
+             [:img {:src "../assets/icons/empty-box.svg"}]
+             [:h3 "No Data Found"]
+             [:p "Enter or adjust your filters to see data."]]]]]]]]]])
   )
 
 #_
