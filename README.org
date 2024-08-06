@@ -2,8 +2,7 @@ Prototyping for BRUCE website
 
 * Run locally
 
-    shadow-cljs watch app
-    lein run [<port>]
+=bin/smoke-test.sh=
 
 * Specs
 
@@ -11,15 +10,17 @@ See https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJ
 
 * Deploy
 
-Heroku, =bin/deploy.sh=
+To Heroku:
 
-Credentials are supplied through env vars:
+=bin/deploy.sh=
+
+Site: https://nameless-plains-89326-4086253ce8be.herokuapp.com/
+
+Credentials are supplied through Heroku config vars:
+
 =GOOGLE_APPLICATION_CREDENTIALS: google-credentials.json=
 =GOOGLE_CREDENTIALS:             <json string>=
 
-On Heroku, the creds are written to the file =google-credentials.json= on startup.
 
-https://nameless-plains-89326-4086253ce8be.herokuapp.com/
 
-Credentials: PICI/Broooce
 

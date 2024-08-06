@@ -1,5 +1,5 @@
 ;;; Wayne config
 {:app-title "BRUCE Data Portal"
  :app-main "wayne.frontend.core.init"
- :colophon  ["Copyright © " [:a {:href "http://hyperphor.com" :style "color: white;"} "Hyperphor"] " 2023-2024"] ;TODO
+ :colophon  ["Copyright © " [:a {:href "http://parkerici.org" :style "color: white;"} "Parker Institute"] " 2023-2024"] 
  }
