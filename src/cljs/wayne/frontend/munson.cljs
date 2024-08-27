@@ -24,6 +24,17 @@
    :treatment "Treatment"
    })
 
+;;; Very non-re-frame sue me
+(defn toggle
+  [id class]
+  (let [elt (.getElementById js/document id)]
+    (.toggle (.-classList elt) class)))
+
+(defn open
+  [id class]
+  (let [elt (.getElementById js/document id)]
+    (.remove (.-classList elt) class)))
+
 (defn dim-selector
   [dim icon-url active-dim]
   (let [text (get dims dim)]
@@ -32,7 +43,10 @@
       :class (when (= dim active-dim) "dataset-tag-active")
       :on-click #(do
                    (rf/dispatch [:set-param :universal :dim dim])
-                   (rf/dispatch [:set-param :heatmap2 :dim dim]))}
+                   (rf/dispatch [:set-param :heatmap2 :dim dim])
+                   (open "collapser-feature" "select-form-group")
+                   (open "collapser-viz" "select-form-group") ;TODO maybe open only on feature selection
+                   )}
      [:img.icon {:src icon-url, :alt text}]
      text]))
 
@@ -116,12 +130,6 @@
 
 
 
-;;; Very non-re-frame sue me
-(defn toggle
-  [id class]
-  (let [elt (.getElementById js/document id)]
-    (.toggle (.-classList elt) class)))
-
 (defn filter-ui
   []
   [:div.filters
@@ -157,11 +165,9 @@
                               } "Clear All"]])
 
 
-
-;;; There's this thing abstraction, you probably haven't heard of it.
 (defn collapse-panel
-  [title content]
-  (let [id (str "collapser-" (u/dehumanize title))]
+  [id title content]
+  (let [id (str "collapser-" (name id))]
     [:div.featured-view.relative
      [:div.features-view
       [:div.features-view-header
@@ -172,7 +178,7 @@
                                 }]
         ;; TODO prob don't want this
         [:img {:src "../assets/icons/download.svg"}]]]
-      [:div.select-form-group.mt-24 {:id id}
+      [:div.select-form-group.mt-24 {:id id}              ;.select-form-group if start collapsed
        content
        ]]]))
 
@@ -202,7 +208,10 @@
         [:p.query-builder-section-subheadline
          "Run sensitivity analyses to explore insights in cancer research, from clinical trials to innovative therapies."]
         [:div.selected-filter-wrapper
-         [collapse-panel (get dims @(rf/subscribe [:param :universal :dim])) 
+         [collapse-panel
+          :dim
+          (or (get dims @(rf/subscribe [:param :universal :dim]))
+              "←  Select a dimension")
           [:div#selectedFilterView
            [filter-view]
            [:div.divider.mb-24.mt-24]
@@ -211,7 +220,7 @@
            ]
          ]
 
-         [collapse-panel "Feature Selection"
+         [collapse-panel :feature "Feature Selection"
           (if dim
             [:div {:style {:width "500px"}} ;TODO
              (when-not feature
@@ -219,7 +228,8 @@
              [fui/ui]]
             [universal/dim-first-warning])]
 
-         [collapse-panel "Visualization"
+         [collapse-panel :viz [:span "Visualization " (when @(rf/subscribe [:loading?])
+       (wu/spinner 1))]
           [:div#visualization.visualization-container
            [:div
             [universal/visualization dim feature data]

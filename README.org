@@ -19,6 +19,7 @@ Site: https://nameless-plains-89326-4086253ce8be.herokuapp.com/
 Credentials are supplied through Heroku config vars:
 
 =GOOGLE_APPLICATION_CREDENTIALS: google-credentials.json=
+
 =GOOGLE_CREDENTIALS:             <json string>=
 
 
