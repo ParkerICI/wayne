@@ -232,7 +232,7 @@
         filters @(rf/subscribe [:param :universal [:filters]])
         ;; TODO this ends up accumulating a lot in the db, I don't think its fatal but
         ;; TODO also filter needs to be cleaned/regularized for matching
-        in-values @(rf/subscribe [:data [:universal-pop {:dim dim :feature feature :filters filters}]])
+        in-values @(rf/subscribe [:data [:populate {:dim dim :feature feature :filters filters}]])
         ] 
     [:div
      (for [value all-values
@@ -482,7 +482,8 @@
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
         feature @(rf/subscribe [:param :universal :feature])
-        data @(rf/subscribe [:data [:universal {:feature feature}]])] 
+        filters @(rf/subscribe [:param :universal [:filters]])
+        data @(rf/subscribe [:data [:universal {:feature feature :filters filters :dim dim}]])] 
     [:div
      [:div.row
       [:div.col-6
@@ -532,6 +533,7 @@
 
 ;;; Omit zeros on marker_intensity (as per Hadeesha 5/28/2024).
 ;;; Might make more sense to do this on server, but easier here.
+;;; TODO not being called? 
 (defmethod feeds/postload :universal
   [db _ data]
   (if (trim-zeros? db)

@@ -138,7 +138,7 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
   [params]
   (query1 (params-remap params)))
 
-(defmethod wd/data :universal-pop
+(defmethod wd/data :populate
   [params]
   (query1-pop (params-remap params)))
 

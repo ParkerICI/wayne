@@ -100,7 +100,7 @@
         filters @(rf/subscribe [:param :universal [:filters]])
         ;; TODO this ends up accumulating a lot in the db, I don't think its fatal but
         ;; TODO also filter needs to be cleaned/regularized for matching
-        in-values @(rf/subscribe [:data [:universal-pop {:dim dim :feature feature :filters filters}]])
+        in-values @(rf/subscribe [:data [:populate {:dim dim :feature feature :filters filters}]])
         ] 
     [:div.accordian-panel {:id id}
      (for [value all-values
@@ -186,7 +186,8 @@
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
         feature @(rf/subscribe [:param :universal :feature])
-        data @(rf/subscribe [:data [:universal {:feature feature}]])]
+        filters @(rf/subscribe [:param :universal [:filters]])
+        data @(rf/subscribe [:data [:universal {:feature feature :filters filters :dim dim}]])]
     [:section.query-builder-section
      [:div.container
       [:div.query-builder-content
