@@ -6,21 +6,28 @@
             [org.candelbio.multitool.math :as mu]
             [hyperphor.way.data :as wd]
             [clojure.string :as str]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            [environ.core :as env]
+            ))
+
+(def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240409"))
+
+;;; New data table, but it is missing patient-level fields so can't be used directly
+#_(def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240810"))
 
 (defn query
   [q]
   (bq/query "pici-internal" q))
 
+;;; q is a template with {from} to plae the FROM clause. Kind of confusing
 (defn select
   [q & {:keys [] :as args}]
   (bq/query "pici-internal"
             (u/expand-template
              (str "select " q)
              (merge args
-                    {:from " FROM `pici-internal.bruce_external.feature_table_20240409` "})
+                    {:from (format " FROM `%s` " bq-table)})
              :key-fn keyword)))
-
 
 (defmethod wd/data :cohort
   [_]

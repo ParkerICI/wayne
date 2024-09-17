@@ -1,0 +1,34 @@
+This explains how to install a new feature table when that is released by Stanford. The path is:
+
+ .rds file  → R → .csv → gs: → BigQuery
+
+* New data from Stanford
+
+Latest here: https://drive.google.com/file/d/1MCBrKiR1hTTp5E1t3h3usIOT0cjUyoV6/view?usp=drive-slack&ts=66e9abe1
+
+Save in
+/opt/client/pici/bruce/data/
+
+* Convert to CSV
+
+r
+bruce <- readRDS('/opt/client/pici/bruce/data/20240810_master_feature_table_na_removed.rds')
+write.csv(bruce, '/opt/client/pici/bruce/data/20240810_master_feature_table_na_removed.csv')
+
+* Upload to gs:
+
+gsutil cp /opt/client/pici/bruce/data/20240810_master_feature_table_na_removed.csv gs://bruce-external-data/mt/feature_table_20240810.csv
+f
+* Install on BigQuery
+
+https://console.cloud.google.com/bigquery?authuser=1&project=pici-internal&ws=!1m0
+
+Create a table under =bruce-external= dataset
+Create from GCS
+
+
+* point app to new data
+
+Set env variable BQ_DATA_TABLE to eg pici-internal.bruce_external.feature_table_20240409
+OR edit the code in https://github.com/ParkerICI/wayne/blob/main/src/clj/wayne/data.clj#L13
+
