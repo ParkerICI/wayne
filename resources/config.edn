@@ -1,5 +1,5 @@
 ;;; Wayne config
 {:app-title "BRUCE Data Portal"
- :app-main "wayne.frontend.core.init"
+ :app-main "wayne.frontend.munson.init" ;core.init for prototype stuff
  :colophon  ["Copyright © " [:a {:href "http://parkerici.org" :style "color: white;"} "Parker Institute"] " 2023-2024"] 
  }
