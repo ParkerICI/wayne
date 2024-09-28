@@ -1,9 +1,9 @@
 (ns wayne.frontend.barchart
   (:require [re-frame.core :as rf]
             [wayne.frontend.data :as data] ;temp
-            [hyperphor.way.vega :as v]
-            [hyperphor.way.download :as download]
-            [hyperphor.way.web-utils :as wu]
+            [com.hyperphor.way.vega :as v]
+            [com.hyperphor.way.download :as download]
+            [com.hyperphor.way.web-utils :as wu]
             [reagent.dom]
             )
   )

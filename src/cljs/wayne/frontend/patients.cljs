@@ -1,8 +1,8 @@
 (ns wayne.frontend.patients
   (:require [re-frame.core :as rf]
             [wayne.frontend.data :as data]
-            [hyperphor.way.aggrid :as ag]
-            [hyperphor.way.tabs :as tab]
+            [com.hyperphor.way.aggrid :as ag]
+            [com.hyperphor.way.tabs :as tab]
             [reagent.dom]
             )
   )

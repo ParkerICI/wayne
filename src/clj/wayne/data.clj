@@ -4,7 +4,7 @@
             [org.candelbio.multitool.core :as u]
             [org.candelbio.multitool.cljcore :as ju]
             [org.candelbio.multitool.math :as mu]
-            [hyperphor.way.data :as wd]
+            [com.hyperphor.way.data :as wd]
             [clojure.string :as str]
             [clojure.data.json :as json]
             [environ.core :as env]
@@ -13,7 +13,8 @@
 (def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240409"))
 
 ;;; New data table, but it is missing patient-level fields so can't be used directly
-#_(def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240810"))
+#_
+(def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature-table-20240810-schema"))
 
 (defn query
   [q]

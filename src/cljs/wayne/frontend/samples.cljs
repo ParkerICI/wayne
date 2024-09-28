@@ -1,6 +1,6 @@
 (ns wayne.frontend.samples
   (:require [re-frame.core :as rf]
-            [hyperphor.way.aggrid :as ag]
+            [com.hyperphor.way.aggrid :as ag]
             [reagent.dom]
             [wayne.frontend.data :as data]
             )

@@ -1,6 +1,6 @@
 (ns wayne.frontend.cohort
   (:require [re-frame.core :as rf]
-            [hyperphor.way.vega :as v]
+            [com.hyperphor.way.vega :as v]
             [wayne.frontend.fgrid :as fgrid]
             )
   )

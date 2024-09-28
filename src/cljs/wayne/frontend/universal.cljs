@@ -2,17 +2,17 @@
   (:require [re-frame.core :as rf]
             [clojure.string :as str]
             [wayne.frontend.signup :as signup]
-            [hyperphor.way.web-utils :as wu]
-            [hyperphor.way.vega :as v]
-            [hyperphor.way.tabs :as tabs]
-            [hyperphor.way.feeds :as feeds]
-            hyperphor.way.params
-            [hyperphor.way.download :as download]
+            [com.hyperphor.way.web-utils :as wu]
+            [com.hyperphor.way.vega :as v]
+            [com.hyperphor.way.tabs :as tabs]
+            [com.hyperphor.way.feeds :as feeds]
+            com.hyperphor.way.params
+            [com.hyperphor.way.download :as download]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
             [org.candelbio.multitool.math :as um]
             [wayne.frontend.feature-select :as fui]
-            [hyperphor.way.cheatmap :as dendro]
+            [com.hyperphor.way.cheatmap :as dendro]
             )
   )
 
