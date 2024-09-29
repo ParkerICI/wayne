@@ -49,6 +49,20 @@ any_value(immunotherapy) as immunotherapy,
 {from}
 group by sample_id"))
 
+
+;;; Sketch towards the patient table in Munson design
+;;; Not actually called yet, and needs more fields
+(defmethod wd/data :patients
+  [_]
+  (select "patient_id,
+array_agg(distinct sample_id) as sample_id,
+array_agg(distinct fov) as fov,
+any_value(who_grade) as who_grade
+{from}
+group by patient_id"))
+
+
+
 (defn clean-data
   [d]
   (map (fn [x] (update x :feature_value (fn [v] (if (= v "NA") nil (u/coerce-numeric v)))))
