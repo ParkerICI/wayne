@@ -10,9 +10,11 @@
             [environ.core :as env]
             ))
 
+;;; See https://console.cloud.google.com/bigquery?authuser=1&project=pici-internal&ws=!1m0
+
 (def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240409"))
 
-;;; New data table, but it is missing patient-level fields so can't be used directly
+;;; New data table (not quite working, its missing ROI and treatment columns for one thing)
 #_
 (def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature-table-20240810-schema"))
 
@@ -62,7 +64,6 @@ any_value(who_grade) as who_grade
 group by patient_id"))
 
 
-
 (defn clean-data
   [d]
   (map (fn [x] (update x :feature_value (fn [v] (if (= v "NA") nil (u/coerce-numeric v)))))
@@ -80,26 +81,26 @@ group by patient_id"))
                    params)))
              params params))
 
-
 (defn true-values
   [map]
   (u/forf [[k v] map]
     (when (= v "true") (name k))))
 
+;;; Generate a where clause from a field/value map:
+;; {:final_diagnosis {:GBM "true", :Astrocytoma "true"}, :recurrence {:yes "true"}})
+;;; => "final_diagnosis in ('GBM', 'Astrocytoma') AND recurrence in ('yes')"
 (defn joint-where-clause
   [values-map]
-  (str/join
-   " AND "
-   (cons "1 = 1"
-         (when values-map
-           (for [dim (keys values-map)]
-             (let [vals (true-values (get values-map dim))]
-               (if (empty? vals)
-                 "1 = 1"
-                 (format "%s in %s" (name dim) (bq/sql-lit-list vals)))))))))
-
-
-
+  (if (empty? values-map)
+    "true"
+    (str/join
+     " AND "
+     (when values-map
+       (for [dim (keys values-map)]
+         (let [vals (true-values (get values-map dim))]
+           (if (empty? vals)
+             "1 = 1"
+             (format "%s in %s" (name dim) (bq/sql-lit-list vals)))))))))
 
 (defn query1
   [{:keys [feature dim filters]}]
