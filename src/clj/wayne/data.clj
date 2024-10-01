@@ -12,11 +12,11 @@
 
 ;;; See https://console.cloud.google.com/bigquery?authuser=1&project=pici-internal&ws=!1m0
 
+#_
 (def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240409"))
 
-;;; New data table (not quite working, its missing ROI and treatment columns for one thing)
-#_
-(def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature-table-20240810-schema"))
+;;; New data table 
+(def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240810_metadata_oct1"))
 
 (defn query
   [q]
@@ -34,19 +34,19 @@
 
 (defmethod wd/data :cohort
   [_]
-  (select "final_diagnosis,
+  (select "Tumor_Diagnosis,
 count(distinct(patient_id)) as patients,
 count(distinct(sample_id)) as samples,
 count(distinct(feature_variable)) as features
-{from} group by final_diagnosis"))
+{from} group by Tumor_Diagnosis"))
 
 (defmethod wd/data :samples
   [_]
   (select "sample_id, 
 any_value(patient_id) as patient_id, 
-any_value(who_grade) as who_grade,
-any_value(final_diagnosis) as final_diagnosis,
-any_value(recurrence) as recurrence,
+any_value(WHO_grade) as WHO_grade,
+any_value(Tumor_Diagnosis) as Tumor_Diagnosis,
+any_value(Recurrence) as Recurrence,
 any_value(immunotherapy) as immunotherapy,
 {from}
 group by sample_id"))
@@ -58,8 +58,7 @@ group by sample_id"))
   [_]
   (select "patient_id,
 array_agg(distinct sample_id) as sample_id,
-array_agg(distinct fov) as fov,
-any_value(who_grade) as who_grade
+any_value(WHO_grade) as WHO_grade
 {from}
 group by patient_id"))
 
@@ -87,8 +86,8 @@ group by patient_id"))
     (when (= v "true") (name k))))
 
 ;;; Generate a where clause from a field/value map:
-;; {:final_diagnosis {:GBM "true", :Astrocytoma "true"}, :recurrence {:yes "true"}})
-;;; => "final_diagnosis in ('GBM', 'Astrocytoma') AND recurrence in ('yes')"
+;; {:Tumor_Diagnosis {:GBM "true", :Astrocytoma "true"}, :recurrence {:yes "true"}})
+;;; => "Tumor_Diagnosis in ('GBM', 'Astrocytoma') AND recurrence in ('yes')"
 (defn joint-where-clause
   [values-map]
   (if (empty? values-map)

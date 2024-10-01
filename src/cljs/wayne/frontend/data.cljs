@@ -71,7 +71,7 @@
 (def values-d
   {:patient_id 268,
    :group ["unknown" "A" "B" "C" "D"],
-   :ROI
+   :Tumor_Region
    ["other" "TUMOR" "SOLID_TUMOR" "INFILTRATING_TUMOR" "NORMAL_BRAIN" "SOLID_INFILTRATING_TUMOR"],
    :site ["CoH" "CHOP" "UCLA" "UCSF" "Stanford"],
    :immunotherapy ["true" "false"],
@@ -130,10 +130,9 @@
     "UCSF_non_trial_controls"
     "UCSF_pxa_group"
     "Stanford_unknown"],
-   :who_grade ["4" "NA" "2" "3"],
-   :fov 604,
+   :WHO_grade ["4" "NA" "2" "3"],
    :sample_id 590,
-   :idh_status ["wild_type" "unknown" "mutant" "NA"],
+   :IDH_R132H ["wild_type" "unknown" "mutant" "NA"],
    :int64_field_0 350000,
    :feature_source ["cell_meta_cluster_final" "whole_sample"],
    :recurrence ["yes" "unknown" "no"],
@@ -155,7 +154,7 @@
     "non_trial_controls"
     "pxa_group"],
    :feature ["non_spatial"],
-   :final_diagnosis
+   :Tumor_Diagnosis
    ["GBM"
     "Astrocytoma"
     "PXA"

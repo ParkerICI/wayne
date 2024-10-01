@@ -15,9 +15,9 @@
    :spec {:mark {:type "bar", :tooltip true },
           ;; :header {:title "foo"}
           :encoding
-          {:y {:field "final_diagnosis", :type "nominal" :axis {:title false}},
+          {:y {:field "Tumor_Diagnosis", :type "nominal" :axis {:title false}},
            :x {:field {:repeat "repeat"} :type "quantitative"}
-           :color {:field "final_diagnosis", :type "nominal" ;Color optional
+           :color {:field "Tumor_Diagnosis", :type "nominal" ;Color optional
                    :scale {:scheme "tableau20"}
                    :legend false}       ;don't really need it with the labels
            :href {:field "url"}

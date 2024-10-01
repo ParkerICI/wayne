@@ -6,13 +6,13 @@
 ;;; BUT will need to work when new data is released.
 
 ;;; Repeated in universal.cljs
-(def grouping-features [:final_diagnosis :who_grade :ROI :recurrence
-                        :treatment :idh_status])
+(def grouping-features [:Tumor_Diagnosis :who_grade :ROI :recurrence
+                        :treatment :IDH_R132H])
 
 ;;; New = 20240810
-(def new-grouping-features [:final_diagnosis :who_grade  :recurrence :idh_status
-                            :tumor_region ; for :ROI
-                            :final_diagnosis_simple ; for :treatment, but that can't be right
+(def new-grouping-features [:Tumor_Diagnosis :who_grade  :recurrence :IDH_R132H
+                            :tumor_region ; for :Tumor_Region
+                            :Tumor_Diagnosis_simple ; for :treatment, but that can't be right
                             ])
 
 (defn query1-meta
@@ -35,7 +35,7 @@ where {where}
 
 ;;; Old table
 #_ (generate-table grouping-features)
-{:final_diagnosis
+{:Tumor_Diagnosis
  ("Astrocytoma"
   "Diffuse_midline_glioma"
   "GBM"
@@ -47,10 +47,10 @@ where {where}
   "Thalmic_glioma"
   "pGBM"
   "pHGG"),
- :who_grade ("2" "3" "4" "NA"),
- :ROI
+ :WHO_grade ("2" "3" "4" "NA"),
+ :Tumor_Region
  ("INFILTRATING_TUMOR" "NORMAL_BRAIN" "SOLID_INFILTRATING_TUMOR" "SOLID_TUMOR" "TUMOR" "other"),
- :recurrence ("no" "unknown" "yes"),
+ :Recurrence ("no" "unknown" "yes"),
  :treatment
  ("CHOP_brain_cptac_2020"
   "CHOP_openpbta"
@@ -70,12 +70,12 @@ where {where}
   "UCSF_non_trial_controls"
   "UCSF_pre_trial"
   "UCSF_pxa_group"),
- :idh_status ("NA" "mutant" "unknown" "wild_type")}
+ :IDH_R132H ("NA" "mutant" "unknown" "wild_type")}
 
 
 ;;; New table
 #_ (generate-table new-grouping-features)
-{:final_diagnosis
+{:Tumor_Diagnosis
  ("Astrocytoma"
   "Breast_CA"
   "Colon_CA"
@@ -100,9 +100,9 @@ where {where}
   "pHGG"
   "pPXA"
   "pThalmic_glioma"),
- :who_grade ("2" "3" "4" "NA" "unknown"),
- :recurrence ("NA" "no" "unknown" "yes"),
- :idh_status ("NA" "mutant" "unknown" "wild_type"),
+ :WHO_grade ("2" "3" "4" "NA" "unknown"),
+ :Recurrence ("NA" "no" "unknown" "yes"),
+ :IDH_R132H ("NA" "mutant" "unknown" "wild_type"),
  :tumor_region ("NA" "other" "tumor_core" "tumor_core_to_infiltrating" "tumor_infiltrating"),
- :final_diagnosis_simple
+ :Tumor_Diagnosis_simple
  ("Astrocytoma" "GBM" "NA" "Oligodendroglioma" "PXA" "Pediatric DIPG" "Pediatric HGG (other)")}

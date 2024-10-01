@@ -34,26 +34,26 @@
 
 
 (defn recurrence1
-  [{:keys [recurrence final_diagnosis] :as row}]
+  [{:keys [recurrence Tumor_Diagnosis] :as row}]
   (assoc row
-         :recurrence1
-         (cond (= final_diagnosis "Normal_brain") "Normal_brain"
+         :Recurrence1
+         (cond (= Tumor_Diagnosis "Normal_brain") "Normal_brain"
                (= "no" recurrence) "Primary"
                (= "yes" recurrence) "Recurrence"
                :else "OTHER")))
 
 (comment
-(def x2 (select "feature_variable, feature_value, recurrence, final_diagnosis {from} where feature_variable = 'EGFR_func_over_all_tumor_prop'"))
+(def x2 (select "feature_variable, feature_value, recurrence, Tumor_Diagnosis {from} where feature_variable = 'EGFR_func_over_all_tumor_prop'"))
 (def x2x (map recurrence1 x2))
 
-(def x3 (map recurrence1 (select (format "feature_variable, feature_value, recurrence, final_diagnosis {from}
+(def x3 (map recurrence1 (select (format "feature_variable, feature_value, recurrence, Tumor_Diagnosis {from}
  where feature_variable in %s" (wu/sql-lit-list ["EGFR_func_over_all_tumor_prop" "GM2_GD2_func_over_all_tumor_prop"])))))
 )
 
 #_
 (defn x3p
   [features]
-  (map recurrence1 (select (format "feature_variable, feature_value, recurrence, final_diagnosis {from}
+  (map recurrence1 (select (format "feature_variable, feature_value, recurrence, Tumor_Diagnosis {from}
  where feature_variable in %s" (wu/sql-lit-list features)))))
 
 (def features1 ["EGFR_func_over_all_tumor_prop"

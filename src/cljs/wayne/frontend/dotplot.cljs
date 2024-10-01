@@ -28,7 +28,7 @@
    {"color" {:field "sample_id", :type "nominal"},
     #_ :opacity #_  {:condition {:param "sample" :value 1} :value 0.1}
     :size  {:condition {:param "sample" :value 100} :value 20}
-    :shape {:field "ROI" :type "nominal"}
+    :shape {:field "Tumor_Region" :type "nominal"}
     "y" {:field "cell_meta_cluster_final", :type "nominal"},
     "x"  {:field "feature_value"
           :type "quantitative"
