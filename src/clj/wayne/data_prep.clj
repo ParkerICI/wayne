@@ -7,10 +7,10 @@
 
 ;;; Repeated in universal.cljs
 (def grouping-features [:Tumor_Diagnosis :who_grade :ROI :recurrence
-                        :treatment :IDH_R132H])
+                        :treatment :IDH_R132H_Status])
 
 ;;; New = 20240810
-(def new-grouping-features [:Tumor_Diagnosis :who_grade  :recurrence :IDH_R132H
+(def new-grouping-features [:Tumor_Diagnosis :who_grade  :recurrence :IDH_R132H_Status
                             :tumor_region ; for :Tumor_Region
                             :Tumor_Diagnosis_simple ; for :treatment, but that can't be right
                             ])
@@ -70,7 +70,7 @@ where {where}
   "UCSF_non_trial_controls"
   "UCSF_pre_trial"
   "UCSF_pxa_group"),
- :IDH_R132H ("NA" "mutant" "unknown" "wild_type")}
+ :IDH_R132H_Status ("NA" "mutant" "unknown" "wild_type")}
 
 
 ;;; New table
@@ -102,7 +102,7 @@ where {where}
   "pThalmic_glioma"),
  :WHO_grade ("2" "3" "4" "NA" "unknown"),
  :Recurrence ("NA" "no" "unknown" "yes"),
- :IDH_R132H ("NA" "mutant" "unknown" "wild_type"),
+ :IDH_R132H_Status ("NA" "mutant" "unknown" "wild_type"),
  :tumor_region ("NA" "other" "tumor_core" "tumor_core_to_infiltrating" "tumor_infiltrating"),
  :Tumor_Diagnosis_simple
  ("Astrocytoma" "GBM" "NA" "Oligodendroglioma" "PXA" "Pediatric DIPG" "Pediatric HGG (other)")}

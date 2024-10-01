@@ -132,7 +132,7 @@
     "Stanford_unknown"],
    :WHO_grade ["4" "NA" "2" "3"],
    :sample_id 590,
-   :IDH_R132H ["wild_type" "unknown" "mutant" "NA"],
+   :IDH_R132H_Status ["wild_type" "unknown" "mutant" "NA"],
    :int64_field_0 350000,
    :feature_source ["cell_meta_cluster_final" "whole_sample"],
    :recurrence ["yes" "unknown" "no"],
