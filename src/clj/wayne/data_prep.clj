@@ -35,6 +35,7 @@ where {where}
 
 ;;; Old table
 #_ (generate-table grouping-features)
+#_
 {:Tumor_Diagnosis
  ("Astrocytoma"
   "Diffuse_midline_glioma"
@@ -75,6 +76,7 @@ where {where}
 
 ;;; New table
 #_ (generate-table new-grouping-features)
+#_
 {:Tumor_Diagnosis
  ("Astrocytoma"
   "Breast_CA"
