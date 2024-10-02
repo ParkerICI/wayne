@@ -11,6 +11,10 @@
             ))
 
 ;;; See https://console.cloud.google.com/bigquery?authuser=1&project=pici-internal&ws=!1m0
+;;; or
+;;; ⪢ gcloud alpha bq tables list --dataset bruce_external
+
+
 
 #_
 (def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240409"))
