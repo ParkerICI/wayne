@@ -7,7 +7,7 @@
                  [org.clojure/data.json "2.5.0"]
                  [environ "1.2.0"]
                  [com.taoensso/timbre "6.3.1"]
-                 [com.hyperphor/way "0.1.7"] 
+                 [com.hyperphor/way "0.1.6"] 
                  ;;; Dev only (TODO use profiles)
                  [seesaw "1.5.0"]
 
