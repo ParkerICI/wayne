@@ -1,0 +1,39 @@
+* To run locally in dev mode
+
+** Install Leiningen 
+
+https://leiningen.org/
+
+Requires: Java
+
+
+** Install shadow-cljs
+
+https://shadow-cljs.github.io/docs/UsersGuide.html#_installation
+
+Requires: node and npm
+
+** install gcloud
+
+https://cloud.google.com/sdk/docs/install
+
+** Authenticate to gcloud
+
+=gcloud auth application-default login=
+
+** Build and start app
+
+=bin/smoke-test.sh=
+
+* Dependencies
+
+Wayne uses two libraries developed by Mike Travers
+
+=org.candelbio/multitool=
+
+=com.hyperphor/way=
+
+if the versions specified in =project.clj= aren't found, you can either
+- contact Mike to get the newer version deployed
+- fall back to the latest version in Clojars https://clojars.org/
+    

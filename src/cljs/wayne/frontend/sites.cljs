@@ -1,9 +1,9 @@
 (ns wayne.frontend.sites
   (:require [re-frame.core :as rf]
-            [hyperphor.way.aggrid :as ag]
-            [hyperphor.way.tabs :as tab]
-            [hyperphor.way.vega :as v]
-            [hyperphor.way.data :as data]
+            [com.hyperphor.way.aggrid :as ag]
+            [com.hyperphor.way.tabs :as tab]
+            [com.hyperphor.way.vega :as v]
+            [com.hyperphor.way.data :as data]
             )
   )
 

@@ -1,7 +1,7 @@
 (ns wayne.core
   (:gen-class)
-  (:require [hyperphor.way.server :as server]
-            [hyperphor.way.config :as config]
+  (:require [com.hyperphor.way.server :as server]
+            [com.hyperphor.way.config :as config]
             [wayne.handler :as handler]
             wayne.data                  ;for the defmethods
             [org.candelbio.multitool.cljcore :as ju]
@@ -20,7 +20,7 @@
   (let [port (or (first args) (env/env :port) )]
     (log/info "Starting server on port" port)
     (heroku-deploy-hack)
-    (server/start (Integer. port) handler/app)
+    (server/start (Integer. port) (handler/app))
     ;; Smart enough to be a no-op on server
     (ju/open-url (format "http://localhost:%s" port))
     ))

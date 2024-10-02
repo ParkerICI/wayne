@@ -1,7 +1,7 @@
 (ns wayne.handler
   (:require [compojure.core :refer [defroutes context GET POST make-route routes]]
-            [hyperphor.way.handler :as wh]
-            [hyperphor.way.views.html :as html]
+            [com.hyperphor.way.handler :as wh]
+            [com.hyperphor.way.views.html :as html]
             [ring.util.response :as response]
             )
   )
@@ -22,5 +22,7 @@
   (GET "/sample/:id" [id] (sample-view id) )
   )
 
-(def app (wh/app site-routes (routes)))
+(defn app
+  []
+  (wh/app site-routes (routes)))
 

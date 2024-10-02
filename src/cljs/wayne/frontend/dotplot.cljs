@@ -1,9 +1,9 @@
 (ns wayne.frontend.dotplot
   (:require [re-frame.core :as rf]
             [wayne.frontend.data :as data] ;temp
-            [hyperphor.way.vega :as v]
-            [hyperphor.way.download :as download]
-            [hyperphor.way.web-utils :as wu]
+            [com.hyperphor.way.vega :as v]
+            [com.hyperphor.way.download :as download]
+            [com.hyperphor.way.web-utils :as wu]
             [reagent.dom]
             )
   )
@@ -28,7 +28,7 @@
    {"color" {:field "sample_id", :type "nominal"},
     #_ :opacity #_  {:condition {:param "sample" :value 1} :value 0.1}
     :size  {:condition {:param "sample" :value 100} :value 20}
-    :shape {:field "ROI" :type "nominal"}
+    :shape {:field "Tumor_Region" :type "nominal"}
     "y" {:field "cell_meta_cluster_final", :type "nominal"},
     "x"  {:field "feature_value"
           :type "quantitative"

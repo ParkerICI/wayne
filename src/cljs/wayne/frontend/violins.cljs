@@ -2,10 +2,10 @@
   (:require [re-frame.core :as rf]
             ["vega-embed" :as ve]
             [wayne.frontend.data :as data]
-            [hyperphor.way.web-utils :as wu]
-            [hyperphor.way.download :as download]
-            [hyperphor.way.vega :as v]
-            [hyperphor.way.tabs :as tab]
+            [com.hyperphor.way.web-utils :as wu]
+            [com.hyperphor.way.download :as download]
+            [com.hyperphor.way.vega :as v]
+            [com.hyperphor.way.tabs :as tab]
             [reagent.dom]
             )
   )
@@ -144,7 +144,7 @@
          (download/button @(rf/subscribe [:data :violin]) "wayne-export.tsv")
          ]]
        ]]
-     [v/vega-view (violin data "ROI") data]
+     [v/vega-view (violin data "Tumor_Region") data]
      ]))
 
 (defmethod tab/set-tab [:tab :violin]
@@ -162,5 +162,5 @@
 ;; Feature type: intensity, immume_cell_ratios, ?
 ;; cell_meta_cluster: one or all ?
 ;; feature_variable: one
-;; ROI all, or split, or multi
+;; Tumor_Region all, or split, or multi
 ;; immunotherapy (yes/no splot)

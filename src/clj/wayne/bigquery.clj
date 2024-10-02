@@ -116,13 +116,18 @@
 ;;         job-id (.build)
 
 (defn get-value
-  [field thing]
-  (cond (instance? FieldValue thing)
-        (case (.name (.getType field))
-          "FLOAT" (.getDoubleValue thing)
+  [field thing & [repeat]]
+  (if (instance? FieldValue thing)
+    (cond (and (not repeat) (= "REPEATED" (str (.getMode field))))
+          (map #(get-value field % true) (.getValue thing))
+          (= "FLOAT" (.name (.getType field))) 
+          (.getDoubleValue thing)
           ;; TODO fill this out
+          :else 
           (.getValue thing))
-        :else thing))
+    thing))
+
+
 
 ;;; Nevermind, simpler! Table is provided in select.
 (defn query

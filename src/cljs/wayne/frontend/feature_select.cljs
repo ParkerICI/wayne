@@ -2,8 +2,8 @@
   (:require [re-frame.core :as rf]
             [clojure.string :as str]
             [wayne.frontend.data :as data]
-            [wayne.frontend.feature-names :as fn]
-            [hyperphor.way.web-utils :as wu]
+            #_ [wayne.frontend.feature-names :as fn]
+            [com.hyperphor.way.web-utils :as wu]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
             )
@@ -234,7 +234,8 @@
 
 (defn feature-valid?
   [feature]
-  (contains? fn/feature-names feature))
+  #_ (contains? fn/feature-names feature)
+  true)
 
 ;;; TODO propagate up into earlier guys
 ;;; TODO subfeature name not actually used, but could be a tooltip or something

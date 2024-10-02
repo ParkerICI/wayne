@@ -1,6 +1,6 @@
 (ns wayne.frontend.signup
   (:require [re-frame.core :as rf]
-            [hyperphor.way.web-utils :as wu]))
+            [com.hyperphor.way.web-utils :as wu]))
 
 ;;; Idea: copy the actual HTML of the form and serve it up, then all the iframe security shit goes away.
 
