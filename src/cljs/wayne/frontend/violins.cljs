@@ -154,13 +154,3 @@
       (assoc-in [:params :violin :rois] ["INFILTRATING_TUMOR" "SOLID_TUMOR"])
       ))
                 
-
-;;; ⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏⩎⩏
-
-;; Site: one or all (or multi)
-;; Diagnosis: one or all
-;; Feature type: intensity, immume_cell_ratios, ?
-;; cell_meta_cluster: one or all ?
-;; feature_variable: one
-;; Tumor_Region all, or split, or multi
-;; immunotherapy (yes/no splot)
