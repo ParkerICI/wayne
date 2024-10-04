@@ -11,23 +11,67 @@
    [org.candelbio.multitool.core :as u]
    ))
 
-
 ;;; This is universal.cljs, but adapted to run in Munson website.
 
+;;; Quick and dirty, could be improved
+(defn info
+  [text]
+  [:img {:src "https://www.iconpacks.net/icons/3/free-information-icon-6276.png"
+         :height 20
+         :title text
+         :data-toggle "tooltip"
+         :style {:cursor "pointer"
+                 :margin-left "5px"}
+         }])
 
 (def dims
-  {:Tumor_Diagnosis "Final Diagnosis"
-   :WHO_grade "WHO grade"
-   :Tumor_Region "Tumor Region"
-   :recurrence "Recurrence"
-   :IDH_R132H_Status "IDH Status"
-   :treatment "Treatment"
-   ;; New
-   :Immunotherapy "Immunotherapy"
-   :Longitudinal "Longitudinal"
-   :Sex "Sex"
-   :Progression "Progression"
-   })
+  (array-map                            ; Order is important 
+   :Tumor_Diagnosis {:label "Final Diagnosis"
+                     :icon "diagnosis-icon.svg"
+                     :values ["Astrocytoma"
+                              "GBM"
+                              "GBM_other"
+                              "Oligodendroglioma"
+                              "PXA"
+                              "Pediatric DIPG"
+                              "Pediatric HGG (other)"]}
+   :WHO_grade {:label "WHO grade"
+               :icon "question-icon.svg"
+               :values  ["2" "3" "4" "Unknown"]}
+   :Immunotherapy {:label "Immunotherapy"
+                   :info "Treatment status"
+                   :values ["false" "true"]}
+   :treatment {:label "Treatment"
+               :info "Various pre-sample collection treatments"
+               :icon "treatment-icon.svg"
+               :values ["Combinatorial_CD27_and_SPORE_Vaccine"
+                        "Lysate_Vaccine"
+                        "Neoadjuvant_PD1_Trial_1"
+                        "Neoadjuvant_PD1_Trial_2"
+                        "SPORE_Vaccine"
+                        "Treatment_Naive"]}
+   :recurrence {:label "Recurrence"
+                :info "Recurrent tumor"
+                :icon "recurrence-icon.svg"
+                :values ["No" "Yes"]}
+   :Longitudinal {:label "Longitudinal"
+                  :info "Patient samples with paired primary and recurrent events"
+                  :values ["Yes" "No"]}
+   :Progression {:label "Progression"
+                 :info "Patients that progressed from lower grade to higher grades. later event catagories denotes the recurrent tumor."
+                 :values ["No" "No_later_event" "Yes" "Yes_later_event"]}
+   :Tumor_Region {:label "Tumor Region"
+                  :info "Anatomical regions of the tumor"
+                  :icon "roi-icon.svg"
+                  :values   ["Other" "Tumor_core" "Tumor_core_to_infiltrating" "Tumor_infiltrating"]}
+   :IDH_R132H_Status {:label "IDH Status"
+                      :info "Common IDH mutation"
+                      :icon "file-chart-icon.svg"
+                      :values ["Mutant" "Wild_type"]
+                      }
+   :Sex {:label "Sex"
+         :values ["F" "M" "Unknown"]}
+   ))
 
 ;;; Very non-re-frame sue me
 (defn toggle
@@ -41,8 +85,9 @@
     (.remove (.-classList elt) class)))
 
 (defn dim-selector
-  [dim icon-url active-dim]
-  (let [text (get dims dim)]
+  [dim active-dim]
+  (let [icon (get-in dims [dim :icon])
+        text (get-in dims [dim :label])]
     [:div.dataset-tag 
      {;; :data-icon data-icon
       :class (when (= dim active-dim) "dataset-tag-active")
@@ -52,42 +97,13 @@
                    (open "collapser-feature" "select-form-group")
                    (open "collapser-viz" "select-form-group") ;TODO maybe open only on feature selection
                    )}
-     (when icon-url
-       [:img.icon {:src icon-url, :alt text}])
+     (when icon
+       [:img.icon {:src (str "../assets/icons/" icon), :alt text}])
      text]))
-
-
-(def filter-features
-  '{:IDH_R132H_Status ("Mutant" "Unknown" "Wild_type"),
-    :Longitudinal ("NA" "No" "Yes"),
-    :treatment
-    ("Combinatorial_CD27_and_SPORE_Vaccine"
-     "Lysate_Vaccine"
-     "Neoadjuvant_PD1_Trial_1"
-     "Neoadjuvant_PD1_Trial_2"
-     "SPORE_Vaccine"
-     "Treatment_Naive"),
-    :Tumor_Region ("Other" "Tumor_core" "Tumor_core_to_infiltrating" "Tumor_infiltrating"),
-    :Sex ("F" "M" "Unknown"),
-    :Progression ("No" "No_later_event" "Unknown" "Yes" "Yes_later_event"),
-    :recurrence ("No" "Unknown" "Yes"),
-    :Immunotherapy ("false" "true"),
-    :Tumor_Diagnosis
-    ("Astrocytoma"
-     "GBM"
-     "GBM_other"
-     "NA"
-     "Oligodendroglioma"
-     "PXA"
-     "Pediatric DIPG"
-     "Pediatric HGG (other)"),
-    :WHO_grade ("2" "3" "4" "NA" "Unknown")})
-
-
 
 (defn filter-values-ui
   [id dim]
-  (let [all-values (get filter-features dim)
+  (let [all-values (get-in dims [dim :values])
         feature @(rf/subscribe [:param :universal [:feature]])
         filters @(rf/subscribe [:param :universal [:filters]])
         ;; TODO this ends up accumulating a lot in the db, I don't think its fatal but
@@ -120,19 +136,21 @@
          (wu/humanize value) disabled?]])
      ]))
 
-
-
 (defn filter-ui
   []
   [:div.filters
-   [:h3.mb-30.font-bold.filter-subheader "Filter"]
+   [:h3.mb-30.font-bold.filter-subheader
+    "Filter" [info "Select molecular and clinical criteria to filter the data for visualization"]]
    [:div.filter-list
-    (for [dim (keys filter-features)]
+    (for [dim (keys dims)]
       (let [collapse-id (str "collapse" (name dim))
             heading-id (str "heading" (name dim))]
         [:div.accordian.accordian-collapsed ;TODO collapsed maybe not
          [:div.accordian-title
-          [:h3 (wu/humanize dim)]
+          [:h3 (get-in dims [dim :label])
+           (when-let [info-text (get-in dims [dim :info])]
+             [info info-text ])
+           ]
           [:img {:src "../assets/icons/minus-grey.svg"
                  :on-click #(toggle collapse-id "select-form-group") ;Note: using this css style for display: none;
                  }]] ;TODO
@@ -188,27 +206,19 @@
         [:div.dataset-selection
          [:h3.mb-30.font-bold "Compare across"]
          [:div.dataset-tags
-          [dim-selector :Tumor_Diagnosis "../assets/icons/diagnosis-icon.svg" dim]
-          [dim-selector :WHO_grade "../assets/icons/question-icon.svg" dim]
-          [dim-selector :Tumor_Region "../assets/icons/roi-icon.svg" dim]
-          [dim-selector :recurrence "../assets/icons/recurrence-icon.svg" dim]
-          [dim-selector :IDH_R132H_Status "../assets/icons/file-chart-icon.svg" dim]
-          [dim-selector :treatment "../assets/icons/treatment-icon.svg" dim]
-          [dim-selector :Sex nil dim]
-          [dim-selector :Immunotherapy nil dim]
-          [dim-selector :Longitudinal nil dim]
-          [dim-selector :Progression nil dim]
+          (for [odim (keys dims)]
+            [dim-selector odim dim])
           ]]
         [:div.divider.mt-30.mb-30]
         [filter-ui]]
        [:div.pt-20
         [:p.query-builder-section-subheadline
-         "Run sensitivity analyses to explore insights in cancer research, from clinical trials to innovative therapies."]
+         "Explore multiomic features of glioma tumor microenvironment."]
         [:div.selected-filter-wrapper
          [collapse-panel
           :dim
-          (or (get dims @(rf/subscribe [:param :universal :dim]))
-              "←  Select a dimension")
+          (or (get-in dims [@(rf/subscribe [:param :universal :dim]) :label])
+              "←  Select a category to compare across")
           [:div#selectedFilterView
            [filter-view]
            [:div.divider.mb-24.mt-24]
