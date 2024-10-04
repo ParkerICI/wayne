@@ -23,6 +23,7 @@
     "log10" {:type "log" :base 10}
      {:type scale}))
 
+;;; Note :zindex attribute doesn't work, but ordering the marks does
 (defn violin
   [data dim feature]
   (let [dim (name dim)
@@ -64,8 +65,16 @@
 
      :config {:axisBand {:bandPosition 1, :tickExtra true, :tickOffset 0}},
      :axes
-     [{:orient "bottom", :scale "xscale", :zindex 1, :title (wu/humanize feature)} ;TODO want metacluster in this
-      {:orient "left", :scale "layout", :tickCount 5, :zindex 1}],
+     [{:orient "bottom",
+       :scale "xscale",
+       :zindex 1,
+       :labelFontSize 14 :titleFontSize 14
+       :title (wu/humanize feature)} ;TODO want metacluster in this
+      {:orient "left",
+       :scale "layout",
+       :tickCount 5,
+       :labelFontSize 14 :titleFontSize 14
+       :zindex 1}],
 
      :scales
      [{:name "layout",
@@ -100,31 +109,35 @@
          :source "stats",
          :transform [{:type "filter", :expr (wu/js-format "datum.%s === parent.%s" dim dim)}]}],
        :marks
-       [{:type "symbol",                ;Points
-         :from {:data "source"},
-         :encode
-         {:enter {:fill "black", :y {:value 0}},
-          :update
-          {:stroke {:value "#000000"},
-           :fill {:value "#000000"},
-           :size {:value 25},
-           :z {:value 1000000},
-           :yc {:signal "blobWidth / 2 + jitter*(random() - 0.5)"}, ;should scale with fatness
-           :strokeWidth {:value 1},
-           :opacity {:signal "points ? 0.3 : 0"},
-           :shape {:value "circle"},
-           :x {:scale "xscale", :field "feature_value"}}}}
+       [
 
         {:type "area",                  ;Violins
          :from {:data "violin"},
          :encode
-         {:enter {:fill {:scale "color", :field {:parent dim}}},
+         {:enter {:fill {:scale "color", :field {:parent dim}}
+                  },
           :update
           {:x {:scale "xscale", :field "value"},
            :yc {:signal "blobWidth / 2"},
            :opacity {:signal "box ? 0 : 1"}
            :height {:scale "hscale", :field "density"}}}}
+        {:type "symbol",                ;Points
+         :from {:data "source"},
+         :encode
+         {:enter {:y {:value 0}
+                  
+                  },
+          :update
+          {:stroke {:value "black"},
+           :fill {:value "black"},
+           :size {:value 25},
+           :yc {:signal "blobWidth / 2 + jitter*(random() - 0.5)"}, ;should scale with fatness
+           :strokeWidth {:value 1},
+           :opacity {:signal "points ? 0.3 : 0"},
+           :shape {:value "circle"},
+           :x {:scale "xscale", :field "feature_value"}}}}
         
+        #_
         {:type "rect",                  ;Box
          :from {:data "summary"},
          :encode
@@ -146,7 +159,7 @@
            :x2 {:scale "xscale", :field "q3"},
            :height {:signal "blobWidth / 10"}
            :yc {:signal "blobWidth / 2"}
-           :fill {:scale "color", :field {:parent dim}}
+           #_ :fill #_ {:scale "color", :field {:parent dim}}
            }}}
         {:type "rect",                  ;Midpoint
          :from {:data "summary"},
