@@ -7,6 +7,7 @@
   )
 
 ;;; Standin sample view
+#_
 (defn sample-view
   [id]
   (response/content-type
@@ -19,7 +20,7 @@
 
 (defroutes site-routes
   (GET "/" [] (response/redirect "pages/query-builder.html"))
-  (GET "/sample/:id" [id] (sample-view id) )
+  #_ (GET "/sample/:id" [id] (sample-view id) )
   )
 
 (defn app

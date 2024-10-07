@@ -1,0 +1,5 @@
+This directory contains page templates and components.
+
+Very simple homebacked templating systgem using ={{faq}}= eg to refer to components. 
+
+Expansion happens at startup (TODO will this work in deployed-resource-based system? Prob not)
