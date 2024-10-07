@@ -43,7 +43,7 @@
   (spit (str "resources/" path) content))
 
 ;; Called at startup (but won't work on Heroku)
-(defn init
+(defn expand-pages
   []
   (let [component-map (resource-map "templates/components")
         page-map (resource-map "templates/pages")]
@@ -51,6 +51,13 @@
       (log/info "Expanding page" page-key)
       (write-resource (str "public/pages/" (name page-key) ".html")
                       (expand-page page-content component-map)))))
+
+
+(defn init
+  []
+  ;; Expand pages if they aren't present
+  (when-not (io/resource "public/pages/about-us.html")
+    (expand-pages)))
 
 ;;; Important: Causes expansion to happen at uberjar build time, for deployment
 (init)
