@@ -3,7 +3,9 @@
             [org.candelbio.multitool.core :as u]
             [org.candelbio.multitool.cljcore :as ju]
             [clojure.string :as str]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [taoensso.timbre :as log]
+            ))
 
 ;;; <<<>>> ⫷ Templating ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>>    
 
@@ -27,16 +29,12 @@
     (zipmap (map #(keyword (second (re-find #"([^/]+)\.html$" %))) comps)
             (map slurp comps))))
 
-(u/def-lazy component-map
-  (resource-map "templates/components"))
 
-(u/def-lazy page-map
-  (resource-map "templates/pages"))
 
 (defn expand-page
-  [page-text]
+  [page-text component-map]
   (u/expand-template page-text
-                     @component-map
+                     component-map
                      :param-regex u/double-braces
                      :key-fn keyword))
 
@@ -44,11 +42,15 @@
   [path content]
   (spit (str "resources/" path) content))
 
-(defn expand-pages
+;; Called at startup (but won't work on Heroku)
+(defn init
   []
-  (doseq [[page-key page-content] @page-map]
-    (write-resource (str "public/pages/" (name page-key) ".html")
-                    (expand-page page-content))))
+  (let [component-map (resource-map "templates/components")
+        page-map (resource-map "templates/pages")]
+    (doseq [[page-key page-content] page-map]
+      (log/info "Expanding page" page-key)
+      (write-resource (str "public/pages/" (name page-key) ".html")
+                      (expand-page page-content component-map)))))
 
 
 ;;; <<<>>> ⫷ Component Detection ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>>
@@ -74,3 +76,4 @@
   (let [lines (mapcat resource-lines files)
         dupes (filter #(> (second %) 2) (frequencies lines))]
     dupes))
+
