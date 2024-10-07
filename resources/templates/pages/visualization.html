@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualization - Bruce data portal</title>
+    <link rel="stylesheet" href="../styles/visualization.css" />
+
+  </head>
+  <body>
+    <header>
+      <div class="container flex justify-between align-center">
+        <a class="logo" href="query-builder.html">
+          <img src="../assets/logo.svg" alt="BRUCE Data Portal logo" />
+        </a>
+        <nav>
+          <ul>
+            <li>
+              <a href="query-builder.html">Query Builder</a>
+            </li>
+            <li><a href="sample-info.html">Sample Info</a></li>
+            <li>
+              <a href="visualization.html" class="active-viz">Visualization</a>
+            </li>
+            <li><a href="about-us.html">About Us</a></li>
+            <li><a href="raw-data-access.html">Raw Data Access</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <section class="page-title page-title--vis">
+        <div class="container">
+          <div class="page-headline">
+            <div class="page-tag">
+              <div class="line"></div>
+              <p>BRUCE DATA PORTAL</p>
+            </div>
+            <h1>Visualization</h1>
+            <p>
+              The Vitessce Visualization tool is a state-of-the-art, web-based
+              application designed to facilitate interactive<br />
+              exploration and analysis of large-scale, multimodal biological
+              data.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section id="vitessce">
+        <div class="container">
+          <img src="../assets/images/vitessce.png" />
+        </div>
+      </section>
+      <section id="raw-data-access">
+        <div class="container">
+          <div class="flex">
+            <div class="image-container">
+              <img
+                src="../assets/images/raw-data-access.jpg"
+                alt="Get Involved Image"
+              />
+            </div>
+            <div class="raw-data-access-content">
+              <h3>Raw Data access</h3>
+              <h1>Unveiling the Essential Resources for Data Analysis</h1>
+              <p>
+                From robust statistical software packages to cutting-edge
+                visualization tools, this exploration offers a comprehensive
+                overview of the essential resources available to researchers and
+                analysts across various disciplines.
+              </p>
+              <button class="btn btn-primary">See Data Access</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      {{faq}}
+    </main>
+{{footer}}
+  </body>
+  <script src="../js/accordion.js"></script>
+</html>
