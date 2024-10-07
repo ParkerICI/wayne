@@ -52,6 +52,9 @@
       (write-resource (str "public/pages/" (name page-key) ".html")
                       (expand-page page-content component-map)))))
 
+;;; Important: Causes expansion to happen at uberjar build time, for deployment
+(init)
+
 
 ;;; <<<>>> ⫷ Component Detection ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>>
 

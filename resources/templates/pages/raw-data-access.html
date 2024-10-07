@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Raw Data Access - Bruce data portal</title>
+    <link rel="stylesheet" href="../styles/raw-data-access.css" />
+
+  </head>
+  <body>
+    <header>
+      <div class="container flex justify-between align-center">
+        <a class="logo" href="query-builder.html">
+          <img src="../assets/logo.svg" alt="BRUCE Data Portal logo" />
+        </a>
+        <nav>
+          <ul>
+            <li>
+              <a href="query-builder.html">Query Builder</a>
+            </li>
+            <li><a href="sample-info.html">Sample Info</a></li>
+            <li>
+              <a href="visualization.html">Visualization</a>
+            </li>
+            <li><a href="about-us.html">About Us</a></li>
+            <li>
+              <a href="raw-data-access.html" class="active-rda"
+                >Raw Data Access</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main>
+      <section class="page-title page-title--rda">
+        <div class="container">
+          <div class="page-headline">
+            <div class="page-tag">
+              <div class="line"></div>
+              <p>BRUCE DATA PORTAL</p>
+            </div>
+            <h1>Raw Data Access</h1>
+            <p>
+              This access enables analysts to work with the purest
+              representation of information, unencumbered by any<br />
+              preconceived structures or interpretations.
+            </p>
+          </div>
+        </div>
+      </section>
+      <section id="raw-data-access-table">
+        <div class="container">
+          <div class="table-wrapper">
+            <div class="tab-container">
+              <div class="tabs">
+                <button class="tab active" id="resourcesTab">
+                  Resources <span class="badge">2</span>
+                </button>
+                <button class="tab" id="reportsTab">
+                  Reports <span class="badge">99+</span>
+                </button>
+              </div>
+              <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search" />
+                <i class="fas fa-search search-icon"></i>
+              </div>
+            </div>
+            <div class="table-container">
+              <table id="documentTable">
+                <thead>
+                  <tr>
+                    <th><input type="checkbox" id="selectAll" /></th>
+                    <th>Document_id</th>
+                    <th>Title</th>
+                    <th>Title</th>
+                    <th>Title</th>
+                    <th>Title</th>
+                    <th>Download Doc</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Table rows will be populated here -->
+                </tbody>
+              </table>
+              <div class="pagination">
+                <button class="page-btn" onclick="prevPage()">&lt;</button>
+                <button class="page-btn">Previous</button>
+                <button class="page-btn">1</button>
+                <button class="page-btn active">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">4</button>
+                <button class="page-btn">5</button>
+                <span>...</span>
+                <button class="page-btn">11</button>
+                <button class="page-btn">Next</button>
+                <button class="page-btn" onclick="nextPage()">&gt;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="raw-data-access">
+        <div class="container">
+          <div class="flex">
+            <div class="image-container">
+              <img
+                src="../assets/images/raw-placeholder-image.png"
+                alt="Get Involved Image"
+              />
+            </div>
+            <div class="raw-data-access-content">
+              <h3>Raw Data access</h3>
+              <h1>
+                Genetic Signature May Help Tailor Treatment for Meningioma
+              </h1>
+              <p>
+                You can’t judge a book by its cover. And, more and more,
+                scientists are coming to understand that you can’t judge a tumor
+                solely by how its cells look under a microscope. <br /><br />For meningioma,
+                the most common type of primary brain tumor in adults,
+                researchers have now shown that the activity of a set of 34
+                specific genes better predicts the clinical behavior of tumors
+                than the physical features of cells in those tumors.
+              </p>
+              <div class="button-container">
+                <button class="btn btn-primary">Query builder</button>
+                <button class="btn btn-outlined">Download Report</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+{{faq}}
+    </main>
+{{footer}}
+  </body>
+  <script src="../js/raw-data-access.js"></script>
+  <script src="../js/accordion.js"></script>
+</html>
