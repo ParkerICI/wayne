@@ -38,20 +38,16 @@
                      :param-regex u/double-braces
                      :key-fn keyword))
 
-(defn write-resource
-  [path content]
-  (spit (str "resources/" path) content))
-
-;; Called at startup (but won't work on Heroku)
+;; Called at Uberjar build time. Won't work at runtime on Heroku
 (defn expand-pages
   []
   (let [component-map (resource-map "templates/components")
         page-map (resource-map "templates/pages")]
+    (ju/ensure-directory "resources/public/pages")
     (doseq [[page-key page-content] page-map]
       (log/info "Expanding page" page-key)
-      (write-resource (str "public/pages/" (name page-key) ".html")
-                      (expand-page page-content component-map)))))
-
+      (spit (str "resources/public/pages/" (name page-key) ".html")
+            (expand-page page-content component-map)))))
 
 (defn init
   []
