@@ -201,6 +201,8 @@
     [:section.query-builder-section
      [:div.container
       [:div.query-builder-content
+
+       ;; Filter LH side panel
        [:div.filters-view
         [:div.query-builder-content-headline [:h1 "Query Builder"]]
         [:div.dataset-selection
@@ -211,22 +213,29 @@
           ]]
         [:div.divider.mt-30.mb-30]
         [filter-ui]]
+
+       ;; Main section
        [:div.pt-20
         [:p.query-builder-section-subheadline
          "Explore multiomic features of glioma tumor microenvironment."]
         [:div.selected-filter-wrapper
-         [collapse-panel
-          :dim
+
+         ;; Compare dim panel
+         [collapse-panel :dim
           (or (get-in dims [@(rf/subscribe [:param :universal :dim]) :label])
               "←  Select a category to compare across")
           [:div#selectedFilterView
            [filter-view]
            [:div.divider.mb-24.mt-24]
-           ;; Static heatmap
-           #_ [:img {:src "../assets/images/graph-frame.png"}]
            ]
          ]
 
+         ;; Heatmap
+         [collapse-panel :heatmap "Sample Distribution Matrix"
+          [:img {:src "../assets/images/graph-frame.png"}]
+          ]
+
+         ;; Feature selection
          [collapse-panel :feature "Feature Selection"
           (if dim
             [:div {:style {:width "500px"}} ;TODO
@@ -235,6 +244,7 @@
              [fui/ui]]
             [universal/dim-first-warning])]
 
+         ;; Visualization
          [collapse-panel :viz [:span "Visualization " (when @(rf/subscribe [:loading?])
        (wu/spinner 1))]
           [:div#visualization.visualization-container
