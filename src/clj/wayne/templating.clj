@@ -4,6 +4,7 @@
             [clojure.string :as str]
             [clojure.java.io :as io]
             [taoensso.timbre :as log]
+            [wayne.team :as team]
             ))
 
 ;;; <<<>>> ⫷ Templating ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>>    
@@ -54,15 +55,12 @@
   []
   ;; Expand pages if they aren't present
   (when-not (io/resource "public/pages/about-us.html")
+    (team/generate)
     (expand-pages)))
 
 ;;; Important: Causes expansion to happen at uberjar build time, for deployment
 (init)
 
-
-;;; <<<>>> ⫷ Team Cards ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>>
-
-(defn team-card
 
 ;;; <<<>>> ⫷ Component Detection ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>>
 
