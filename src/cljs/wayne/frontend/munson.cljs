@@ -40,7 +40,7 @@
                :values  ["2" "3" "4" "Unknown"]}
    :Immunotherapy {:label "Immunotherapy"
                    :info "Treatment status"
-                   :values ["false" "true"]}
+                   :values [["false" "No"] ["true" "Yes"]]}
    :treatment {:label "Treatment"
                :info "Various pre-sample collection treatments"
                :icon "treatment-icon.svg"
@@ -70,7 +70,7 @@
                       :values ["Mutant" "Wild_type"]
                       }
    :Sex {:label "Sex"
-         :values ["F" "M" "Unknown"]}
+         :values [["F" "Female"] ["M" "Male"] "Unknown"]}
    ))
 
 ;;; Very non-re-frame sue me
@@ -111,8 +111,10 @@
         in-values @(rf/subscribe [:data [:populate {:dim dim :feature feature :filters filters}]])
         ] 
     [:div.accordian-panel.collapsed {:id id}
-     (for [value all-values
-           :let [id (str "dim" (name dim) "-" value)
+     (for [value-spec all-values
+           :let [value (if (vector? value-spec) (first value-spec) value-spec)
+                 label (wu/humanize (if (vector? value-spec) (second value-spec) value-spec))
+                 id (str "dim" (name dim) "-" value)
                  checked? (get-in filters [dim value])
                  disabled? (not (contains? in-values value))
                  ]]
@@ -133,7 +135,7 @@
         [:span.checkmark]
         [:label.form-check-label {:for id :class (when disabled? "text-muted")
                                   }
-         (wu/humanize value) disabled?]])
+         label disabled?]])
      ]))
 
 (defn filter-ui
