@@ -1,6 +1,5 @@
 (ns wayne.templating
-  (:require #_[me.raynes.fs :as fs]
-            [org.candelbio.multitool.core :as u]
+  (:require [org.candelbio.multitool.core :as u]
             [org.candelbio.multitool.cljcore :as ju]
             [clojure.string :as str]
             [clojure.java.io :as io]
@@ -29,14 +28,16 @@
     (zipmap (map #(keyword (second (re-find #"([^/]+)\.html$" %))) comps)
             (map slurp comps))))
 
-
+(defn expand-template
+  [template params]
+  (u/expand-template template
+                     params
+                     :param-regex u/double-braces
+                     :key-fn keyword))
 
 (defn expand-page
   [page-text component-map]
-  (u/expand-template page-text
-                     component-map
-                     :param-regex u/double-braces
-                     :key-fn keyword))
+  (expand-template page-text component-map))
 
 ;; Called at Uberjar build time. Won't work at runtime on Heroku
 (defn expand-pages
@@ -58,6 +59,10 @@
 ;;; Important: Causes expansion to happen at uberjar build time, for deployment
 (init)
 
+
+;;; <<<>>> ⫷ Team Cards ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>>
+
+(defn team-card
 
 ;;; <<<>>> ⫷ Component Detection ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>> ⫷ ⫸ <<<>>>
 
