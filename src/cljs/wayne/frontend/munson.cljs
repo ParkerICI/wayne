@@ -94,8 +94,8 @@
       :on-click #(do
                    (rf/dispatch [:set-param :universal :dim dim])
                    (rf/dispatch [:set-param :heatmap2 :dim dim])
-                   (open "collapser-feature" "select-form-group")
-                   (open "collapser-viz" "select-form-group") ;TODO maybe open only on feature selection
+                   (open "collapser-feature" "collapsed")
+                   (open "collapser-viz" "collapsed") ;TODO maybe open only on feature selection
                    )}
      (when icon
        [:img.icon {:src (str "../assets/icons/" icon), :alt text}])
@@ -110,7 +110,7 @@
         ;; TODO also filter needs to be cleaned/regularized for matching
         in-values @(rf/subscribe [:data [:populate {:dim dim :feature feature :filters filters}]])
         ] 
-    [:div.accordian-panel {:id id}
+    [:div.accordian-panel.collapsed {:id id}
      (for [value all-values
            :let [id (str "dim" (name dim) "-" value)
                  checked? (get-in filters [dim value])
@@ -145,14 +145,14 @@
     (for [dim (keys dims)]
       (let [collapse-id (str "collapse" (name dim))
             heading-id (str "heading" (name dim))]
-        [:div.accordian.accordian-collapsed ;TODO collapsed maybe not
+        [:div.accordian.accordian-collapsed
          [:div.accordian-title
           [:h3 (get-in dims [dim :label])
            (when-let [info-text (get-in dims [dim :info])]
              [info info-text ])
            ]
           [:img {:src "../assets/icons/minus-grey.svg"
-                 :on-click #(toggle collapse-id "select-form-group") ;Note: using this css style for display: none;
+                 :on-click #(toggle collapse-id "collapsed") ;Note: using this css style for display: none;
                  }]] ;TODO
          [filter-values-ui collapse-id dim]
          ]))]])
@@ -184,11 +184,11 @@
        [:div.flex.align-center.flex-row.gap-8 [:h3 title]]
        [:div.flex.gap-16
         [:img#toggleSelectForm {:src "../assets/icons/merge-horizontal-grey.svg"
-                                :on-click #(toggle id "select-form-group")
+                                :on-click #(toggle id "collapsed")
                                 }]
         ;; TODO prob don't want this
         [:img {:src "../assets/icons/download.svg"}]]]
-      [:div.select-form-group.mt-24 {:id id}              ;.select-form-group if start collapsed
+      [:div.collapsed.mt-24 {:id id}              ;.collapsed if start collapsed
        content
        ]]]))
 
