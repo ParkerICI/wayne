@@ -143,17 +143,13 @@
     "Filter" [info "Select molecular and clinical criteria to filter the data for visualization"]]
    [:div.filter-list
     (for [dim (keys dims)]
-      (let [collapse-id (str "collapse" (name dim))
-            heading-id (str "heading" (name dim))]
+      (let [collapse-id (str "collapse" (name dim))]
         [:div.accordian.accordian-collapsed
-         [:div.accordian-title
+         [:div.accordian-title {:on-click #(toggle collapse-id "collapsed")}
           [:h3 (get-in dims [dim :label])
            (when-let [info-text (get-in dims [dim :info])]
-             [info info-text ])
-           ]
-          [:img {:src "../assets/icons/minus-grey.svg"
-                 :on-click #(toggle collapse-id "collapsed") ;Note: using this css style for display: none;
-                 }]] ;TODO
+             [info info-text])]
+          [:img {:src "../assets/icons/minus-grey.svg"}]]
          [filter-values-ui collapse-id dim]
          ]))]])
 
