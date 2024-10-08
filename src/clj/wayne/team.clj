@@ -46,6 +46,7 @@
 (defn team-cards
   []
   (let [template (slurp (io/resource "templates/components/team-member-card.html"))]
-    (apply str
+    (spit "resources/templates/components/team-cards.html"
+          (apply str
            (map (partial template/expand-template template)
-                team))))
+                team)))))
