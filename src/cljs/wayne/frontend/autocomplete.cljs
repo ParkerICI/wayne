@@ -1,20 +1,12 @@
 (ns wayne.frontend.autocomplete
   (:require [re-frame.core :as rf]
-            [com.hyperphor.way.api :as api]
+            #_ [com.hyperphor.way.api :as api]
+            [com.hyperphor.way.feeds :as feeds]
             [clojure.string :as str]
             ))
 
-;;; → Way
+;;; → Way (but needs to be generalized)
 ;;; Loosely based on Alzabo's autocomplete
-
-
-#_
-(rf/reg-event-db              ;; sets up initial application state
- :initialize                 ;; usage:  (dispatch [:initialize])
- (fn [_ _]                   ;; the two parameters are not important here, so use _
-     {:user-string ""
-      :choices []
-      }))
 
 (rf/reg-event-db
  :user-string-change
@@ -23,29 +15,35 @@
    #_ (api/api-get "/ac" {:query-params {:user user-string}
                        :on-success (fn [response]
                                      (rf/dispatch [:choices-change response]))})
-   (assoc db :user-string user-string)))
+   (-> db
+       (assoc :user-string user-string)
+       ;; Shouldn't be necessary, should be automated in subscription TODO
+       (assoc-in [:data-status :rna-autocomplete] :invalid)
+       )))
 
 (rf/reg-sub
   :user-string
   (fn [db _]  
     (:user-string db "")))
 
-#_
-(rf/reg-sub
-  :choices
-  (fn [db _]  
-    (:choices db)))
+(rf/reg-event-db
+ :choose
+ (fn [db [_ choice]]
+   (-> db
+       (assoc :user-string choice)
+       (assoc-in [:data :rna-autocomplete] []) ;clear the popup early, better UX
+       )))
 
 (defn render-item
   [choice user-string]
-  [:div choice])                        ;TODO highlight
+  [:div {:on-click #(rf/dispatch [:choose choice])} choice]) ;TODO highlight
 
 (defn ui
   []
   (let [user-string @(rf/subscribe [:user-string])
-        ;; choices @(rf/subscribe [:choices])
+        prefix (str/upper-case user-string)
         choices (when (> (count user-string) 1)
-                  @(rf/subscribe [:data [:rna-autocomplete {:prefix (str/upper-case user-string)}]]))
+                  @(rf/subscribe [:data :rna-autocomplete {:prefix prefix}]))
         ]
     [:div {:style {:padding "10px"}}
      [:div
@@ -55,15 +53,16 @@
                             (rf/dispatch
                              [:user-string-change (-> e .-target .-value)]))}]
       ]
-     [:div.popup
-      [:div.popuptext {:style {:visibility (if (empty? choices) "hidden" "visible")}}
-       (if (empty? choices)
-         [:div [:h3 "No results"]]
+     (when-not (or (empty? choices)
+                   (and (= 1 (count choices)) ; don't show if we've just clicked an item
+                        (= (first choices) user-string)))
+       [:div.popup
+        [:div.popuptext {:style {:visibility (if (empty? choices) "hidden" "visible")}}
          [:table                        ;TODO doesn't really need to be a table
           [:tbody
            (for [choice choices]
              ^{:key choice}
              [:tr
-              [:td (render-item choice user-string)]])]])]]]
+              [:td (render-item choice user-string)]])]]]])]
     ))
 

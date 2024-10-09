@@ -109,7 +109,7 @@
         filters @(rf/subscribe [:param :universal [:filters]])
         ;; TODO this ends up accumulating a lot in the db, I don't think its fatal but
         ;; TODO also filter needs to be cleaned/regularized for matching
-        in-values @(rf/subscribe [:data [:populate {:dim dim :feature feature :filters filters}]])
+        in-values @(rf/subscribe [:data [:populate dim] {:dim dim :feature feature :filters filters}])
         ] 
     [:div.accordian-panel.collapsed {:id id}
      (for [value-spec all-values
@@ -185,8 +185,7 @@
         [:img#toggleSelectForm {:src "../assets/icons/merge-horizontal-grey.svg"
                                 :on-click #(toggle id "collapsed")
                                 }]
-        ;; TODO prob don't want this
-        [:img {:src "../assets/icons/download.svg"}]]]
+        ]]
       [:div.collapsed.mt-24 {:id id}              ;.collapsed if start collapsed
        content
        ]]]))
@@ -196,7 +195,7 @@
   (let [dim @(rf/subscribe [:param :universal :dim])
         feature @(rf/subscribe [:param :universal :feature])
         filters @(rf/subscribe [:param :universal [:filters]])
-        data @(rf/subscribe [:data [:universal {:feature feature :filters filters :dim dim}]])]
+        data @(rf/subscribe [:data :universal {:feature feature :filters filters :dim dim}])]
     [:section.query-builder-section
      [:div.container
       [:div.query-builder-content
