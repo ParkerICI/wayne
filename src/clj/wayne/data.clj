@@ -180,9 +180,11 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
   [params]
   (heatmap2 (params-remap params)))
 
-
-
-
-
-              
-
+;;; curl "http://localhost:1199/api/data?data-id=rna-autocomplete&prefix=CL"
+(defmethod wd/data :rna-autocomplete
+  [params]
+  (map :feature_variable
+       (select "distinct(feature_variable) {from}
+where bio_feature_type = 'spatial_RNA'
+and feature_variable like '{prefix}%%'  order by feature_variable limit 20"
+               params)))
