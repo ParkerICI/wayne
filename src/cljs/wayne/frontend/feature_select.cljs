@@ -38,8 +38,6 @@
    "Tumor_cells"
    "Unassigned"])
 
-;;; From Hadeesha TODO figure out how to use
-
 ;;; Tumor cell types
 (def tumor_func_columns_core_simple
   #{"B7H3_func", "EGFR_func", "GM2_GD2_func" , "GPC2_func" ,  "HER2_func","NG2_func","VISTA_func"})
@@ -419,9 +417,45 @@
   []
   (select-widget :feature-feature data/features #(rf/dispatch [:set-param :universal :feature %])))
 
+(def nonspatial-feature-tree
+  [["Glycan"
+    ["relative_intensity"]
+    ["Cell_ratios"]
+    ["Cell_abundances"]]
+   ["Cells"]
+   ["Protein"]])
+
+(def spatial-feature-tree
+  [["RNA"
+    ["immune-high"]
+    ["immune-low"]]
+   ["Glycans"
+    ["Pixel clusters"]]
+   ["Cells"
+    ["Cell Neighborhood Freq"]
+    ["Spatial Density"]
+    ["Area Density"
+     ["Tumor_cells"]
+     ["Immune_cells"]
+     ["Functional_markers"]]]
+   ]
+  )
+
+
 (defn l2-spatial
   []
-  [:i "TBD"])
+  (let [l2-feature @(rf/subscribe [:param :features :feature-broad-feature-type])
+        l3-feature-tree (rest (u/some-thing #(= (first %) l2-feature) spatial-feature-tree))
+        l3-feature @(rf/subscribe [:param :features :feature-feature-type])
+        l4-feature-tree (rest (u/some-thing #(= (first %) l3-feature) l3-feature-tree))]
+    [:div
+     (select-widget :feature-broad-feature-type (map first spatial-feature-tree))
+     (select-widget :feature-feature-type (map first l3-feature-tree))
+     (when-not (empty? l4-feature-tree) (select-widget :feature-bio-feature-type (map first l4-feature-tree)))
+     ;; TODO actual feature selection
+
+     ]) )
+
 
 ;;; → Multitool?
 (defn conjs
