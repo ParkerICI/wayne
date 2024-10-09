@@ -179,11 +179,10 @@
   (let [id (str "collapser-" (name id))]
     [:div.featured-view.relative
      [:div.features-view
-      [:div.features-view-header
+      [:div.features-view-header {:on-click #(toggle id "collapsed")}
        [:div.flex.align-center.flex-row.gap-8 [:h3 title]]
        [:div.flex.gap-16
         [:img#toggleSelectForm {:src "../assets/icons/merge-horizontal-grey.svg"
-                                :on-click #(toggle id "collapsed")
                                 }]
         ]]
       [:div.collapsed.mt-24 {:id id}              ;.collapsed if start collapsed
