@@ -1155,3 +1155,24 @@ button:hover {
   margin-left: 16px;
   margin-bottom: 16px;
 }
+
+/* Autocomplete */
+
+/* Popup container */
+.popup {
+  position: absolute;
+  cursor: pointer;
+}
+
+/* The actual popup (appears on top) */
+.popup .popuptext {
+  visibility: hidden;
+  background-color: rgba(225,225,225,0.9);
+  border-radius: 6px;
+  padding: 8px;
+  z-index: 1;
+}
+
+.popup td {
+  padding: 2px;
+}

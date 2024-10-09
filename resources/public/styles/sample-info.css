@@ -156,31 +156,33 @@
   display: block;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-  border: 1px solid #dde1e6;
-}
 
-th,
-td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #dde1e6;
-}
+/* this shit is disastrous */
+/* table { */
+/*   width: 100%; */
+/*   border-collapse: collapse; */
+/*   margin-bottom: 20px; */
+/*   border: 1px solid #dde1e6; */
+/* } */
 
-th {
-  background-color: #000;
-  font-size: 14px;
-  color: #fff;
-  font-weight: 500;
-  height: 48px;
-}
+/* th, */
+/* td { */
+/*   padding: 12px; */
+/*   text-align: left; */
+/*   border-bottom: 1px solid #dde1e6; */
+/* } */
 
-td {
-  font-size: 14px;
-}
+/* th { */
+/*   background-color: #000; */
+/*   font-size: 14px; */
+/*   color: #fff; */
+/*   font-weight: 500; */
+/*   height: 48px; */
+/* } */
+
+/* td { */
+/*   font-size: 14px; */
+/* } */
 
 .pagination {
   display: flex;
