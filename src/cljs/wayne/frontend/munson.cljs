@@ -1,8 +1,5 @@
 (ns wayne.frontend.munson
   (:require
-   ["react-dom/client" :refer [createRoot]]
-   [goog.dom :as gdom]
-   [reagent.core :as r]
    [re-frame.core :as rf]
    [com.hyperphor.way.web-utils :as wu]
    [com.hyperphor.way.ui.init :as init]
@@ -11,8 +8,6 @@
    [org.candelbio.multitool.core :as u]
    ))
 
-;;; This is universal.cljs, but adapted to run in Munson website.
-
 ;;; Quick and dirty, could be improved
 (defn info
   [text]
@@ -20,8 +15,10 @@
          :height 20
          :title text
          :data-toggle "tooltip"
-         :style {:cursor "pointer"
-                 :margin-left "5px"}
+         :style {:cursor "pointer"      ;TODO move to .css
+                 :vertical-align "middle"
+                 :margin-left "7px"
+                 :margin-bottom "3px"}
          }])
 
 (def dims

@@ -1,8 +1,6 @@
 (ns wayne.frontend.feature-select
   (:require [re-frame.core :as rf]
             [clojure.string :as str]
-            [wayne.frontend.data :as data]
-            #_ [wayne.frontend.feature-names :as fn]
             [com.hyperphor.way.web-utils :as wu]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
@@ -83,11 +81,7 @@
    (wu/humanize (trim-prefix id))
    (select-widget-minimal id values extra-action)])
 
-
-
 ;;; Hack and temporary
-
-
 
 (defn clean-select-value
   [v]
@@ -129,7 +123,7 @@
   [["Glycan"
     ["relative_intensity"]]
    ["Cells"
-    ["cell_ratios"
+    ["Cell_Ratios"
      ["Cells_and_functional_markers"]
      ["Immune_cells"]
      ["Immune_to_Tumor_cells"]
@@ -151,7 +145,7 @@
    ["Glycans"
     ["Pixel clusters"]]                 ;?db I thik it's "glycan" and this is a no-op
    ["Cells"
-    ["Cell Neighborhood Freq"]          ;?db
+    ["Neighborhood_Frequencies"]          ;?db
     ["spatial_density"]
     ["Area Density"
      ["Tumor_cells"]

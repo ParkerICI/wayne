@@ -154,11 +154,19 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
                   :where (joint-where-clause filter))
           ))))
 
+;;; → Multitool
+(defn eor
+  [a b]
+  (if (empty? a) b a))
+
+;;; Misnamed now
 (u/defn-memoized bio_feature_type-features
   [bio_feature_type]
   (map :feature_variable                ;(comp patch-feature
-       (select "distinct feature_variable {from} where bio_feature_type = '{bio_feature_type}'"
-               :bio_feature_type bio_feature_type)))
+       (eor (select "distinct feature_variable {from} where bio_feature_type = '{bio_feature_type}'"
+                    :bio_feature_type bio_feature_type)
+            (select "distinct feature_variable {from} where feature_type = '{bio_feature_type}'"
+                    :bio_feature_type bio_feature_type))))
 
 (defmethod wd/data :universal
   [params]
