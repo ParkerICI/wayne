@@ -1162,6 +1162,7 @@ button:hover {
 .popup {
   position: absolute;
   cursor: pointer;
+  z-index: 1000;
 }
 
 /* The actual popup (appears on top) */

@@ -9,7 +9,6 @@
    [wayne.frontend.universal :as universal]
    [wayne.frontend.feature-select :as fui]
    [org.candelbio.multitool.core :as u]
-   [wayne.frontend.autocomplete :as autocomplete] ;TEMP
    ))
 
 ;;; This is universal.cljs, but adapted to run in Munson website.
@@ -201,8 +200,6 @@
 
        ;; Filter LH side panel
        [:div.filters-view
-        [autocomplete/ui]               ;TEMP
-
         [:div.query-builder-content-headline [:h1 "Query Builder"]]
         [:div.dataset-selection
          [:h3.mb-30.font-bold "Compare across"]

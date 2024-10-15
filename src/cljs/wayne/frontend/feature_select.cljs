@@ -6,6 +6,7 @@
             [com.hyperphor.way.web-utils :as wu]
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
+            [wayne.frontend.autocomplete :as autocomplete] ;TEMP
             )
   )
 
@@ -430,14 +431,14 @@
     ["immune-high"]
     ["immune-low"]]
    ["Glycans"
-    ["Pixel clusters"]]
+    ["Pixel clusters"]]                 ;?db I thik it's "glycan" and this is a no-op
    ["Cells"
-    ["Cell Neighborhood Freq"]
-    ["Spatial Density"]
+    ["Cell Neighborhood Freq"]          ;?db
+    ["spatial_density"]
     ["Area Density"
      ["Tumor_cells"]
      ["Immune_cells"]
-     ["Functional_markers"]]]
+     ["Functional_markers"]]]           ;db  "Cells_and_functional_markers" ?
    ]
   )
 
@@ -447,13 +448,21 @@
   (let [l2-feature @(rf/subscribe [:param :features :feature-broad-feature-type])
         l3-feature-tree (rest (u/some-thing #(= (first %) l2-feature) spatial-feature-tree))
         l3-feature @(rf/subscribe [:param :features :feature-feature-type])
-        l4-feature-tree (rest (u/some-thing #(= (first %) l3-feature) l3-feature-tree))]
+        l4-feature-tree (rest (u/some-thing #(= (first %) l3-feature) l3-feature-tree))
+        l4-feature (and (not (empty? l4-feature-tree))
+                        @(rf/subscribe [:param :features :feature-bio-feature-type]))
+        query-feature (or l4-feature l3-feature)
+        ]
+    (prn :l2 query-feature l2-feature l3-feature l4-feature)
     [:div
      (select-widget :feature-broad-feature-type (map first spatial-feature-tree))
      (select-widget :feature-feature-type (map first l3-feature-tree))
-     (when-not (empty? l4-feature-tree) (select-widget :feature-bio-feature-type (map first l4-feature-tree)))
-     ;; TODO actual feature selection
-
+     (when-not (empty? l4-feature-tree)
+       (prn :l4-feature-tree l4-feature-tree)
+       (select-widget :feature-bio-feature-type (map first l4-feature-tree)))
+     (if (contains? #{"immune-high" "immune-low"} query-feature)
+        [autocomplete/ui]
+        (select-widget :feature_variable @(rf/subscribe [:data :features {:bio_feature_type query-feature}])))
      ]) )
 
 
