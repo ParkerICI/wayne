@@ -91,37 +91,19 @@
 
 ;;; This does the work of computing the feature based on the various selectors
 ;;; via compute-feature-variable (multimethod)
-#_
+
 (rf/reg-sub
  :selected-feature
  (fn [db _]
    ;; stuff into query machinery
-   (when (get-in db [:params :features :feature-type])
-     (let [feature
-           (if (= "marker_intensity" (get-in db [:params :features :feature-type]))
-             (get-in db [:params :features :feature-feature])
-             (let [feature-type (keyword (get-in db [:params :features :feature-bio-feature-type]))
-                   feature-params (->> (get-in db [:params :features])
-                                       (u/map-values clean-select-value)
-                                       (extend-params feature-type))]
-               (when (and feature-type feature-params)
-                 (compute-feature-variable feature-type feature-params))))] ;methodized
-       ;; NOTE Connects up to query machinery. Not completely sure if this is kosher, but it seems to work
-       (when-not (= feature (get-in db [:params :universal :feature]))
-         (rf/dispatch [:set-param :universal :feature feature]))
-       feature))))
-
-(defn feature-valid?
-  [feature]
-  #_ (contains? fn/feature-names feature)
-  true)
-
-;;; TODO propagate up into earlier guys
-;;; TODO subfeature name not actually used, but could be a tooltip or something
+   (let [feature (get-in db [:params :features :feature-feature_variable])]
+     (when-not (= feature (get-in db [:params :universal :feature]))
+       (rf/dispatch [:set-param :universal :feature feature]))
+     feature)))
 
 (def nonspatial-feature-tree
   [["Glycan"
-    ["relative_intensity"]]
+    ["Relative_Intensity"]]
    ["Cells"
     ["Cell_Ratios"
      ["Cells_and_functional_markers"]
@@ -142,8 +124,9 @@
   [["RNA"
     ["immune-high"]
     ["immune-low"]]
-   ["Glycans"
-    ["Pixel clusters"]]                 ;?db I thik it's "glycan" and this is a no-op
+   ;; Not actually in database?
+   #_ ["Glycans"
+    ["Pixel clusters"]]
    ["Cells"
     ["Neighborhood_Frequencies"]          ;?db
     ["spatial_density"]
@@ -171,6 +154,7 @@
         l4-feature (and (not (empty? l4-feature-tree))
                         @(rf/subscribe [:param :features :feature-bio-feature-type]))
         query-feature (or l4-feature l3-feature)
+        selected-feature @(rf/subscribe [:selected-feature])
         ]
     (prn :feature-selector query-feature l1-feature l2-feature l3-feature l4-feature)
     [:div
@@ -182,7 +166,8 @@
        (select-widget :feature-bio-feature-type (map first l4-feature-tree)))
      (if (contains? #{"immune-high" "immune-low"} query-feature)
        (row "RNA" [autocomplete/ui])
-        (select-widget :feature_feature_variable @(rf/subscribe [:data :features {:bio_feature_type query-feature}])))
+       (select-widget :feature-feature_variable @(rf/subscribe [:data :features {:bio_feature_type query-feature}])))
+     (row "selected" selected-feature)
      ]) )
 
 
@@ -193,37 +178,17 @@
     #{thing}
     (conj coll thing)))
 
-#_
-(defn l2-nonspatial
-  []
-  [:div 
-   (select-widget :feature-type (map first non-spatial-features-2-3))
-   (let [feature-l2 @(rf/subscribe [:param :features :feature-type])]
-     (if (= "marker_intensity" feature-l2)
-       [:div                            ;TODO wire this into feature output
-        (select-widget :feature-meta-cluster cell-meta-clusters)
-        [l3-feature]]
-       ;; Not marker_intensity
-       [:div
-        (select-widget
-         :feature-bio-feature-type
-         (get (into {} non-spatial-features-2-3) feature-l2)
-         #(rf/dispatch [:set-param :heatmap :bio_feature_type %])
-         )
-        (when-let [bio_feature_type @(rf/subscribe [:param :features :feature-bio-feature-type])]
-          [row "feature" [feature-ui bio_feature_type]] )]))
-   ])
 
 (defn feature-list-ui
   []
   (let [feature @(rf/subscribe [:selected-feature])
         feature-list @(rf/subscribe [:param :heatmap2 :feature-list])]
     [:div
-     [row "feature_variable"
+     [row "actual variable"
       [:span
        (wu/humanize feature)
-       [:b (str " " (if (feature-valid? feature) "present " "ND") )] ;TODO EnJun wants to wordsmith these
-       (when (and (feature-valid? feature)
+       #_ [:b (str " " (if (feature-valid? feature) "present " "ND") )] ;TODO EnJun wants to wordsmith these
+       (when (and #_ (feature-valid? feature)
                   (not (contains? feature-list feature)))
          [:a #_ :button.btn.btn-sm.btn-secondary.mx-2
           {:href "#"
@@ -239,18 +204,8 @@
 
 (defn ui
   []
-  [:div
-   [:div.row
-    [:div.col-10
-     [new-feature-selector]
-     ;; Note: if this is omitted, initial plot doesn't load. So if people don't liek it, keep it but hide it
-     (when-let [feature @(rf/subscribe [:selected-feature])]
-       [row "feature_variable"
-        [:span
-         (wu/humanize feature)
-         [:b (str " " (if (feature-valid? feature) "present " "ND") )] ;TODO EnJun wants to wordsmith these
-
-         ]])     
-     ]]
-   ])
+  [:div.row
+   [:div.col-10
+    [new-feature-selector]
+    ]])
 

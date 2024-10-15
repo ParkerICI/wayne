@@ -32,6 +32,7 @@
    (-> db
        (assoc :user-string choice)
        (assoc-in [:data :rna-autocomplete] []) ;clear the popup early, better UX
+       (assoc-in [:params :features :feature-feature_variable] choice) ;integrate with search
        )))
 
 (defn render-item
@@ -52,6 +53,7 @@
                             [:user-string-change (-> e .-target .-value)]))}]
 
      (when-not (or (empty? choices)
+                   ;; TODO not quite right in cases where one entry is a prefix of another (eg PODXL)
                    (and (= 1 (count choices)) ; don't show if we've just clicked an item
                         (= (first choices) user-string)))
        [:div.popup
