@@ -181,7 +181,7 @@
        (prn :l4-feature-tree l4-feature-tree)
        (select-widget :feature-bio-feature-type (map first l4-feature-tree)))
      (if (contains? #{"immune-high" "immune-low"} query-feature)
-        [autocomplete/ui]
+       (row "RNA" [autocomplete/ui])
         (select-widget :feature_feature_variable @(rf/subscribe [:data :features {:bio_feature_type query-feature}])))
      ]) )
 

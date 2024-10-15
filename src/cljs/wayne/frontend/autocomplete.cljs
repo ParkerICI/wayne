@@ -45,14 +45,12 @@
         choices (when (> (count user-string) 1)
                   @(rf/subscribe [:data :rna-autocomplete {:prefix prefix}]))
         ]
-    [:div {:style {:padding "10px"}}
-     [:div
-      "RNA: "
-      [:input {:value user-string
-               :on-change (fn [e]
-                            (rf/dispatch
-                             [:user-string-change (-> e .-target .-value)]))}]
-      ]
+    [:div 
+     [:input {:value user-string
+              :on-change (fn [e]
+                           (rf/dispatch
+                            [:user-string-change (-> e .-target .-value)]))}]
+
      (when-not (or (empty? choices)
                    (and (= 1 (count choices)) ; don't show if we've just clicked an item
                         (= (first choices) user-string)))
