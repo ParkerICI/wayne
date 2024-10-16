@@ -1,0 +1,77 @@
+(ns wayne.BRUCEteam
+  (:require
+   [org.candelbio.multitool.core :as u]
+   [clojure.java.io :as io]
+   )
+  )
+
+;;; Uses the template system but in a different awkward way.
+;;; Writes back into templates/components directory so result can be put into page. Kludgy.
+
+;;; TODO need to make twitter icons etc conditional somehow. Bleah
+
+
+(def BRUCEteam
+  [
+   {:name "Crystal Mackall",
+    :image "https://med.stanford.edu/services/api/cap/profiles/photocache.73276.jpg"
+    :link "https://med.stanford.edu/mackalllab/People.html"
+    :link2 "https://med.stanford.edu/profiles/crystal-mackall"
+    :title "Professor, Stanford University"
+    :twitter "https://x.com/mackalllab/"
+    }
+
+   {:name "Robert Prins",
+    :image "https://robertprinslab.healthsciences.ucla.edu/sites/g/files/oketem1351/files/styles/1_1_960px/public/media/images/prins-robert.jpg.webp"
+    :link "https://robertprinslab.healthsciences.ucla.edu/"
+    :link2 "https://bri.ucla.edu/people/robert-prins/"
+    :twitter "https://x.com/UCLANsgy/"
+    :title "Associate Professor, University of California, Los Angeles"
+    }
+
+   {:name "Hideho Okada",
+    :image "https://braintumorcenter.ucsf.edu/sites/default/files/styles/person/public/2018-04/okada_hideho_740x864.jpg"
+    :link "https://okadalab.ucsf.edu/"
+    :link2 "https://profiles.ucsf.edu/hideho.okada"
+    :twitter "https://twitter.com/okadalabucsf1
+    :title "Professor, University of California, San Francisco"
+    }
+
+   {:name "Christine Brown",
+    :image "https://www.cityofhope.org/sites/www/files/styles/small_bio_portrait_315x450_/public/image/christine-brown.jpg"
+    :link "https://www.cityofhope.org/research/beckman-research-institute/immuno-oncology/christine-brown-lab"
+    :link2 "https://www.cityofhope.org/christine-brown"
+    :title "Professor, City of Hope"
+    }
+
+   {:name "Kristina Cole",
+    :image "https://www.chop.edu/sites/default/files/styles/crop_and_center_300x375/public/providers-new-cole-kristina.jpg"
+    :link "https://www.chop.edu/doctors/cole-kristina-a"
+    :title "Associate Professor, Children's Hospital of Philadelphia"
+    }
+
+   {:name "Derek Oldridge",
+    :image "https://pathology.med.upenn.edu/sites/default/files/styles/person/public/oldridge_derek_20232.jpg"
+    :link "https://www.theoldridgelab.com/"
+    :link2 "https://pathology.med.upenn.edu/department/people/1699/derek-alan-oldridge"
+    :title "Assistant Professor, Children's Hospital of Philadelphia
+    :twitter "https://twitter.com/oldridgederek"
+    }
+   ]
+  )
+
+;;; Dupe from templating because namespace issues
+(defn expand-template
+  [template params]
+  (u/expand-template template
+                     params
+                     :param-regex u/double-braces
+                     :key-fn keyword))
+
+(defn generate
+  []
+  (let [template (slurp (io/resource "templates/components/team-member-card.html"))]
+    (spit "resources/templates/components/team-cards2.html"
+          (apply str
+           (map (partial expand-template template)
+                team)))))
