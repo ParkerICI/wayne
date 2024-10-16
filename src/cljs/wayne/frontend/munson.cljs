@@ -22,7 +22,7 @@
 
 (def dims
   (array-map                            ; Order is important 
-   :Tumor_Diagnosis {:label "Final Diagnosis"
+   :Tumor_Diagnosis {:label "Tumor Diagnosis"
                      :icon "diagnosis-icon.svg"
                      :values ["Astrocytoma"
                               "GBM"
@@ -61,7 +61,7 @@
                   :icon "roi-icon.svg"
                   :values   ["Other" "Tumor_core" "Tumor_core_to_infiltrating" "Tumor_infiltrating"]}
    :IDH_R132H_Status {:label "IDH Status"
-                      :info "Common IDH mutation"
+                      :info "R132H - Common IDH mutation"
                       :icon "file-chart-icon.svg"
                       :values ["Mutant" "Wild_type"]
                       }
