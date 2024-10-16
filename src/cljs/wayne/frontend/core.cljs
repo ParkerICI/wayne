@@ -18,7 +18,7 @@
    [wayne.frontend.samples :as samples]
    ;; [wayne.frontend.dotplot :as dotplot]
    ;; [wayne.frontend.barchart :as barchart]
-   [wayne.frontend.universal :as universal]
+   ;; [wayne.frontend.universal :as universal]
    ;; [wayne.frontend.dendrogram :as dend]
    ;; [wayne.frontend.fgrid :as fgrid]
    [wayne.frontend.signup :as signup]
@@ -70,7 +70,7 @@
 ;     :violin violins/violins
      ;; :dotplot dotplot/plot
      ;; :barchart barchart/plot
-     :query universal/ui
+     ;; :query universal/ui
      ;; :dendrogram dend/dev-ui
      ;; :data_grid fgrid/ui
      )]

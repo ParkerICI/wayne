@@ -3,7 +3,7 @@
    [re-frame.core :as rf]
    [com.hyperphor.way.web-utils :as wu]
    [com.hyperphor.way.ui.init :as init]
-   [wayne.frontend.universal :as universal]
+   [wayne.frontend.visualization :as viz]
    [wayne.frontend.feature-select :as fui]
    [org.candelbio.multitool.core :as u]
    ))
@@ -184,6 +184,16 @@
        content
        ]]]))
 
+(defn dim-first-warning
+  []
+  [:div.mt-4
+   [:span.alert.alert-info.text-nowrap "← First select a dimension to compare ←"]])
+
+(defn feature-second-warning
+  []
+  [:div.my-3
+   [:span.alert.alert-info.text-nowrap "↓  Next select a feature below ↓"]])
+
 (defn munson-new
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
@@ -216,12 +226,12 @@
          [collapse-panel :dim
           (if-let [dim (get-in dims [@(rf/subscribe [:param :universal :dim]) :label])]
             (str "Selected category: " dim)
-              "←  Select a category to compare across")
+            "←  Select a category to compare across")
           [:div#selectedFilterView
            [filter-view]
            [:div.divider.mb-24.mt-24]
            ]
-         ]
+          ]
 
          ;; Heatmap
          [collapse-panel :heatmap "Sample Distribution Matrix"
@@ -233,16 +243,18 @@
           (if dim
             [:div {:style {:width "500px"}} ;TODO
              (when-not feature
-               [universal/feature-second-warning])
+               [feature-second-warning])
              [fui/ui]]
-            [universal/dim-first-warning])]
+            [dim-first-warning])]
 
          ;; Visualization
-         [collapse-panel :viz [:span "Visualization " (when @(rf/subscribe [:loading?])
-       (wu/spinner 1))]
+         [collapse-panel :viz
+          [:span "Visualization "
+           (when @(rf/subscribe [:loading?])
+             (wu/spinner 1))]
           [:div#visualization.visualization-container
            [:div
-            [universal/visualization dim feature data]
+            [viz/visualization dim feature data]
             #_
             [:div.no-data.text-center
              [:img {:src "../assets/icons/empty-box.svg"}]
@@ -255,7 +267,6 @@
   [:div
    ;; Stand in
    [munson-new]
-   #_ [universal/ui]
    ])
 
 (defn ^:export init
