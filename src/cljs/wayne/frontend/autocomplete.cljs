@@ -11,10 +11,7 @@
 (rf/reg-event-db
  :user-string-change
  (fn [db [_ user-string]]
-   ;; Using [:data] machinery, save some work (TODO make sure it isn't retaining too much)
-   #_ (api/api-get "/ac" {:query-params {:user user-string}
-                       :on-success (fn [response]
-                                     (rf/dispatch [:choices-change response]))})
+   ;; Using [:data] machinery, save some work
    (-> db
        (assoc :user-string user-string)
        ;; Shouldn't be necessary, should be automated in subscription TODO
@@ -36,8 +33,8 @@
        )))
 
 (defn render-item
-  [choice user-string]
-  [:div {:on-click #(rf/dispatch [:choose choice])} choice]) ;TODO highlight
+  [choice user-string]                  ;TODO user-string highlight
+  [:div {:on-click #(rf/dispatch [:choose choice])} choice]) 
 
 (defn ui
   []

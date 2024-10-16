@@ -2,6 +2,7 @@
   (:require
    [re-frame.core :as rf]
    [com.hyperphor.way.web-utils :as wu]
+   [com.hyperphor.way.feeds :as feeds]
    [com.hyperphor.way.ui.init :as init]
    [wayne.frontend.visualization :as viz]
    [wayne.frontend.feature-select :as fui]
@@ -261,6 +262,30 @@
              [:h3 "No Data Found"]
              [:p "Enter or adjust your filters to see data."]]]]]]]]]])
   )
+
+;;; Omit zeros on marker_intensity (as per Hadeesha 5/28/2024).
+;;; Might make more sense to do this on server, but easier here.
+;;; TODO Obsolete in new feature scheme, ask Hadeesha if still needed
+#_
+(defn trim-zeros?
+  ([]
+   (= "marker_intensity" @(rf/subscribe [:param :features :feature-type])))
+  ;; this version can be called in more places
+  ([db]
+   (= "marker_intensity" (get-in db [:params :features :feature-type])))
+   )
+
+#_
+(defmethod feeds/postload :universal
+  [db _ data]
+  (if (trim-zeros? db)
+    (update-in db
+               [:data [:universal]]
+               (fn [rows]
+                 (remove (fn [row] (= 0 (:feature_value row)))
+                         rows)))
+    db))
+
 
 (defn app-ui
   []
