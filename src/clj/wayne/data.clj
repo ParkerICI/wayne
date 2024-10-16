@@ -154,11 +154,19 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
                   :where (joint-where-clause filter))
           ))))
 
+;;; → Multitool
+(defn eor
+  [a b]
+  (if (empty? a) b a))
+
+;;; Misnamed now
 (u/defn-memoized bio_feature_type-features
   [bio_feature_type]
   (map :feature_variable                ;(comp patch-feature
-       (select "distinct feature_variable {from} where bio_feature_type = '{bio_feature_type}'"
-               :bio_feature_type bio_feature_type)))
+       (eor (select "distinct feature_variable {from} where bio_feature_type = '{bio_feature_type}'"
+                    :bio_feature_type bio_feature_type)
+            (select "distinct feature_variable {from} where feature_type = '{bio_feature_type}'"
+                    :bio_feature_type bio_feature_type))))
 
 (defmethod wd/data :universal
   [params]
@@ -180,9 +188,13 @@ where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0
   [params]
   (heatmap2 (params-remap params)))
 
+;;; curl "http://localhost:1199/api/data?data-id=rna-autocomplete&prefix=CL"
 
-
-
-
-              
-
+;;; Note: in theory, might want to be parameterizable by feature_type = Immune_High or _Low, but in practice these are the same
+(defmethod wd/data :rna-autocomplete
+  [params]
+  (map :feature_variable
+       (select "distinct(feature_variable) {from}
+where bio_feature_type = 'spatial_RNA'
+and feature_variable like '{prefix}%%'  order by feature_variable limit 20"
+               params)))

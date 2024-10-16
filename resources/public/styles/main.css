@@ -477,7 +477,6 @@ button:hover {
 }
 
 .filter-subheader {
-  text-transform: uppercase;
   font-size: 16px;
 }
 
@@ -1154,4 +1153,89 @@ button:hover {
   margin-top: 8px;
   margin-left: 16px;
   margin-bottom: 16px;
+}
+
+/* Autocomplete */
+
+/* Popup container */
+.popup {
+  position: absolute;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+/* The actual popup (appears on top) */
+.popup .popuptext {
+  visibility: hidden;
+  background-color: rgba(225,225,225,0.9);
+  border-radius: 6px;
+  padding: 8px;
+  z-index: 1;
+}
+
+.popup td {
+  padding: 2px;
+}
+
+[data-tooltip]:hover::after {
+  font-size: 14px;
+  font-weight: normal;
+  display: block;
+  position: absolute;
+  content: attr(data-tooltip);
+  border: 1px solid #666;
+  border-radius: 6px;
+  background-color: rgba(225,225,225,0.9);
+  padding: .35em;
+}
+
+
+/* Munson tabs (formerly in sample-info) */
+
+.tabs {
+  display: flex;
+  border-bottom: 2px solid #dde1e6;
+  height: 58px;
+}
+
+.tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #fff;
+  border: none;
+  outline: none;
+  transition: background-color 0.3s ease;
+  border-bottom: 4px solid transparent;
+  font-size: 16px;
+  color: #697077;
+  text-transform: uppercase;
+}
+.tab:hover {
+  background-color: transparent;
+}
+.tab.active {
+  background-color: transparent;
+  border-bottom: 4px solid #000 !important;
+  color: #000;
+}
+
+.tab-content {
+  display: none;
+  padding: 20px 0;
+}
+
+.tab-content.active {
+  display: block;
+}
+/* Boostrap replacements TODO TEMP this is to make the feature selctor look semi-reasonable */
+
+.row {
+  display: flex;
+  padding: 5px;
+}
+.col-3 {
+  width: 160px;
+}
+.col-7 {
+  width: 440px;
 }

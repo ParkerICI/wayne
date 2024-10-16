@@ -120,41 +120,8 @@
   border: 1px solid #dde1e6;
 }
 
-.tabs {
-  display: flex;
-  border-bottom: 2px solid #dde1e6;
-  height: 58px;
-}
 
-.tab {
-  padding: 10px 20px;
-  cursor: pointer;
-  background-color: #fff;
-  border: none;
-  outline: none;
-  transition: background-color 0.3s ease;
-  border-bottom: 4px solid transparent;
-  font-size: 16px;
-  color: #697077;
-  text-transform: uppercase;
-}
-.tab:hover {
-  background-color: transparent;
-}
-.tab.active {
-  background-color: transparent;
-  border-bottom: 4px solid #000 !important;
-  color: #000;
-}
-
-.tab-content {
-  display: none;
-  padding: 20px 0;
-}
-
-.tab-content.active {
-  display: block;
-}
+/* tabs stuff moved to main */
 
 table {
   width: 100%;
@@ -292,14 +259,3 @@ td {
 }
 
 
-/* Boostrap replacements TODO TEMP this is to make the feature selctor look semi-reasonable */
-
-.row {
-  display: flex;
-}
-.col-3 {
-  width: 160px;
-}
-.col-7 {
-  width: 440px;
-}

@@ -1,32 +1,29 @@
 (ns wayne.frontend.munson
   (:require
-   ["react-dom/client" :refer [createRoot]]
-   [goog.dom :as gdom]
-   [reagent.core :as r]
    [re-frame.core :as rf]
    [com.hyperphor.way.web-utils :as wu]
+   [com.hyperphor.way.feeds :as feeds]
    [com.hyperphor.way.ui.init :as init]
-   [wayne.frontend.universal :as universal]
+   [wayne.frontend.visualization :as viz]
    [wayne.frontend.feature-select :as fui]
    [org.candelbio.multitool.core :as u]
    ))
 
-;;; This is universal.cljs, but adapted to run in Munson website.
-
-;;; Quick and dirty, could be improved
 (defn info
   [text]
-  [:img {:src "https://www.iconpacks.net/icons/3/free-information-icon-6276.png"
-         :height 20
-         :title text
-         :data-toggle "tooltip"
-         :style {:cursor "pointer"
-                 :margin-left "5px"}
-         }])
+  [:span {:data-tooltip text}
+   [:img.info
+    {:src "https://www.iconpacks.net/icons/3/free-information-icon-6276.png"
+     :height 20
+     :style {:cursor "pointer"      ;TODO move to .css
+             :vertical-align "middle"
+             :margin-left "7px"
+             :margin-bottom "3px"}
+     }]])
 
 (def dims
   (array-map                            ; Order is important 
-   :Tumor_Diagnosis {:label "Final Diagnosis"
+   :Tumor_Diagnosis {:label "Tumor Diagnosis"
                      :icon "diagnosis-icon.svg"
                      :values ["Astrocytoma"
                               "GBM"
@@ -65,7 +62,7 @@
                   :icon "roi-icon.svg"
                   :values   ["Other" "Tumor_core" "Tumor_core_to_infiltrating" "Tumor_infiltrating"]}
    :IDH_R132H_Status {:label "IDH Status"
-                      :info "Common IDH mutation"
+                      :info "R132H - Common IDH mutation"
                       :icon "file-chart-icon.svg"
                       :values ["Mutant" "Wild_type"]
                       }
@@ -108,7 +105,7 @@
         filters @(rf/subscribe [:param :universal [:filters]])
         ;; TODO this ends up accumulating a lot in the db, I don't think its fatal but
         ;; TODO also filter needs to be cleaned/regularized for matching
-        in-values @(rf/subscribe [:data [:populate {:dim dim :feature feature :filters filters}]])
+        in-values @(rf/subscribe [:data [:populate dim] {:dim dim :feature feature :filters filters}])
         ] 
     [:div.accordian-panel.collapsed {:id id}
      (for [value-spec all-values
@@ -142,7 +139,7 @@
   []
   [:div.filters
    [:h3.mb-30.font-bold.filter-subheader
-    "Filter" [info "Select molecular and clinical criteria to filter the data for visualization"]]
+    "FILTER" [info "Select molecular and clinical criteria to filter the data for visualization"]]
    [:div.filter-list
     (for [dim (keys dims)]
       (let [collapse-id (str "collapse" (name dim))]
@@ -178,24 +175,32 @@
   (let [id (str "collapser-" (name id))]
     [:div.featured-view.relative
      [:div.features-view
-      [:div.features-view-header
+      [:div.features-view-header {:on-click #(toggle id "collapsed")}
        [:div.flex.align-center.flex-row.gap-8 [:h3 title]]
        [:div.flex.gap-16
         [:img#toggleSelectForm {:src "../assets/icons/merge-horizontal-grey.svg"
-                                :on-click #(toggle id "collapsed")
                                 }]
-        ;; TODO prob don't want this
-        [:img {:src "../assets/icons/download.svg"}]]]
+        ]]
       [:div.collapsed.mt-24 {:id id}              ;.collapsed if start collapsed
        content
        ]]]))
+
+(defn dim-first-warning
+  []
+  [:div.mt-4
+   [:span.alert.alert-info.text-nowrap "← First select a dimension to compare ←"]])
+
+(defn feature-second-warning
+  []
+  [:div.my-3
+   [:span.alert.alert-info.text-nowrap "↓  Next select a feature below ↓"]])
 
 (defn munson-new
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
         feature @(rf/subscribe [:param :universal :feature])
         filters @(rf/subscribe [:param :universal [:filters]])
-        data @(rf/subscribe [:data [:universal {:feature feature :filters filters :dim dim}]])]
+        data @(rf/subscribe [:data :universal {:feature feature :filters filters :dim dim}])]
     [:section.query-builder-section
      [:div.container
       [:div.query-builder-content
@@ -222,12 +227,12 @@
          [collapse-panel :dim
           (if-let [dim (get-in dims [@(rf/subscribe [:param :universal :dim]) :label])]
             (str "Selected category: " dim)
-              "←  Select a category to compare across")
+            "←  Select a category to compare across")
           [:div#selectedFilterView
            [filter-view]
            [:div.divider.mb-24.mt-24]
            ]
-         ]
+          ]
 
          ;; Heatmap
          [collapse-panel :heatmap "Sample Distribution Matrix"
@@ -239,16 +244,18 @@
           (if dim
             [:div {:style {:width "500px"}} ;TODO
              (when-not feature
-               [universal/feature-second-warning])
+               [feature-second-warning])
              [fui/ui]]
-            [universal/dim-first-warning])]
+            [dim-first-warning])]
 
          ;; Visualization
-         [collapse-panel :viz [:span "Visualization " (when @(rf/subscribe [:loading?])
-       (wu/spinner 1))]
+         [collapse-panel :viz
+          [:span "Visualization "
+           (when @(rf/subscribe [:loading?])
+             (wu/spinner 1))]
           [:div#visualization.visualization-container
            [:div
-            [universal/visualization dim feature data]
+            [viz/visualization dim feature data]
             #_
             [:div.no-data.text-center
              [:img {:src "../assets/icons/empty-box.svg"}]
@@ -256,12 +263,35 @@
              [:p "Enter or adjust your filters to see data."]]]]]]]]]])
   )
 
+;;; Omit zeros on marker_intensity (as per Hadeesha 5/28/2024).
+;;; Might make more sense to do this on server, but easier here.
+;;; TODO Obsolete in new feature scheme, ask Hadeesha if still needed
+#_
+(defn trim-zeros?
+  ([]
+   (= "marker_intensity" @(rf/subscribe [:param :features :feature-type])))
+  ;; this version can be called in more places
+  ([db]
+   (= "marker_intensity" (get-in db [:params :features :feature-type])))
+   )
+
+#_
+(defmethod feeds/postload :universal
+  [db _ data]
+  (if (trim-zeros? db)
+    (update-in db
+               [:data [:universal]]
+               (fn [rows]
+                 (remove (fn [row] (= 0 (:feature_value row)))
+                         rows)))
+    db))
+
+
 (defn app-ui
   []
   [:div
    ;; Stand in
    [munson-new]
-   #_ [universal/ui]
    ])
 
 (defn ^:export init
