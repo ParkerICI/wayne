@@ -8,18 +8,17 @@
    [org.candelbio.multitool.core :as u]
    ))
 
-;;; Quick and dirty, could be improved
 (defn info
   [text]
-  [:img {:src "https://www.iconpacks.net/icons/3/free-information-icon-6276.png"
-         :height 20
-         :title text
-         :data-toggle "tooltip"
-         :style {:cursor "pointer"      ;TODO move to .css
-                 :vertical-align "middle"
-                 :margin-left "7px"
-                 :margin-bottom "3px"}
-         }])
+  [:span {:data-tooltip text}
+   [:img.info
+    {:src "https://www.iconpacks.net/icons/3/free-information-icon-6276.png"
+     :height 20
+     :style {:cursor "pointer"      ;TODO move to .css
+             :vertical-align "middle"
+             :margin-left "7px"
+             :margin-bottom "3px"}
+     }]])
 
 (def dims
   (array-map                            ; Order is important 
@@ -139,7 +138,7 @@
   []
   [:div.filters
    [:h3.mb-30.font-bold.filter-subheader
-    "Filter" [info "Select molecular and clinical criteria to filter the data for visualization"]]
+    "FILTER" [info "Select molecular and clinical criteria to filter the data for visualization"]]
    [:div.filter-list
     (for [dim (keys dims)]
       (let [collapse-id (str "collapse" (name dim))]
