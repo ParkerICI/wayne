@@ -215,3 +215,6 @@
   background-color: #02B192
 }
 
+.social-links a[href=''] {
+  display: none;
+}

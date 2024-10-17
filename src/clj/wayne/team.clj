@@ -8,9 +8,8 @@
 ;;; Uses the template system but in a different awkward way.
 ;;; Writes back into templates/components directory so result can be put into page. Kludgy.
 
-;;; TODO need to make twitter icons etc conditional somehow. Bleah
-;;; TODO regularize image height
-
+;;; Note: :link2 not yet used in th4e template, not sure what to do with it
+;;; Note: :instagram and :facebook also supported, but no data yet
 
 (def team
   [
