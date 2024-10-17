@@ -13,6 +13,7 @@ pom.xml.asc
 .hg/
 resources/public/cljs-out
 resources/public/pages
+resources/templates/components/team-cards.html
 node_modules
 shadow-cljs.edn
 .shadow-cljs/

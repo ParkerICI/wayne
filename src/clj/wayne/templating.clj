@@ -58,6 +58,11 @@
     (team/generate)
     (expand-pages)))
 
+(defn reinit
+  []
+  (team/generate)
+  (expand-pages)  )
+
 ;;; Important: Causes expansion to happen at uberjar build time, for deployment
 (init)
 
