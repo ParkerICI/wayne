@@ -29,17 +29,16 @@
      :$schema "https://vega.github.io/schema/vega/v5.json",
      :width 700,
      :signals
-     [{:name "box", :value false, :bind {:input "checkbox"}}
-      {:name "points", :value true, :bind {:input "checkbox"}}
+     [{:name "box", :value false #_ :bind #_ {:input "checkbox"}}
+      {:name "points", :value true, #_ :bind #_  {:input "checkbox"}}
       {:name "jitter" :value 50 :bind {:input :range, :min 0, :max 200}}
       {:name "blobWidth", :value 200, :bind {:input :range, :min 100, :max 1000}} ;controls fatness of violins  
       {:name "blobSpace" :value 750 :bind {:input :range, :min 100, :max 2000}}
       {:name "height", :update "blobSpace"}
-      {:name "trim", :value true, :bind {:input "checkbox"}}
-
+      {:name "trim", :value true, #_ :bind #_ {:input "checkbox"}}
       ;; TODO this didn't work, so going out of Vega
       #_ {"name" "xscales", "value" "linear" "bind"  {"input" "select" "options" ["linear" "log10" "log2" "sqrt"]}}
-      {:name "bandwidth", :value 0, :bind {:input "range", :min 0, :max 1.0E-4, :step 1.0E-6}}],
+      {:name "bandwidth", :value 0, #_ :bind #_ {:input "range", :min 0, :max 1.0E-4, :step 1.0E-6}}],
      :data
      [{:name "source", :values data}
       {:name "density",
@@ -66,6 +65,7 @@
        :scale "xscale",
        :zindex 1,
        :labelFontSize 18 :titleFontSize 16
+       :labelAngle 45 :labelAlign "left"
        :title (wu/humanize feature)} ;TODO want metacluster in this
       {:orient "left",
        :scale "layout",
