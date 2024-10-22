@@ -177,6 +177,7 @@
         ]}],
      }))
 
+#_
 (defn boxplot
   [data dim]
   (let [scale (interpret-scale @(rf/subscribe [:param :features :scale]))]
@@ -293,7 +294,7 @@
                        [v/vega-view (violin data dim feature) data]
                        [scale-chooser]
                        ])
-       :boxplot (fn [] [:div.vstack
+       #_ :boxplot #_ (fn [] [:div.vstack
                         [v/vega-lite-view (boxplot data dim) data]
                         [scale-chooser]
                         ])
