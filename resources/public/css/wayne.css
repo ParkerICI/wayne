@@ -53,3 +53,7 @@
     border-radius: 50%;
     animation: var(--bs-spinner-animation-speed) linear infinite var(--bs-spinner-animation-name);
 }
+
+.text-muted {
+  color: #BBB;
+}
