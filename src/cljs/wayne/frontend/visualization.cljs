@@ -219,7 +219,7 @@
 ;;; TODO The "n rows, zeros omitted, Download" row doesn't really apply
 (defn heatmap2
   [dim]
-  (let [data (humanize-features @(rf/subscribe [:data [:heatmap2]]))]
+  (let [data (humanize-features @(rf/subscribe [:data :heatmap2]))]
     [:div
      (if (empty? data)
        [:div.alert.alert-info

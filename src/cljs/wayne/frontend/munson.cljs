@@ -7,6 +7,7 @@
    [wayne.frontend.visualization :as viz]
    [wayne.frontend.feature-select :as fui]
    [org.candelbio.multitool.core :as u]
+   [com.hyperphor.way.api :as api]
    ))
 
 (defn info
@@ -298,3 +299,19 @@
   []
   (init/init app-ui nil)
   )
+
+;;; TODO this patches a Way method, should be done there 
+(rf/reg-event-db
+ :fetch
+ (fn [db [_ data-id params]]
+   (api/api-get
+    "/data"
+    {:params (merge (get-in db [:params data-id]) 
+                    (assoc params :data-id data-id)) 
+     :handler #(rf/dispatch [:com.hyperphor.way.feeds/loaded data-id params %])
+     :error-handler #(rf/dispatch [:data-error data-id %1]) ;Override standard error handler
+     })
+   (-> db
+       (assoc :loading? true)
+       (assoc-in [:data-status data-id] :fetching)
+       (assoc-in [:data-params data-id] params))))
