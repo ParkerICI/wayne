@@ -57,3 +57,8 @@
 .text-muted {
   color: #BBB;
 }
+
+.disabled {
+  background: lightgrey;
+  pointer-events: none;
+}

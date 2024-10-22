@@ -31,12 +31,15 @@
      :signals
      [{:name "box", :value false #_ :bind #_ {:input "checkbox"}}
       {:name "points", :value true, #_ :bind #_  {:input "checkbox"}}
-      {:name "jitter" :value 50 :bind {:input :range, :min 0, :max 200}}
+      {:name "jitter" #_ :value #_ 50 :bind {:element "#jitter"}}
+      ;; There's some horrible bug that makes htis not work
+      #_ {:name "blobWidth"  :value 200, :bind {:element "#blobWidth"}} ;controls fatness of violins  
       {:name "blobWidth", :value 200, :bind {:input :range, :min 100, :max 1000}} ;controls fatness of violins  
-      {:name "blobSpace" :value 750 :bind {:input :range, :min 100, :max 2000}}
-      {:name "height", :update "blobSpace"}
+      {:name "blobSpace" #_ :value #_ 200 :bind {:element "#blobSpace"}}
+      #_ {:name "blobSpace" :value 750 :bind {:input :range, :min 100, :max 2000}}
+      {:name "height" :update "blobSpace"}
       {:name "trim", :value true, #_ :bind #_ {:input "checkbox"}}
-      ;; TODO this didn't work, so going out of Vega
+      ;; TODO this didn't work, so going out of Vega. Note, see https://vega.github.io/vega/docs/signals/#bind-external
       #_ {"name" "xscales", "value" "linear" "bind"  {"input" "select" "options" ["linear" "log10" "log2" "sqrt"]}}
       {:name "bandwidth", :value 0, #_ :bind #_ {:input "range", :min 0, :max 1.0E-4, :step 1.0E-6}}],
      :data
@@ -244,11 +247,7 @@
      [fui/feature-list-ui]
      ]))
 
-(defn scale-chooser
-  []
-  [:div.hstack.flex
-   "Scale: " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])
-   ])
+
 
 (defn munson-tabs
   "Define a set of tabs. id is a keyword, tabs is a map (array-map is best to preserve order) mapping keywords to ui fns "
@@ -274,6 +273,24 @@
    (= "marker_intensity" (get-in db [:params :features :feature-type])))
    )
 
+(defn slider
+  [& {:keys [id min max default]}]
+  [:span
+   [:label (str id)]
+   [:input {:id id :type "range" :name id :min min :max max :value default}] ;Step?
+   ])
+
+(defn control-panel
+  []
+  [:table.table
+   [:tr
+    [:td [:span "Scale: " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])]]
+    [:td.disabled [slider :id "blobWidth" :min 100 :max 1000 :default 200]]]
+   [:tr
+    [:td [slider :id "jitter" :min 0 :max 200]]
+    [:td [slider :id "blobSpace" :min 100 :max 2000 :default 600]]]]
+  )
+
 (defn visualization 
   [dim feature data]
   (when dim
@@ -291,8 +308,8 @@
       :uviz
       (array-map
        :violin (fn [] [:div
+                       [control-panel]
                        [v/vega-view (violin data dim feature) data]
-                       [scale-chooser]
                        ])
        #_ :boxplot #_ (fn [] [:div.vstack
                         [v/vega-lite-view (boxplot data dim) data]

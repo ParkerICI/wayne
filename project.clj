@@ -15,7 +15,7 @@
                  ;; See packge.json for the real ones
                  
                  ;; This should get inherited from way, but is necessary for some reason
-                 [thheller/shadow-cljs "2.26.5"] ;TODO maybe only in dev profile
+                 [thheller/shadow-cljs "2.28.18"] ;TODO maybe only in dev profile
 
                  ;;; Wayne specific
                  [com.google.cloud/google-cloud-bigquery "2.27.0"]
