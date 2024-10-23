@@ -25,18 +25,16 @@
   [data dim feature]
   (let [dim (name dim)
         scale (interpret-scale @(rf/subscribe [:param :features :scale]))] ;TODO wee fui/ref below
-    {:description "A violin plot example showing distributions for pengiun body mass.",
+    {:description "A violin plot",
      :$schema "https://vega.github.io/schema/vega/v5.json",
      :width 700,
      :signals
      [{:name "box", :value false #_ :bind #_ {:input "checkbox"}}
       {:name "points", :value true, #_ :bind #_  {:input "checkbox"}}
-      {:name "jitter" #_ :value #_ 50 :bind {:element "#jitter"}}
-      ;; There's some horrible bug that makes htis not work
-      #_ {:name "blobWidth"  :value 200, :bind {:element "#blobWidth"}} ;controls fatness of violins  
-      {:name "blobWidth", :value 200, :bind {:input :range, :min 100, :max 1000}} ;controls fatness of violins  
-      {:name "blobSpace" #_ :value #_ 200 :bind {:element "#blobSpace"}}
-      #_ {:name "blobSpace" :value 750 :bind {:input :range, :min 100, :max 2000}}
+      {:name "jitter"  :bind {:element "#jitter"}}
+      {:name "blobWidthx" :value "200" :bind {:element "#blobWidth"}} ;controls fatness of violins
+      {:name "blobWidth" :update "parseInt(blobWidthx)"}             ;necessary because ext binding come in as string, bleah
+      {:name "blobSpace" :value 300 :bind {:element "#blobSpace"}}
       {:name "height" :update "blobSpace"}
       {:name "trim", :value true, #_ :bind #_ {:input "checkbox"}}
       ;; TODO this didn't work, so going out of Vega. Note, see https://vega.github.io/vega/docs/signals/#bind-external
@@ -277,7 +275,8 @@
   [& {:keys [id min max default]}]
   [:span
    [:label (str id)]
-   [:input {:id id :type "range" :name id :min min :max max :value default}] ;Step?
+   ;; No :value, breaks interaction
+   [:input {:id id :type "range" :name id :min min :max max :defaultValue default}] ;Step?
    ])
 
 (defn control-panel
@@ -285,10 +284,10 @@
   [:table.table
    [:tr
     [:td [:span "Scale: " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])]]
-    [:td.disabled [slider :id "blobWidth" :min 100 :max 1000 :default 200]]]
+    [:td [slider :id "blobWidth" :min 100 :max 1000 :default 200]]]
    [:tr
-    [:td [slider :id "jitter" :min 0 :max 200]]
-    [:td [slider :id "blobSpace" :min 100 :max 2000 :default 600]]]]
+    [:td [slider :id "jitter" :min 0 :max 200 :default 50]]
+    [:td [slider :id "blobSpace" :min 100 :max 2000 :default 700]]]]
   )
 
 (defn visualization 
