@@ -106,13 +106,14 @@ group by patient_id"))
              (format "%s in %s" (name dim) (bq/sql-lit-list vals)))))))))
 
 (defn query1
-  [{:keys [feature dim filters]}]
+  [{:keys [feature dim filters] :as params}]
   (when (and feature dim)
     (-> (select "feature_value, {dim} {from} 
-where feature_variable = '{feature}' AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of differe
-                :dim dim
-                :feature feature
-                :where (str (joint-where-clause (dissoc filters (keyword feature)))  )) ; " and cell_meta_cluster_final = 'APC'"
+where feature_variable = '{feature}'
+AND feature_type = '{feature-type}'
+AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of differe
+                (assoc params
+                       :where (str (joint-where-clause (dissoc filters (keyword feature)))  ))) ; " and cell_meta_cluster_final = 'APC'"
         clean-data)))
 
 ;;; Allowable feature values for a single dim, given feature and filters

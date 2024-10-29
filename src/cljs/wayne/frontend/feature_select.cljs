@@ -122,11 +122,8 @@
 
 (def spatial-feature-tree
   [["RNA"
-    ["immune-high"]
-    ["immune-low"]]
-   ;; Not actually in database?
-   #_ ["Glycans"
-    ["Pixel clusters"]]
+    ["Immune_High"]
+    ["Immune_Low"]]
    ["Cells"
     ["Neighborhood_Frequencies"]          ;?db
     ["spatial_density"]
