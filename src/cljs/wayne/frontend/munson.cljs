@@ -29,7 +29,6 @@
                      :icon "diagnosis-icon.svg"
                      :values ["Astrocytoma"
                               "GBM"
-                              "GBM_other"
                               "Oligodendroglioma"
                               "PXA"
                               "Pediatric DIPG"
