@@ -98,10 +98,11 @@
        (rf/dispatch [:set-param :universal :feature feature]))
      feature)))
 
+;;; Note: might be easier and less error-prone to build this from data
 (def nonspatial-feature-tree
   [
    ["Cells"
-    ["cell_abundances"
+    ["Cell_Abundance"
      ["Relative_to_all_tumor_cells"]
      ["Relative_to_all_immune_cells"]]
     ["Cell_Ratios"
@@ -126,11 +127,9 @@
     ["Immune_Low"]]
    ["Cells"
     ["Neighborhood_Frequencies"]          ;?db
-    ["spatial_density"]
-    ["Area Density"
-     ["Tumor_cells"]
-     ["Immune_cells"]
-     ["Functional_markers"]]]           ;db  "Cells_and_functional_markers" ?
+    ["Spatial_Density"]
+    ["Area_Density"
+     ]]           ;db  "Cells_and_functional_markers" ?
    ]
   )
 
@@ -144,9 +143,9 @@
   []
   (let [l1-feature @(rf/subscribe [:param :features :feature-supertype])
         l2-feature-tree (rest (u/some-thing #(= (first %) l1-feature) feature-tree))
-        l2-feature @(rf/subscribe [:param :features :feature-broad-feature-type])
+        l2-feature @(rf/subscribe [:param :features :feature-broad_feature_type])
         l3-feature-tree (rest (u/some-thing #(= (first %) l2-feature) l2-feature-tree))
-        l3-feature @(rf/subscribe [:param :features :feature-feature-type])
+        l3-feature @(rf/subscribe [:param :features :feature-feature_type])
         l4-feature-tree (rest (u/some-thing #(= (first %) l3-feature) l3-feature-tree))
         l4-feature (and (not (empty? l4-feature-tree))
                         @(rf/subscribe [:param :features :feature-bio-feature-type]))
@@ -156,8 +155,8 @@
     (prn :feature-selector query-feature l1-feature l2-feature l3-feature l4-feature)
     [:div
      (select-widget :feature-supertype (map first feature-tree))
-     (select-widget :feature-broad-feature-type (map first l2-feature-tree))
-     (select-widget :feature-feature-type (map first l3-feature-tree))
+     (select-widget :feature-broad_feature_type (map first l2-feature-tree))
+     (select-widget :feature-feature_type (map first l3-feature-tree))
      (when-not (empty? l4-feature-tree)
        (prn :l4-feature-tree l4-feature-tree)
        (select-widget :feature-bio-feature-type (map first l4-feature-tree)))

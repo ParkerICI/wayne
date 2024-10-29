@@ -206,9 +206,9 @@
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
         feature @(rf/subscribe [:param :universal :feature])
-        feature-type @(rf/subscribe [:param :features :feature-feature-type])
+        feature_type @(rf/subscribe [:param :features :feature-feature_type])
         filters @(rf/subscribe [:param :universal [:filters]])
-        data @(rf/subscribe [:data :universal {:feature feature :feature-type feature-type  :filters filters :dim dim}])]
+        data @(rf/subscribe [:data :universal {:feature feature :feature_type feature_type  :filters filters :dim dim}])]
     [:section.query-builder-section
      [:div.container
       [:div.query-builder-content

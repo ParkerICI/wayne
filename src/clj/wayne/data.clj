@@ -110,7 +110,7 @@ group by patient_id"))
   (when (and feature dim)
     (-> (select "feature_value, {dim} {from} 
 where feature_variable = '{feature}'
-AND feature_type = '{feature-type}'
+AND feature_type = '{feature_type}'
 AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of differe
                 (assoc params
                        :where (str (joint-where-clause (dissoc filters (keyword feature)))  ))) ; " and cell_meta_cluster_final = 'APC'"
