@@ -1232,7 +1232,7 @@ button:hover {
 /* For visualization controls */
 
 fieldset {
-  height: 90px;			/* because css is stupid */
+  height: 100px;			/* because css is stupid */
   border-radius: 5px;
 }
 

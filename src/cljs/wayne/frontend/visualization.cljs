@@ -29,9 +29,9 @@
      :$schema "https://vega.github.io/schema/vega/v5.json"
      :width 700
      :signals
-     [{:name "box" :value true :bind #_ {:element "#box"} {:input "checkbox"  :element  "#pchecks"}}
-      {:name "violin" :value true :bind #_ {:element "#violin"}  {:input "checkbox" :element  "#pchecks"}}
-      {:name "points" :value true #_ :bind #_  {:input "checkbox"}}
+     [{:name "box" :value true :bind {:input "checkbox"  :element "#pchecks"}}
+      {:name "violin" :value true :bind  {:input "checkbox" :element "#pchecks"}}
+      {:name "points" :value true :bind  {:input "checkbox" :element "#pchecks"}}
       {:name "jitter"  :bind {:element "#jitter"}}
       {:name "blobWidthx" :bind {:element "#blobWidth"}} ;controls fatness of violins
       {:name "blobWidth" :update "parseInt(blobWidthx)"}             ;necessary because ext binding come in as string, bleah
