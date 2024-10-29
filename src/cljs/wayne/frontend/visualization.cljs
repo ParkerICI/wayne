@@ -117,6 +117,7 @@
          :from {:data "violin"},
          :encode
          {:enter {:fill {:scale "color", :field {:parent dim}}
+                  :tooltip {:signal "datum"}   ;TODO maybe 
                   },
           :update
           {:x {:scale "xscale", :field "value"},
@@ -131,6 +132,8 @@
          :from {:data "source"},
          :encode
          {:enter {:y {:value 0}                  
+                  ;; Not very interesting (could be if they included the full row)
+                  ;; :tooltip {:signal "datum"}  
                   },
           :update
           {:stroke {:value "black"},
@@ -163,6 +166,7 @@
          :from {:data "summary"},
          :encode
          {:enter {:stroke {:value "black"}
+                  :tooltip {:signal "datum"}
                   :cornerRadius {:value 4}}
           :update
           {:x {:scale "xscale", :field "q1"},
@@ -170,7 +174,8 @@
            :height {:signal "blobWidth / 5"}
            :yc {:signal "blobWidth / 2"}
            :opacity {:signal "box ? 1 : 0"}
-           #_ :fill #_ {:scale "color", :field {:parent dim}}
+           ;; If violins present, use black, otherwise semantic color. TODO tweak and deal with other combos
+           :fill {:signal (str "violin ? 'black' :  scale('color', datum." dim ")")} 
            }}}
 
 
