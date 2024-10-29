@@ -32,10 +32,10 @@
      [{:name "box", :value false #_ :bind #_ {:input "checkbox"}}
       {:name "points", :value true, #_ :bind #_  {:input "checkbox"}}
       {:name "jitter"  :bind {:element "#jitter"}}
-      {:name "blobWidthx" :value "200" :bind {:element "#blobWidth"}} ;controls fatness of violins
+      {:name "blobWidthx" :bind {:element "#blobWidth"}} ;controls fatness of violins
       {:name "blobWidth" :update "parseInt(blobWidthx)"}             ;necessary because ext binding come in as string, bleah
-      {:name "blobSpace" :value 300 :bind {:element "#blobSpace"}}
-      {:name "height" :update "blobSpace"}
+      {:name "blobSpace" :bind {:element "#blobSpace"}}
+      {:name "height" :update "blobSpace" #_  "blobSpace * length(scale('layout').domain)"} ; not working
       {:name "trim", :value true, #_ :bind #_ {:input "checkbox"}}
       ;; TODO this didn't work, so going out of Vega. Note, see https://vega.github.io/vega/docs/signals/#bind-external
       #_ {"name" "xscales", "value" "linear" "bind"  {"input" "select" "options" ["linear" "log10" "log2" "sqrt"]}}
@@ -271,6 +271,7 @@
    (= "marker_intensity" (get-in db [:params :features :feature-type])))
    )
 
+#_
 (defn slider
   [& {:keys [id min max default]}]
   [:span
@@ -279,16 +280,35 @@
    [:input {:id id :type "range" :name id :min min :max max :defaultValue default}] ;Step?
    ])
 
+(defn update-slider-value
+  [id]
+  (fn [e]
+    (let [value (.-value (.-target e))
+          elt (.getElementById js/document id)
+          sibling (.-nextSibling elt)]
+      (set! (.-value sibling) value))))
+
+(defn slider
+  [& {:keys [id min max default]}]
+  [:span
+   [:label (str id)]
+   ;; No :value, breaks interaction
+   [:input {:id id :type "range" :name id :min min :max max :defaultValue default
+            :on-input (update-slider-value id)
+            }] ;Step?
+   [:output default]])
+
+
 (defn control-panel
   []
   [:table.table
    [:tr
     [:td [:span "Scale: " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])]]
-    [:td [slider :id "blobWidth" :min 100 :max 1000 :default 200]]]
+    [:td [slider :id "blobWidth" :min 100 :max 1000 :default 100]]]
    [:tr
-    [:td [slider :id "jitter" :min 0 :max 200 :default 50]]
-    [:td [slider :id "blobSpace" :min 100 :max 2000 :default 700]]]]
-  )
+    [:td [slider :id "jitter" :min 0 :max 200 :default 25]]
+    [:td [slider :id "blobSpace" :min 100 :max 2000 :default 700]] ;should be 150 and height = blobwidthh * domain, but not working
+    ]])
 
 (defn visualization 
   [dim feature data]
