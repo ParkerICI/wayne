@@ -89,9 +89,6 @@
     nil
     v))
 
-;;; This does the work of computing the feature based on the various selectors
-;;; via compute-feature-variable (multimethod)
-
 (rf/reg-sub
  :selected-feature
  (fn [db _]
@@ -102,23 +99,26 @@
      feature)))
 
 (def nonspatial-feature-tree
-  [["Glycan"
-    ["Relative_Intensity"]]
+  [
    ["Cells"
+    ["cell_abundances"
+     ["Relative_to_all_tumor_cells"]
+     ["Relative_to_all_immune_cells"]]
     ["Cell_Ratios"
      ["Cells_and_functional_markers"]
      ["Immune_cells"]
      ["Immune_to_Tumor_cells"]
      ["Tumor_cells"]]
-    ["cell_abundances"
-     ["Relative_to_all_tumor_cells"]
-     ["Relative_to_all_immune_cells"]]]
+    ]
    ["Protein"
     ["Tumor_Antigens_Intensity_Segments"]
     ["Tumor_Antigens_Intensity"]        ;TODO metacluster
     ["Functional_marker_intensity"]     ;ditto
     ["Phenotype_marker_intensity"]      ;dito
-    ]])
+    ]
+   ["Glycan"
+    ["Relative_Intensity"]]
+   ])
 
 (def spatial-feature-tree
   [["RNA"

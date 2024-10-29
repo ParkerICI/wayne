@@ -25,6 +25,7 @@
 (def dims
   (array-map                            ; Order is important 
    :Tumor_Diagnosis {:label "Tumor Diagnosis"
+                     :info "Glial tumor subtypes"
                      :icon "diagnosis-icon.svg"
                      :values ["Astrocytoma"
                               "GBM"
@@ -33,7 +34,8 @@
                               "PXA"
                               "Pediatric DIPG"
                               "Pediatric HGG (other)"]}
-   :WHO_grade {:label "WHO grade"
+   :WHO_grade {:label "WHO Grade"
+               :info "World Health Organization tumor grade classification"
                :icon "question-icon.svg"
                :values  ["2" "3" "4" "Unknown"]}
    :Immunotherapy {:label "Immunotherapy"

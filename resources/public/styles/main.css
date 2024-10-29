@@ -1178,6 +1178,7 @@ button:hover {
 }
 
 [data-tooltip]:hover::after {
+  z-index: 10000;
   font-size: 14px;
   font-weight: normal;
   display: block;
