@@ -25,38 +25,39 @@
   [data dim feature]
   (let [dim (name dim)
         scale (interpret-scale @(rf/subscribe [:param :features :scale]))] ;TODO wee fui/ref below
-    {:description "A violin plot",
-     :$schema "https://vega.github.io/schema/vega/v5.json",
-     :width 700,
+    {:description "A violin plot"
+     :$schema "https://vega.github.io/schema/vega/v5.json"
+     :width 700
      :signals
-     [{:name "box", :value false #_ :bind #_ {:input "checkbox"}}
-      {:name "points", :value true, #_ :bind #_  {:input "checkbox"}}
+     [{:name "box" :value true :bind #_ {:element "#box"} {:input "checkbox"  :element  "#pchecks"}}
+      {:name "violin" :value true :bind #_ {:element "#violin"}  {:input "checkbox" :element  "#pchecks"}}
+      {:name "points" :value true #_ :bind #_  {:input "checkbox"}}
       {:name "jitter"  :bind {:element "#jitter"}}
       {:name "blobWidthx" :bind {:element "#blobWidth"}} ;controls fatness of violins
       {:name "blobWidth" :update "parseInt(blobWidthx)"}             ;necessary because ext binding come in as string, bleah
       {:name "blobSpace" :bind {:element "#blobSpace"}}
       {:name "height" :update "blobSpace" #_  "blobSpace * length(scale('layout').domain)"} ; not working
-      {:name "trim", :value true, #_ :bind #_ {:input "checkbox"}}
+      {:name "trim" :value true #_ :bind #_ {:input "checkbox"}}
       ;; TODO this didn't work, so going out of Vega. Note, see https://vega.github.io/vega/docs/signals/#bind-external
       #_ {"name" "xscales", "value" "linear" "bind"  {"input" "select" "options" ["linear" "log10" "log2" "sqrt"]}}
-      {:name "bandwidth", :value 0, #_ :bind #_ {:input "range", :min 0, :max 1.0E-4, :step 1.0E-6}}],
+      {:name "bandwidth" :value 0 #_ :bind #_ {:input "range" :min 0 :max 1.0E-4 :step 1.0E-6}}]
      :data
-     [{:name "source", :values data}
-      {:name "density",
-       :source "source",
+     [{:name "source" :values data}
+      {:name "density"
+       :source "source"
        :transform
-       [{:type "kde",                   ; Kernel Density Estimation, see https://vega.github.io/vega/docs/transforms/kde/
-         :field "feature_value",
-         :groupby [dim],
-         :bandwidth {:signal "bandwidth"},
+       [{:type "kde"                   ; Kernel Density Estimation, see https://vega.github.io/vega/docs/transforms/kde/
+         :field "feature_value"
+         :groupby [dim]
+         :bandwidth {:signal "bandwidth"}
          :resolve "shared"
          #_ :extent #_ {:signal "trim ? null : [0.0003, 0.0005]"}}]}
-      {:name "stats",
-       :source "source",
+      {:name "stats"
+       :source "source"
        :transform
-       [{:type "aggregate",
-         :groupby [dim],
-         :fields ["feature_value" "feature_value" "feature_value" "feature_value" "feature_value"],
+       [{:type "aggregate"
+         :groupby [dim]
+         :fields ["feature_value" "feature_value" "feature_value" "feature_value" "feature_value"]
          :ops ["min" "q1" "median" "q3" "max"],
          :as  ["min" "q1" "median" "q3" "max"]}]}]
 
@@ -110,7 +111,8 @@
        :marks
        [
 
-        {:type "area",                  ;Violins
+        ;; Violins
+        {:type "area",                  
          :from {:data "violin"},
          :encode
          {:enter {:fill {:scale "color", :field {:parent dim}}
@@ -118,13 +120,16 @@
           :update
           {:x {:scale "xscale", :field "value"},
            :yc {:signal "blobWidth / 2"},
-           :opacity {:signal "box ? 0 : 1"}
-           :height {:scale "hscale", :field "density"}}}}
-        {:type "symbol",                ;Points
+           :opacity {:signal "violin ? 1 : 0"}
+           :height {:scale "hscale", :field "density"}
+           ;; :tooltip {:value "boxx"}
+           }}}
+
+        ;; Points
+        {:type "symbol",
          :from {:data "source"},
          :encode
-         {:enter {:y {:value 0}
-                  
+         {:enter {:y {:value 0}                  
                   },
           :update
           {:stroke {:value "black"},
@@ -136,8 +141,9 @@
            :shape {:value "circle"},
            :x {:scale "xscale", :field "feature_value"}}}}
         
+        ;; Box
         #_
-        {:type "rect",                  ;Box
+        {:type "rect",                 
          :from {:data "summary"},
          :encode
          {:enter {:cornerRadius {:value 4} },
@@ -148,31 +154,47 @@
            :yc {:signal "blobWidth / 2"}
            :fill {:scale "color", :field {:parent dim}}
            }}}
-        {:type "rect",                  ;Box outline
+
+        ;; TODO maybe make color and fill different if violin is on
+
+        ;;  Box outline
+        {:type "rect",                  
          :from {:data "summary"},
          :encode
-         {:enter {:stroke {:value "gray"}
+         {:enter {:stroke {:value "black"}
                   :cornerRadius {:value 4}}
           :update
           {:x {:scale "xscale", :field "q1"},
            :x2 {:scale "xscale", :field "q3"},
-           :height {:signal "blobWidth / 10"}
+           :height {:signal "blobWidth / 5"}
            :yc {:signal "blobWidth / 2"}
+           :opacity {:signal "box ? 1 : 0"}
            #_ :fill #_ {:scale "color", :field {:parent dim}}
            }}}
-        {:type "rect",                  ;Midpoint
+
+
+        ;; Midpoint
+        {:type "rect",                  
          :from {:data "summary"},
          :encode
-         {:enter {:fill {:value "white"}, :width {:value 2}, :height {:value 20}},
-          :update {:x {:scale "xscale", :field "median"}, :yc {:signal "blobWidth / 2"}}}}
+         {:enter {:fill {:value "black"}, :width {:value 2}, :height {:value 20}},
+          :update {:x {:scale "xscale", :field "median"}
+                   :yc {:signal "blobWidth / 2"}
+                   :opacity {:signal "box ? 1 : 0"}
+                   }}}
 
-        {:type "rect",                  ;Whisker
+
+
+        ;; Whisker
+        {:type "rect",                 
          :from {:data "summary"},
          :encode
          {:enter {:fill {:value "black"}, :width {:value 2}, :height {:value 2}},
           :update {:x {:scale "xscale", :field "min"},
                    :x2 {:scale "xscale", :field "max"}
-                   :yc {:signal "blobWidth / 2"}}}}
+                   :yc {:signal "blobWidth / 2"}
+                   :opacity {:signal "box ? 1 : 0"}
+                   }}}
 
 
         ]}],
@@ -290,7 +312,7 @@
 
 (defn slider
   [& {:keys [id min max default]}]
-  [:span
+  [:span.slider
    [:label (str id)]
    ;; No :value, breaks interaction
    [:input {:id id :type "range" :name id :min min :max max :defaultValue default
@@ -298,17 +320,31 @@
             }] ;Step?
    [:output default]])
 
+#_
+(defn checkbox
+  [& {:keys [id default]}]
+  [:span
+   [:label (str id)]
+   ;; No :value, breaks interaction
+   [:input {:id id :type "checkbox" :name id :defaultChecked default}]
+   ])
 
 (defn control-panel
   []
   [:table.table
    [:tr
-    [:td [:span "Scale: " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])]]
-    [:td [slider :id "blobWidth" :min 100 :max 1000 :default 100]]]
-   [:tr
-    [:td [slider :id "jitter" :min 0 :max 200 :default 25]]
-    [:td [slider :id "blobSpace" :min 100 :max 2000 :default 700]] ;should be 150 and height = blobwidthh * domain, but not working
-    ]])
+    [:td 
+     [:fieldset [:legend "Type"] [:div#pchecks]]]
+    [:td 
+     [:fieldset [:legend "Adjust plot"]
+      [:table.table
+       [:tr
+        [:td [:span.slider "scale " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])]]
+        [:td [slider :id "blobWidth" :min 100 :max 1000 :default 100]]]
+       [:tr
+        [:td [slider :id "jitter" :min 0 :max 200 :default 25]]
+        [:td [slider :id "blobSpace" :min 100 :max 2000 :default 700]] ;should be 150 and height = blobwidthh * domain, but not working
+        ]]]]]])
 
 (defn visualization 
   [dim feature data]
@@ -326,7 +362,7 @@
      [munson-tabs                       ;TODO need to split or be an arg or simething
       :uviz
       (array-map
-       :violin (fn [] [:div
+       :plot (fn [] [:div
                        [control-panel]
                        [v/vega-view (violin data dim feature) data]
                        ])

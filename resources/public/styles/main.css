@@ -1240,3 +1240,16 @@ button:hover {
 .col-7 {
   width: 440px;
 }
+
+
+/* For visualization controls */
+
+fieldset {
+  height: 90px;			/* because css is stupid */
+  border-radius: 5px;
+}
+
+.slider {
+  margin-left: 5px;
+  margin-right: 5px;
+}
