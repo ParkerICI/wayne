@@ -187,10 +187,8 @@
      [row "actual variable"
       [:span
        (wu/humanize feature)
-       #_ [:b (str " " (if (feature-valid? feature) "present " "ND") )] ;TODO EnJun wants to wordsmith these
-       (when (and #_ (feature-valid? feature)
-                  (not (contains? feature-list feature)))
-         [:a #_ :button.btn.btn-sm.btn-secondary.mx-2
+       (when (not (contains? feature-list feature))
+         [:button.btn.btn-sm.btn-secondary.mx-2 ;TODO none of these boostrap stules are present
           {:href "#"
            :on-click #(rf/dispatch [:update-param :heatmap2 :feature-list conjs feature])}
           "add"])
@@ -199,7 +197,7 @@
      [row
       [:span "feature list "
        (when-not (empty? feature-list)
-         [:a {:href "#" :on-click #(rf/dispatch [:set-param :heatmap2 :feature-list #{}])} "clear"])]
+         [:button.btn.btn-sm.btn-secondary.mx-2 {:href "#" :on-click #(rf/dispatch [:set-param :heatmap2 :feature-list #{}])} "clear"])]
       (str/join ", " (map wu/humanize feature-list))]]))
 
 (defn ui

@@ -480,19 +480,6 @@ button:hover {
   font-size: 16px;
 }
 
-.clear-all-button {
-  background-color: white;
-  border: none;
-  color: var(--primary-blue-60);
-  text-decoration: underline;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.clear-all-button:hover {
-  background-color: transparent;
-}
-
 .filter-list {
   display: flex;
   gap: 14px;
@@ -1252,4 +1239,11 @@ fieldset {
 .slider {
   margin-left: 5px;
   margin-right: 5px;
+}
+
+.alert {
+  background-color: pink;
+  border: 2x solid red;
+  padding: 3px;
+  border-radius: 10px;
 }

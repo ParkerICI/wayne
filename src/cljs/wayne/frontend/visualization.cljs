@@ -245,6 +245,8 @@
   [dim]
   (let [data (humanize-features @(rf/subscribe [:data :heatmap2]))]
     [:div
+     [:fieldset {:style {:margin-top "5px" :height "auto"}} [:legend "feature selection"]
+      [fui/feature-list-ui]]
      (if (empty? data)
        [:div.alert.alert-info
         "No data, you probably need to add some features to the feature list"]
@@ -264,7 +266,7 @@
                                      {:labelAngle 45}]]}
                          )
          ))
-     [fui/feature-list-ui]
+
      ]))
 
 

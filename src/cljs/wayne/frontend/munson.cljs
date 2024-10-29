@@ -157,7 +157,16 @@
 
 (defn filter-view
   []
-  [:div.selected-filter-list
+  [:fieldset.selected-filter-list
+   {:style {:height "auto"}}
+   [:legend "Filters"]
+   [:button.btn.btn-sm.btn-secondary.mx-2
+    {:style {:height :fit-content}
+     :on-click #(do (rf/dispatch [:set-param :universal :filters {}])
+                    (rf/dispatch [:set-param :heatmap :filter {}])
+                    (rf/dispatch [:set-param :universal :feature nil]))
+     }
+    "Clear All"]
    (u/mapf (fn [[col vals]]
              (let [in-vals (u/mapf (fn [[v in]]
                                      (if in v))
@@ -166,11 +175,7 @@
                ;; TODO implement close icon
                [:span (map (fn [v] [:div.tag (wu/humanize v) [:img {:src "../assets/icons/close.svg"}]]) in-vals)]))
            @(rf/subscribe [:param :universal [:filters]]))
-   [:button.clear-all-button {:type "submit"
-                              :on-click #(do (rf/dispatch [:set-param :universal :filters {}])
-                                             (rf/dispatch [:set-param :heatmap :filter {}])
-                                             (rf/dispatch [:set-param :universal :feature nil]))
-                              } "Clear All"]])
+   ])
 
 
 (defn collapse-panel
