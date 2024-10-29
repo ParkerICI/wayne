@@ -66,14 +66,15 @@
      [{:orient "bottom",
        :scale "xscale",
        :zindex 1,
-       :labelFontSize 18 :titleFontSize 16
-       :labelAngle 45 :labelAlign "left"
+       :labelFontSize 18 :titleFontSize 20
+       :labelAngle 90 :labelAlign "left"
        :title (wu/humanize feature)} ;TODO want metacluster in this
+
       {:orient "left",
        :scale "layout",
        :tickCount 5,
-       :labelFontSize 18 :titleFontSize 16
-       :title dim
+       :labelFontSize 18 :titleFontSize 20
+       :title (wu/humanize (name dim))
        :zindex 1}],
 
      :scales
