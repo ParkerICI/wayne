@@ -855,7 +855,7 @@ button:hover {
 }
 
 .page-title--vis {
-  background-image: url("../assets/images/visualization.png");
+  background-image: url("../assets/images/cell-background.png"); /*TODO image is too big, trim it down*/
 }
 
 .page-title--rda {
