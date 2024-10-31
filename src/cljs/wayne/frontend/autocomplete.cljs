@@ -1,8 +1,7 @@
 (ns wayne.frontend.autocomplete
   (:require [re-frame.core :as rf]
-            #_ [com.hyperphor.way.api :as api]
-            [com.hyperphor.way.feeds :as feeds]
             [clojure.string :as str]
+            [org.candelbio.multitool.core :as u]
             ))
 
 ;;; → Way (but needs to be generalized)
@@ -26,11 +25,15 @@
 (rf/reg-event-db
  :choose
  (fn [db [_ choice]]
-   (-> db
-       (assoc :user-string choice)
-       (assoc-in [:data :rna-autocomplete] []) ;clear the popup early, better UX
-       (assoc-in [:params :features :feature-feature_variable] choice) ;integrate with search
-       )))
+   (if (some #(= % choice) (get-in db [:data :rna-autocomplete]))
+     (-> db
+         (assoc :user-string choice)
+         (assoc-in [:data :rna-autocomplete] []) ;clear the popup early, better UX
+         (assoc-in [:params :features :feature-feature_variable] choice) ;integrate with search
+         )
+     ;; not a legit choice, probably came from a blur, clear completion pane and  ignore 
+     (-> db
+         (assoc-in [:data :rna-autocomplete] [])))))
 
 (defn render-item
   [choice user-string]                  ;TODO user-string highlight
@@ -47,7 +50,12 @@
      [:input {:value user-string
               :on-change (fn [e]
                            (rf/dispatch
-                            [:user-string-change (-> e .-target .-value)]))}]
+                            [:user-string-change (-> e .-target .-value)]))
+              :on-blur (fn [e]
+                         (rf/dispatch
+                            [:choose (-> e .-target .-value)])
+                         )
+              }]
 
      (when-not (or (empty? choices)
                    ;; TODO not quite right in cases where one entry is a prefix of another (eg PODXL)

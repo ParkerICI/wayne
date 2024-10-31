@@ -192,6 +192,7 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
 ;;; curl "http://localhost:1199/api/data?data-id=rna-autocomplete&prefix=CL"
 
 ;;; Note: in theory, might want to be parameterizable by feature_type = Immune_High or _Low, but in practice these are the same
+;;; Value: list of matching strings
 (defmethod wd/data :rna-autocomplete
   [params]
   (map :feature_variable
