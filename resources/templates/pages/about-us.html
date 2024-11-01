@@ -42,36 +42,6 @@
         </div>
       </section>
       <section id="mission-research">
-        <div class="mission">
-          <div class="container">
-            <div class="mission-content">
-              <div class="image-container">
-                <img
-                  src="../assets/images/about-image-1.png"
-                  alt="Mission Image"
-                />
-              </div>
-              <div class="text-container">
-                <h2>Our Mission</h2>
-                <div class="divider-container mb-32">
-                  <div class="divider-short"></div>
-                  <div class="divider-long"></div>
-                </div>
-                <p>
-                  We believe in a future where cancer is no longer a threat, and
-                  we are committed to making that vision a reality through
-                  innovative research, education, and patient support.At the
-                  Cancer Research Foundation, our mission is to accelerate the
-                  progress of cancer research to improve the lives of patients
-                  and their families. We believe in a future where cancer is no
-                  longer a threat, and we are committed to making that vision a
-                  reality through innovative research, education, and patient
-                  support.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
         <div class="research">
           <div class="container">
             <div class="research-content">
@@ -96,14 +66,26 @@ We are committed to advancing the understanding and treatment of primary brain t
         </div>
       </section>
       <section id="team">
-        <div class="container">
+        <div class="container team-sec">
           <h2 class="text-left">Our Team</h2>
           <h1 class="team-subheader">
             The driving force behind our research and operations
           </h1>
+
           <div class="team-list">
 	    <!-- cards go here -->
 	    {{team-cards}}
+
+          </div>
+	  </div>
+	<div class="container team-sec">
+          <h2 class="text-left">Our Collaborators</h2>
+          <h1 class="team-subheader">
+            The scientists who shared samples and drove science forward
+          </h1>
+          <div class="team-list">
+	    <!-- cards go here -->
+	    {{collaborator-cards}}
 
           </div>
         </div>
