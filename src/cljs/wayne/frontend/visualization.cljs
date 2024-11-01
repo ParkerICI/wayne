@@ -175,7 +175,7 @@
            :yc {:signal "blobWidth / 2"}
            :opacity {:signal "box ? 1 : 0"}
            ;; If violins present, use black, otherwise semantic color. TODO tweak and deal with other combos
-           :fill {:signal (str "violin ? 'black' :  scale('color', datum." dim ")")} 
+           :fill {:signal (str "violin ? '' :  scale('color', datum." dim ")")} 
            }}}
 
 

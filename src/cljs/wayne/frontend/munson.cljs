@@ -226,7 +226,7 @@
         [filter-ui]]
 
        ;; Main section
-       [:div.pt-20
+       [:div.pt-6
         [:p.query-builder-section-subheadline
          "Explore multiomic features of glioma tumor microenvironment."]
         [:div.selected-filter-wrapper
