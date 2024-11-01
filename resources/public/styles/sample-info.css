@@ -42,9 +42,9 @@
 
 .sample-info-graph {
   height: 284px;
-  background-image: url('../assets/images/sample-graph.jpg');
+  width: 625px;
+  background-image: url('../assets/images/sam/bruce-website-image1.png');
   background-repeat: no-repeat;
-  width: 543px;
   background-size: cover;
 }
 
@@ -100,8 +100,8 @@
 }
 
 .graph-sample {
-  width: 313px;
-  height: 218px;
+  width: 413px;
+  height: 268px;
   border: 1px solid #dde1e6;
   background-color: #fff;
 }
