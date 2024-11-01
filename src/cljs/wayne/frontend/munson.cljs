@@ -137,11 +137,22 @@
          label disabled?]])
      ]))
 
+(defn clear-all-filters-button
+  []
+  (when-not (empty? @(rf/subscribe [:param :universal [:filters]]))
+    [:button.btn.btn-sm.btn-secondary.mx-2
+     {:style {:height :fit-content}
+      :on-click #(do (rf/dispatch [:set-param :universal :filters {}])
+                     (rf/dispatch [:set-param :heatmap :filter {}])
+                     (rf/dispatch [:set-param :universal :feature nil]))
+      }
+     "Clear All"]))
+
 (defn filter-ui
   []
   [:div.filters
    [:h3.mb-30.font-bold.filter-subheader
-    "FILTER" [info "Select molecular and clinical criteria to filter the data for visualization"]]
+    "FILTER" [info "Select molecular and clinical criteria to filter the data for visualization"] [clear-all-filters-button]]
    [:div.filter-list
     (for [dim (keys dims)]
       (let [collapse-id (str "collapse" (name dim))]
@@ -159,13 +170,7 @@
   [:fieldset.selected-filter-list
    {:style {:height "auto"}}
    [:legend "Filters"]
-   [:button.btn.btn-sm.btn-secondary.mx-2
-    {:style {:height :fit-content}
-     :on-click #(do (rf/dispatch [:set-param :universal :filters {}])
-                    (rf/dispatch [:set-param :heatmap :filter {}])
-                    (rf/dispatch [:set-param :universal :feature nil]))
-     }
-    "Clear All"]
+   [clear-all-filters-button]
    (u/mapf (fn [[col vals]]
              (let [in-vals (u/mapf (fn [[v in]]
                                      (if in v))
