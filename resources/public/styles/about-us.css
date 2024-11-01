@@ -61,7 +61,7 @@
 }
 
 #team {
-  padding: 80px 0;
+  padding: 40px 0;
   background-color: #F2F2F2;
 }
 
@@ -77,13 +77,17 @@
   font-weight: 400;
 }
 
+.team-sec {
+  margin-top: 34px;
+}
+
 .team-list {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 16px;
   align-items: baseline;
-  margin-top: 64px;
+  margin-top: 30px;
 }
 
 .team-member-card {

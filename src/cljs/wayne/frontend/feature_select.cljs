@@ -10,33 +10,6 @@
 
 ;;; Complex enough to get its own file
 
-;;; could drive these from a query and API
-(def cell-meta-clusters
-  ["APC"
-   "Bcells"
-   "DC_CD123"
-   "DC_CD206"
-   "DC_Mac_CD209"
-   "Endothelial_cells"
-   "Immune_unassigned"
-   "Macrophage_CD163"
-   "Macrophage_CD206"
-   "Macrophage_CD68"
-   "Mast_cells"
-   "Microglia"
-   "Myeloid_CD11b"
-   "Myeloid_CD14"
-   "Myeloid_CD141"
-;;; I think this option should not appear?
-;   "NA"
-   "Neurons"
-   "Neutrophils"
-   "Tcell_CD4"
-   "Tcell_CD8"
-   "Tcell_FoxP3"
-   "Tumor_cells"
-   "Unassigned"])
-
 (defn trim-prefix
   [id]
   (subs (name id) (count "feature-")))
@@ -46,7 +19,6 @@
   [:div.row.my-2
    [:div.col-3 [:label.small.pt-2 [:b label]]]  ;TEMP for dev I think
    [:div.col-7 contents]])
-
 
 (defn safe-name
   [thing]

@@ -45,7 +45,7 @@
    ]
   )
 
-(def BRUCEteam
+(def collaborators
   [
    {:name "Crystal Mackall",
     :image "https://med.stanford.edu/services/api/cap/profiles/photocache.73276.jpg"
@@ -102,10 +102,17 @@
                      :param-regex u/double-braces
                      :key-fn keyword))
 
-(defn generate
-  []
+(defn generate-1
+  [list output]
   (let [template (slurp (io/resource "templates/components/team-member-card.html"))]
-    (spit "resources/templates/components/team-cards.html"
+    (spit (str "resources/templates/components/" output)
           (apply str
            (map (partial expand-template template)
-                (concat team BRUCEteam))))))
+                list)))))
+
+(defn generate
+  []
+  (generate-1 team "team-cards.html")
+  (generate-1 collaborators "collaborator-cards.html"))
+
+
