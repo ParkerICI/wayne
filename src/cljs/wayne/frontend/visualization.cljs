@@ -246,13 +246,47 @@
   (mapcat #(z-transform % field)
           (vals (group-by column-field ds))))
 
+(defn conjs
+  [coll thing]
+  (if (nil? coll)
+    #{thing}
+    (conj coll thing)))
+
+(defn row
+  [label contents]
+  [:div.row.my-2
+   [:div.col-3 [:label.small.pt-2 [:b label]]]
+   [:div.col-9 contents]])
+
+;;; This is actually part of the he
+(defn feature-list-ui
+  []
+  (let [feature @(rf/subscribe [:selected-feature])
+        feature-list @(rf/subscribe [:param :heatmap2 :feature-list])]
+    [:div
+     [row "variable to add:"
+      [:span
+       (wu/humanize feature)
+       (when (not (contains? feature-list feature))
+         [:button.btn.btn-sm.btn-secondary.mx-2 ;TODO none of these boostrap stules are present
+          {:href "#"
+           :on-click #(rf/dispatch [:update-param :heatmap2 :feature-list conjs feature])}
+          "add"])
+       ]]
+     ;; TODO lozenge UI
+     [row
+      [:span "feature list:"
+       (when-not (empty? feature-list)
+         [:button.btn.btn-sm.btn-secondary.mx-2 {:href "#" :on-click #(rf/dispatch [:set-param :heatmap2 :feature-list #{}])} "clear"])]
+      (str/join ", " (map wu/humanize feature-list))]]))
+
 ;;; TODO The "n rows, zeros omitted, Download" row doesn't really apply
 (defn heatmap2
   [dim]
   (let [data (humanize-features @(rf/subscribe [:data :heatmap2]))]
     [:div
      [:fieldset {:style {:margin-top "5px" :height "auto"}} [:legend "feature selection"]
-      [fui/feature-list-ui]]
+      [feature-list-ui]]
      (if (empty? data)
        [:div.alert.alert-info
         "No data, you probably need to add some features to the feature list"]

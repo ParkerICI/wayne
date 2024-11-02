@@ -8,9 +8,12 @@
             )
   )
 
-;;; Data definitions
+;;; ⊛✪⊛ Data defintions ✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪
 
-;;; Note: might be easier and less error-prone to build this from data
+;;; To generate these, see scrap/data-curation
+
+;;; Feature tree generation (select widget hierarchy etc) 
+
 (def nonspatial-feature-tree
   [
    ["Cells"
@@ -50,7 +53,8 @@
     ["spatial" ~@spatial-feature-tree]
     ])
 
-;;; Building these in due to laziness. To generate, see scrap/data[-curation]
+;;; Values for segmented feature selectors
+
 (def cells-and-functional-marker-segs
   [["APC_CD86"
     "APC_IDO1"
@@ -143,33 +147,35 @@
 
 (def neighborhoods
   ["APC"
-  "Bcells"
-  "DC_Mac_CD209"
-  "Endothelial"
-  "Endothelial_cells"
-  "Immune"
-  "Immune_unassigned"
-  "Lymphoid"
-  "Macrophage_CD206"
-  "Macrophage_CD68"
-  "Macrophage_CD68_CD163"
-  "Mast_cells"
-  "Microglia"
-  "Microglia_CD163"
-  "Myeloid"
-  "Myeloid_CD11b"
-  "Myeloid_CD11b_HLADR+"
-  "Myeloid_CD14"
-  "Myeloid_CD141"
-  "Myeloid_CD14_CD163"
-  "Neurons"
-  "Neutrophils"
-  "Tcell_CD4"
-  "Tcell_CD8"
-  "Tcell_FoxP3"
-  "Tumor_cells"])
+   "Bcells"
+   "DC_Mac_CD209"
+   "Endothelial"
+   "Endothelial_cells"
+   "Immune"
+   "Immune_unassigned"
+   "Lymphoid"
+   "Macrophage_CD206"
+   "Macrophage_CD68"
+   "Macrophage_CD68_CD163"
+   "Mast_cells"
+   "Microglia"
+   "Microglia_CD163"
+   "Myeloid"
+   "Myeloid_CD11b"
+   "Myeloid_CD11b_HLADR+"
+   "Myeloid_CD14"
+   "Myeloid_CD141"
+   "Myeloid_CD14_CD163"
+   "Neurons"
+   "Neutrophils"
+   "Tcell_CD4"
+   "Tcell_CD8"
+   "Tcell_FoxP3"
+   "Tumor_cells"])
 
-;;; Complex enough to get its own file
+;;; ⊛✪⊛ Utilities ✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪
+
+;;; → Multitool?
 
 (defn trim-prefix
   [id]
@@ -222,7 +228,7 @@
     nil
     v))
 
-
+;;; ⊛✪⊛ Segmented features ✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪
 
 (defn boilerplate
   [s]
@@ -246,11 +252,16 @@
         template
         (range))])
 
-(defmulti feature-variable-ui identity)
+;;; Methods for customizing the bottom level of feature select tree
+;;; Note: these aren't parallel becau
+
+(defmulti feature-variable-ui (fn [feature-type bio-feature-type] [feature-type bio-feature-type]))
 
 (defmethod feature-variable-ui :default
-  [query-feature]
-  (select-widget :feature-feature_variable @(rf/subscribe [:data :features {:bio_feature_type query-feature}])))
+  [feature-type bio-feature-type]
+  (select-widget :feature-feature_variable
+                 @(rf/subscribe [:data :features {:feature_type feature-type
+                                                  :bio_feature_type bio-feature-type}])))
 
 (defmulti feature-from-db
   (fn [db]
@@ -261,16 +272,20 @@
   [db]
   (get-in db [:params :features :feature-feature_variable]))
 
-(defmethod feature-variable-ui "Immune_High"
-  [_]
+(defmethod feature-variable-ui ["Immune_High" nil]
+  [_ _]
   (row "RNA" [autocomplete/ui]))
 
-(defmethod feature-variable-ui "Immune_Low"
-  [_]
+(defmethod feature-from-db :default
+  [db]
+  (get-in db [:params :features :feature-feature_variable]))
+
+(defmethod feature-variable-ui ["Immune_Low" nil]
+  [_ _]
   (row "RNA" [autocomplete/ui]))
 
-(defmethod feature-variable-ui "Cells_and_functional_markers"
-  [_]
+(defmethod feature-variable-ui ["Cell_Ratios" "Cells_and_functional_markers"]
+  [_ _]
   (row "feature_variable" 
        [segmented [(first cells-and-functional-marker-segs)
                    "over"
@@ -292,7 +307,7 @@
          (get-in db [:params :features :subfeature-4])
          "func"))
 
-(defmethod feature-variable-ui "Neighborhood_Frequencies"
+(defmethod feature-variable-ui ["Neighborhood_Frequencies" nil]
   [_]
   (row "feature_variable"
        [segmented
@@ -306,11 +321,12 @@
        "-"
        (get-in db [:params :features :subfeature-2])))
     
+;;; ⊛✪⊛ UI and data ✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪
 
 (rf/reg-sub
  :selected-feature
  (fn [db _]
-   ;; stuff into query machinery
+   ;; stuff into query
    (let [feature (feature-from-db db)]
      (when-not (= feature (get-in db [:params :universal :feature]))
        (rf/dispatch [:set-param :universal :feature feature]))
@@ -327,8 +343,6 @@
         l4-feature (if (empty? l4-feature-tree)
                      (do (rf/dispatch [:set-param :features :feature-bio-feature-type nil]) nil)
                      @(rf/subscribe [:param :features :feature-bio-feature-type]))
-        query-feature (or l4-feature l3-feature)
-         
         ]
     [:div
      (select-widget :feature-supertype (map first feature-tree))
@@ -336,39 +350,9 @@
      (select-widget :feature-feature_type (map first l3-feature-tree))
      (when-not (empty? l4-feature-tree)
        (select-widget :feature-bio-feature-type (map first l4-feature-tree)))
-     (feature-variable-ui query-feature)
+     (feature-variable-ui l3-feature l4-feature)
      (row "selected" @(rf/subscribe [:selected-feature]))
-     ]) )
-
-
-;;; → Multitool?
-(defn conjs
-  [coll thing]
-  (if (nil? coll)
-    #{thing}
-    (conj coll thing)))
-
-
-(defn feature-list-ui
-  []
-  (let [feature @(rf/subscribe [:selected-feature])
-        feature-list @(rf/subscribe [:param :heatmap2 :feature-list])]
-    [:div
-     [row "actual variable"
-      [:span
-       (wu/humanize feature)
-       (when (not (contains? feature-list feature))
-         [:button.btn.btn-sm.btn-secondary.mx-2 ;TODO none of these boostrap stules are present
-          {:href "#"
-           :on-click #(rf/dispatch [:update-param :heatmap2 :feature-list conjs feature])}
-          "add"])
-       ]]
-     ;; TODO lozenge UI
-     [row
-      [:span "feature list "
-       (when-not (empty? feature-list)
-         [:button.btn.btn-sm.btn-secondary.mx-2 {:href "#" :on-click #(rf/dispatch [:set-param :heatmap2 :feature-list #{}])} "clear"])]
-      (str/join ", " (map wu/humanize feature-list))]]))
+     ]))
 
 (defn ui
   []
