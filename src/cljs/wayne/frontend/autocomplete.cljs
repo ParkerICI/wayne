@@ -51,10 +51,10 @@
               :on-change (fn [e]
                            (rf/dispatch
                             [:user-string-change (-> e .-target .-value)]))
-              :on-blur (fn [e]
-                         (rf/dispatch
-                            [:choose (-> e .-target .-value)])
-                         )
+              :on-blur  (fn [e]
+                          (when (and (= 1 (count choices)) 
+                                     (= (first choices) (-> e .-target .-value)))
+                            (rf/dispatch [:choose (first choices)])))
               }]
 
      (when-not (or (empty? choices)
