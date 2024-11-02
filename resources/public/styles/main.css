@@ -1247,3 +1247,8 @@ fieldset {
   padding: 3px;
   border-radius: 10px;
 }
+
+/* from boosttrap */
+.text-nowrap {
+  white-space: nowrap !important;
+}
