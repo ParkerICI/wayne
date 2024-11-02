@@ -141,6 +141,34 @@
    ["B7H3" "EGFR" "GM2_GD2" "GPC2" "HER2" "NG2" "VISTA"]]
   )
 
+(def neighborhoods
+  ["APC"
+  "Bcells"
+  "DC_Mac_CD209"
+  "Endothelial"
+  "Endothelial_cells"
+  "Immune"
+  "Immune_unassigned"
+  "Lymphoid"
+  "Macrophage_CD206"
+  "Macrophage_CD68"
+  "Macrophage_CD68_CD163"
+  "Mast_cells"
+  "Microglia"
+  "Microglia_CD163"
+  "Myeloid"
+  "Myeloid_CD11b"
+  "Myeloid_CD11b_HLADR+"
+  "Myeloid_CD14"
+  "Myeloid_CD141"
+  "Myeloid_CD14_CD163"
+  "Neurons"
+  "Neutrophils"
+  "Tcell_CD4"
+  "Tcell_CD8"
+  "Tcell_FoxP3"
+  "Tumor_cells"])
+
 ;;; Complex enough to get its own file
 
 (defn trim-prefix
@@ -218,31 +246,66 @@
         template
         (range))])
 
-(defn cells-and-functional-marker-ui
-  []
-  [segmented [(first cells-and-functional-marker-segs)
-              "over"
-              (wu/humanize @(rf/subscribe [:param :features :subfeature-0]))
-              "plus"
-              (second cells-and-functional-marker-segs)
-              ]])
+(defmulti feature-variable-ui identity)
 
+(defmethod feature-variable-ui :default
+  [query-feature]
+  (select-widget :feature-feature_variable @(rf/subscribe [:data :features {:bio_feature_type query-feature}])))
+
+(defmulti feature-from-db
+  (fn [db]
+    [(get-in db [:params :features :feature-feature_type])
+     (get-in db [:params :features :feature-bio-feature-type])]))
+
+(defmethod feature-from-db :default
+  [db]
+  (get-in db [:params :features :feature-feature_variable]))
+
+(defmethod feature-variable-ui "Immune_High"
+  [_]
+  (row "RNA" [autocomplete/ui]))
+
+(defmethod feature-variable-ui "Immune_Low"
+  [_]
+  (row "RNA" [autocomplete/ui]))
+
+(defmethod feature-variable-ui "Cells_and_functional_markers"
+  [_]
+  (row "feature_variable" 
+       [segmented [(first cells-and-functional-marker-segs)
+                   "over"
+                   (wu/humanize @(rf/subscribe [:param :features :subfeature-0]))
+                   "plus"
+                   (second cells-and-functional-marker-segs)
+                   ]]))
 
 (defn joins
   [& segs]
   (str/join "_" segs))
 
-(defn feature-from-db
+(defmethod feature-from-db ["Cell_Ratios"  "Cells_and_functional_markers"]
   [db]
-  (case (get-in db [:params :features :feature-bio-feature-type])
-    "Cells_and_functional_markers"
-    (joins (get-in db [:params :features :subfeature-0])
-            "over"
-            (get-in db [:params :features :subfeature-0])
-            "plus"
-            (get-in db [:params :features :subfeature-4])
-            "func")
-    (get-in db [:params :features :feature-feature_variable])))    
+  (joins (get-in db [:params :features :subfeature-0])
+         "over"
+         (get-in db [:params :features :subfeature-0])
+         "plus"
+         (get-in db [:params :features :subfeature-4])
+         "func"))
+
+(defmethod feature-variable-ui "Neighborhood_Frequencies"
+  [_]
+  (row "feature_variable"
+       [segmented
+        [neighborhoods
+         "-"
+         neighborhoods]]))
+
+(defmethod feature-from-db ["Neighborhood_Frequencies" nil]
+  [db]
+  (str (get-in db [:params :features :subfeature-0])
+       "-"
+       (get-in db [:params :features :subfeature-2])))
+    
 
 (rf/reg-sub
  :selected-feature
@@ -261,10 +324,11 @@
         l3-feature-tree (rest (u/some-thing #(= (first %) l2-feature) l2-feature-tree))
         l3-feature @(rf/subscribe [:param :features :feature-feature_type])
         l4-feature-tree (rest (u/some-thing #(= (first %) l3-feature) l3-feature-tree))
-        l4-feature (and (not (empty? l4-feature-tree))
-                        @(rf/subscribe [:param :features :feature-bio-feature-type]))
+        l4-feature (if (empty? l4-feature-tree)
+                     (do (rf/dispatch [:set-param :features :feature-bio-feature-type nil]) nil)
+                     @(rf/subscribe [:param :features :feature-bio-feature-type]))
         query-feature (or l4-feature l3-feature)
-        selected-feature @(rf/subscribe [:selected-feature])
+         
         ]
     [:div
      (select-widget :feature-supertype (map first feature-tree))
@@ -272,12 +336,8 @@
      (select-widget :feature-feature_type (map first l3-feature-tree))
      (when-not (empty? l4-feature-tree)
        (select-widget :feature-bio-feature-type (map first l4-feature-tree)))
-     (case query-feature
-       "Immune_High" (row "RNA" [autocomplete/ui])
-       "Immune_Low" (row "RNA" [autocomplete/ui])
-       "Cells_and_functional_markers" (row "feature_variable" [cells-and-functional-marker-ui])
-       (select-widget :feature-feature_variable @(rf/subscribe [:data :features {:bio_feature_type query-feature}])))
-     (row "selected" selected-feature)
+     (feature-variable-ui query-feature)
+     (row "selected" @(rf/subscribe [:selected-feature]))
      ]) )
 
 
