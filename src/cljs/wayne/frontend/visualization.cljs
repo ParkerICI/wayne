@@ -27,7 +27,8 @@
         scale (interpret-scale @(rf/subscribe [:param :features :scale]))] ;TODO wee fui/ref below
     {:description "A violin plot"
      :$schema "https://vega.github.io/schema/vega/v5.json"
-     :width 700
+     :width 800
+     :autosize :fit-x
      :signals
      [{:name "box" :value true :bind {:input "checkbox"  :element "#pchecks"}}
       {:name "violin" :value true :bind  {:input "checkbox" :element "#pchecks"}}
