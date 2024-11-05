@@ -13,6 +13,7 @@
 (def col-defs
   [:patient_id :samples, :who_grade, :diagnosis, :immunotherapy, :site])
 
+;;; NOTE: for this to work, you need ./externs/app.txt containing at least withParams
 (defn ag-grid-theme
   [base params]
   (.withParams base (clj->js params)))
