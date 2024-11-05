@@ -22,18 +22,20 @@
 ;;; New data table 
 (def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240810_metadata_oct1"))
 
+(def metadata-table  "pici-internal.bruce_external.metadata_complete")
+
 (defn query
   [q]
   (bq/query "pici-internal" q))
 
 ;;; q is a template with {from} to plae the FROM clause. Kind of confusing
 (defn select
-  [q & {:keys [] :as args}]
+  [q & {:keys [table] :as args :or {table bq-table}}]
   (bq/query "pici-internal"
             (u/expand-template
              (str "select " q)
              (merge args
-                    {:from (format " FROM `%s` " bq-table)})
+                    {:from (format " FROM `%s` " table)})
              :key-fn keyword)))
 
 (defmethod wd/data :cohort
@@ -46,15 +48,7 @@ count(distinct(feature_variable)) as features
 
 (defmethod wd/data :samples
   [_]
-  (select "sample_id, 
-any_value(patient_id) as patient_id, 
-any_value(WHO_grade) as WHO_grade,
-any_value(Tumor_Diagnosis) as Tumor_Diagnosis,
-any_value(Recurrence) as Recurrence,
-any_value(immunotherapy) as immunotherapy,
-{from}
-group by sample_id"))
-
+  (select "* {from}" {:table metadata-table}))
 
 ;;; Sketch towards the patient table in Munson design
 ;;; Not actually called yet, and needs more fields

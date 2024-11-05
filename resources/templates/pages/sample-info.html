@@ -120,36 +120,8 @@
               </button>
             </div>
 
-            <div id="patients" class="tab-content active">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Patient Id</th>
-                    <th>Samples</th>
-                    <th>Group</th>
-                    <th>Site</th>
-                    <th>Immunotherapy</th>
-                    <th>Who_Grade</th>
-                    <th>Fovs</th>
-                  </tr>
-                </thead>
-                <tbody id="table-body">
-                  <!-- Rows will be inserted here -->
-                </tbody>
-              </table>
-              <div class="pagination">
-                <button class="page-btn" onclick="prevPage()">&lt;</button>
-                <button class="page-btn">Previous</button>
-                <button class="page-btn">1</button>
-                <button class="page-btn active">2</button>
-                <button class="page-btn">3</button>
-                <button class="page-btn">4</button>
-                <button class="page-btn">5</button>
-                <span>...</span>
-                <button class="page-btn">11</button>
-                <button class="page-btn">Next</button>
-                <button class="page-btn" onclick="nextPage()">&gt;</button>
-              </div>
+            <div id="app" class="tab-content active">
+	      
             </div>
 
             <div id="samples" class="tab-content">
@@ -166,6 +138,7 @@
     </main>
     {{footer}}
   </body>
-  <script src="../js/sample-info.js"></script>
-  <script src="../js/accordion.js"></script>
+  <script src="/cljs-out/dev-main.js"></script>
+  <script>window.onload = function() { wayne.frontend.samples.init(); }</script>
+
 </html>
