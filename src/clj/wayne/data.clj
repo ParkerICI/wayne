@@ -38,6 +38,7 @@
                     {:from (format " FROM `%s` " table)})
              :key-fn keyword)))
 
+;;; Not presently used
 (defmethod wd/data :cohort
   [_]
   (select "Tumor_Diagnosis,
@@ -46,19 +47,22 @@ count(distinct(sample_id)) as samples,
 count(distinct(feature_variable)) as features
 {from} group by Tumor_Diagnosis"))
 
+;;; Not presently used
 (defmethod wd/data :samples
   [_]
   (select "patient_id, sample_id, who_grade, final_diagnosis_simple, immunotherapy, site {from}" {:table metadata-table}))
 
-;;; Sketch towards the patient table in Munson design
-;;; Not actually called yet, and needs more fields
 (defmethod wd/data :patients
   [_]
   (select "patient_id,
-array_agg(distinct sample_id) as sample_id,
-any_value(WHO_grade) as WHO_grade
-{from}
-group by patient_id"))
+array_agg(sample_id) as samples,
+any_value(who_grade) as who_grade,
+any_value(final_diagnosis_simple) as diagnosis,
+any_value(immunotherapy) as immunotherapy,
+any_value(site) as site
+{from} group by patient_id"
+          {:table metadata-table})
+  )
 
 
 (defn clean-data
