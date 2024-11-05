@@ -4,18 +4,20 @@
             [com.hyperphor.way.ui.init :as init]
             com.hyperphor.way.feeds
             [reagent.dom]
-            [wayne.frontend.data :as data]
             )
   )
+
+(def col-defs
+  [:patient_id :sample_id, :who_grade, :final_diagnosis_simple, :immunotherapy, :site])
 
 (defn samples
   []
   [:div
-   [:h3 "Samples!"]
    (let [samples @(rf/subscribe [:data :samples {:fake :it}])] ;TODO param because there's bug in data feed mech
      [ag/ag-table 
       samples
-      :col-defs data/col-defs
+      :columns col-defs
+      :class "sample-table"
       ])])
 
 (defn ^:export init

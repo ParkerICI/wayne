@@ -48,7 +48,7 @@ count(distinct(feature_variable)) as features
 
 (defmethod wd/data :samples
   [_]
-  (select "* {from}" {:table metadata-table}))
+  (select "patient_id, sample_id, who_grade, final_diagnosis_simple, immunotherapy, site {from}" {:table metadata-table}))
 
 ;;; Sketch towards the patient table in Munson design
 ;;; Not actually called yet, and needs more fields
