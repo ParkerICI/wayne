@@ -4,6 +4,7 @@
             [com.hyperphor.way.ui.init :as init]
             com.hyperphor.way.feeds
             [reagent.dom]
+            ["ag-grid-community" :as agx]
             )
   )
 
@@ -12,6 +13,11 @@
 (def col-defs
   [:patient_id :samples, :who_grade, :diagnosis, :immunotherapy, :site])
 
+(defn ag-grid-theme
+  [base params]
+  (.withParams base (clj->js params)))
+
+;;; TODO col-defs causing console errors, need to fix that.
 (defn samples
   []
   [:div
@@ -20,6 +26,17 @@
       samples
       :columns col-defs
       :class "sample-table"
+      :ag-grid-options {:theme (ag-grid-theme agx/themeQuartz
+                                              {:headerBackgroundColor "#020000",
+                                               :headerFontSize 14,
+                                               :headerFontWeight 600,
+                                               :headerTextColor "#FFFFFF"
+                                               :foregroundColor "black"
+                                               :accentColor "#4586FF"
+                                               })
+                        :sideBar nil
+                        :statusBar nil
+                        }
       ])])
 
 (defn ^:export init
