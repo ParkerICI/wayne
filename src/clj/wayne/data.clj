@@ -65,20 +65,24 @@ any_value(site) as site
   )
 
 
+;;; TODO is this still necessary/valid?
 (defn clean-data
   [d]
   (map (fn [x] (update x :feature_value (fn [v] (if (= v "NA") nil (u/coerce-numeric v)))))
        d))
 
 ;;; General trick to convert maps in get params back into their real form.
-;;; → Way
+;;; → Way, this should be done before methods get called 
 (defn params-remap
   [params]
   (reduce-kv (fn [params k v]
                (if (= v "null")         ;fix "null"s
                  (dissoc params k)      
-                 (if (and (string? k) (re-find #"\[.*\]" k)) 
-                   (dissoc (assoc-in params (mapv keyword (re-seq #"\w+" k)) v) k) ;TODO a bit hacky
+                 (if (and (string? k) (re-find #"\[.*\]" k))
+                   (let [base (keyword (re-find   #"^\w*" k)) ;eg "filters"
+                         keys (map (comp keyword second) (re-seq  #"\[(.*?)\]" k))]
+                     (dissoc (assoc-in params (cons base keys) v)
+                             k))
                    params)))
              params params))
 
@@ -158,14 +162,17 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
   [a b]
   (if (empty? a) b a))
 
-;;; Misnamed now
 (u/defn-memoized bio_feature_type-features
   [bio_feature_type]
   (map :feature_variable                ;(comp patch-feature
-       (eor (select "distinct feature_variable {from} where bio_feature_type = '{bio_feature_type}'"
-                    :bio_feature_type bio_feature_type)
-            (select "distinct feature_variable {from} where feature_type = '{bio_feature_type}'"
-                    :bio_feature_type bio_feature_type))))
+       (select "distinct feature_variable {from} where bio_feature_type = '{bio_feature_type}'"
+               :bio_feature_type bio_feature_type)))
+
+(u/defn-memoized feature-feature_type-features
+  [feature_type]
+  (map :feature_variable
+       (select "distinct feature_variable {from} where feature_type = '{feature_type}'"
+               :feature_type feature_type)))
 
 (defmethod wd/data :universal
   [params]
@@ -177,8 +184,12 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
 
 (defmethod wd/data :features
   [params]
-  (bio_feature_type-features (:bio_feature_type params)))
-
+  (let [{:keys [bio_feature_type feature-feature_type]} (params-remap params)]
+    (cond bio_feature_type
+          (bio_feature_type-features bio_feature_type)
+          feature-feature_type
+          (feature-feature_type-features feature-feature_type))))
+          
 (defmethod wd/data :heatmap
   [params]
   (heatmap (params-remap params)))
