@@ -320,7 +320,22 @@
                           ;; TODO color scale is too small.
                           :aggregate-fn :mean
                           :patches [[{:orient :bottom :scale :sx}
-                                     {:labelAngle 45}]]}
+                                     {:labelAngle 90
+                                      :labelFontSize 12
+                                      :titleFontSize 14
+                                      :titleAnchor :start ;without this, titles will grow the grid section and make it come loose from trees...prob should be default
+                                      }]
+                                    [{:orient :right :scale :sy}
+                                     {:labelFontSize 12
+                                      :titleFontSize 14
+                                      :titleAnchor :start
+                                      }]
+                                    [{:fill :color :type :gradient}
+                                     {:titleFontSize 14
+                                      :gradientLength {:signal "max(hm_height,100)"}
+                                      }
+                                     ]
+                                    ]}
                          )
          ))
 
