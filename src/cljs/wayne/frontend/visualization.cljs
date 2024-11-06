@@ -27,7 +27,8 @@
         scale (interpret-scale @(rf/subscribe [:param :features :scale]))] ;TODO wee fui/ref below
     {:description "A violin plot"
      :$schema "https://vega.github.io/schema/vega/v5.json"
-     :width 700
+     :width 800
+     :autosize :fit-x
      :signals
      [{:name "box" :value true :bind {:input "checkbox"  :element "#pchecks"}}
       {:name "violin" :value true :bind  {:input "checkbox" :element "#pchecks"}}
@@ -127,23 +128,7 @@
            ;; :tooltip {:value "boxx"}
            }}}
 
-        ;; Points
-        {:type "symbol",
-         :from {:data "source"},
-         :encode
-         {:enter {:y {:value 0}                  
-                  ;; Not very interesting (could be if they included the full row)
-                  ;; :tooltip {:signal "datum"}  
-                  },
-          :update
-          {:stroke {:value "black"},
-           :fill {:value "black"},
-           :size {:value 25},
-           :yc {:signal "blobWidth / 2 + jitter*(random() - 0.5)"}, ;should scale with fatness
-           :strokeWidth {:value 1},
-           :opacity {:signal "points ? 0.3 : 0"},
-           :shape {:value "circle"},
-           :x {:scale "xscale", :field "feature_value"}}}}
+        
         
         ;; Box
         #_
@@ -203,7 +188,39 @@
                    }}}
 
 
-        ]}],
+        ]}
+
+      {:type "group",
+       :from {:facet {:data "source", :name "points", :groupby dim}},
+       :encode
+       {:update
+        {:yc {:scale "layout", :field dim, :band 0.5},
+         :height {:signal "blobWidth"},
+         :width {:signal "width"}
+         }},
+       :marks
+       [
+        ;; Points
+        {:type "symbol",
+         :from {:data "points"},
+         :encode
+         {:enter {;; :y #_ {:value 0} {:field dim}
+                  ;; Not very interesting (could be if they included the full row)
+                  :tooltip {:signal "datum"}  
+                  },
+          :update
+          {:stroke {:value "black"},
+           :fill {:value "black"},
+           :size {:value 25},
+           :yc {:signal "blobWidth / 2 + jitter*(random() - 0.5)"}, ;should scale with fatness
+           :strokeWidth {:value 1},
+           :opacity {:signal "points ? 0.3 : 0"},
+           :shape {:value "circle"},
+
+           :x {:scale "xscale", :field "feature_value"}}}}]}
+
+
+      ],
      }))
 
 #_
@@ -246,13 +263,47 @@
   (mapcat #(z-transform % field)
           (vals (group-by column-field ds))))
 
+(defn conjs
+  [coll thing]
+  (if (nil? coll)
+    #{thing}
+    (conj coll thing)))
+
+(defn row
+  [label contents]
+  [:div.row.my-2
+   [:div.col-3 [:label.small.pt-2 [:b label]]]
+   [:div.col-9 contents]])
+
+;;; This is actually part of the he
+(defn feature-list-ui
+  []
+  (let [feature @(rf/subscribe [:selected-feature])
+        feature-list @(rf/subscribe [:param :heatmap2 :feature-list])]
+    [:div
+     [row "variable to add:"
+      [:span
+       (wu/humanize feature)
+       (when (not (contains? feature-list feature))
+         [:button.btn.btn-sm.btn-secondary.mx-2 ;TODO none of these boostrap stules are present
+          {:href "#"
+           :on-click #(rf/dispatch [:update-param :heatmap2 :feature-list conjs feature])}
+          "add"])
+       ]]
+     ;; TODO lozenge UI
+     [row
+      [:span "feature list:"
+       (when-not (empty? feature-list)
+         [:button.btn.btn-sm.btn-secondary.mx-2 {:href "#" :on-click #(rf/dispatch [:set-param :heatmap2 :feature-list #{}])} "clear"])]
+      (str/join ", " (map wu/humanize feature-list))]]))
+
 ;;; TODO The "n rows, zeros omitted, Download" row doesn't really apply
 (defn heatmap2
   [dim]
   (let [data (humanize-features @(rf/subscribe [:data :heatmap2]))]
     [:div
      [:fieldset {:style {:margin-top "5px" :height "auto"}} [:legend "feature selection"]
-      [fui/feature-list-ui]]
+      [feature-list-ui]]
      (if (empty? data)
        [:div.alert.alert-info
         "No data, you probably need to add some features to the feature list"]
@@ -269,7 +320,22 @@
                           ;; TODO color scale is too small.
                           :aggregate-fn :mean
                           :patches [[{:orient :bottom :scale :sx}
-                                     {:labelAngle 45}]]}
+                                     {:labelAngle 90
+                                      :labelFontSize 12
+                                      :titleFontSize 14
+                                      :titleAnchor :start ;without this, titles will grow the grid section and make it come loose from trees...prob should be default
+                                      }]
+                                    [{:orient :right :scale :sy}
+                                     {:labelFontSize 12
+                                      :titleFontSize 14
+                                      :titleAnchor :start
+                                      }]
+                                    [{:fill :color :type :gradient}
+                                     {:titleFontSize 14
+                                      :gradientLength {:signal "max(hm_height,100)"}
+                                      }
+                                     ]
+                                    ]}
                          )
          ))
 

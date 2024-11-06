@@ -4,7 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sample Info - Bruce data portal</title>
+
     <link rel="stylesheet" href="../styles/sample-info.css" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
    
@@ -42,12 +44,13 @@
             </div>
             <h1>Sample Info</h1>
             <p>
-              Enhance the clarity and reach of your work, ultimately advancing
-              the understanding and treatment of cancer.
+This page provides detailed clinical annotations for a comprehensive glioma tissue cohort, consisting of 618 samples from both high-grade and low-grade gliomas, collected from multiple clinical sites. Each sample is linked to harmonized clinical data, facilitating research efforts to improve the understanding and treatment of gliomas.
             </p>
           </div>
           <div class="sample-info-content">
-            <div class="sample-info-graph"></div>
+            <div class="sample-info-graph">
+	      <img src="/assets/images/sam/bruce-website-image1.svg"/>
+	    </div>
             <div class="sample-info-data">
               <div class="sample-info-data-card">
                 <div class="sample-info-card-media">
@@ -111,45 +114,9 @@
       <section id="data-table">
         <div class="container">
           <div class="sample-data-table">
-            <div class="tabs">
-              <button class="tab active" onclick="openTab(event, 'patients')">
-                Patients
-              </button>
-              <button class="tab" onclick="openTab(event, 'samples')">
-                Samples
-              </button>
-            </div>
-
-            <div id="patients" class="tab-content active">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Patient Id</th>
-                    <th>Samples</th>
-                    <th>Group</th>
-                    <th>Site</th>
-                    <th>Immunotherapy</th>
-                    <th>Who_Grade</th>
-                    <th>Fovs</th>
-                  </tr>
-                </thead>
-                <tbody id="table-body">
-                  <!-- Rows will be inserted here -->
-                </tbody>
-              </table>
-              <div class="pagination">
-                <button class="page-btn" onclick="prevPage()">&lt;</button>
-                <button class="page-btn">Previous</button>
-                <button class="page-btn">1</button>
-                <button class="page-btn active">2</button>
-                <button class="page-btn">3</button>
-                <button class="page-btn">4</button>
-                <button class="page-btn">5</button>
-                <span>...</span>
-                <button class="page-btn">11</button>
-                <button class="page-btn">Next</button>
-                <button class="page-btn" onclick="nextPage()">&gt;</button>
-              </div>
+	    <h3>Patients and samples</h3>
+            <div id="app" class="tab-content active">
+	      
             </div>
 
             <div id="samples" class="tab-content">
@@ -166,6 +133,7 @@
     </main>
     {{footer}}
   </body>
-  <script src="../js/sample-info.js"></script>
-  <script src="../js/accordion.js"></script>
+  <script src="/cljs-out/dev-main.js"></script>
+  <script>window.onload = function() { wayne.frontend.samples.init(); }</script>
+
 </html>

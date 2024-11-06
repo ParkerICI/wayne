@@ -8,13 +8,14 @@
         "test": "test"
     },
     "dependencies": {
-        "ag-grid-community": "^31.0.1",
-        "ag-grid-enterprise": "^31.0.1",
-        "ag-grid-react": "^31.0.1",
+        "ag-grid-community": "^32.0.1",
+        "ag-grid-enterprise": "^32.0.1",
+        "ag-grid-react": "^32.0.1",
         "create-react-class": "^15.7.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "react-vega": "^7.6.0"
+        "react-vega": "^7.6.0",
+	"vega-lite": "5.15.1"
     },
     "devDependencies": {
         "shadow-cljs": "2.26.5"
@@ -31,3 +32,4 @@
     "license": "ISC",
     "homepage": "https://github.com/parkerici/wayne"
 }
+

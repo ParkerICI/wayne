@@ -2,7 +2,7 @@
   (:require
    [re-frame.core :as rf]
    [com.hyperphor.way.web-utils :as wu]
-   [com.hyperphor.way.feeds :as feeds]
+   com.hyperphor.way.feeds
    [com.hyperphor.way.ui.init :as init]
    [wayne.frontend.visualization :as viz]
    [wayne.frontend.feature-select :as fui]

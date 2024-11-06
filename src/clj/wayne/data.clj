@@ -22,20 +22,23 @@
 ;;; New data table 
 (def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240810_metadata_oct1"))
 
+(def metadata-table  "pici-internal.bruce_external.metadata_complete")
+
 (defn query
   [q]
   (bq/query "pici-internal" q))
 
 ;;; q is a template with {from} to plae the FROM clause. Kind of confusing
 (defn select
-  [q & {:keys [] :as args}]
+  [q & {:keys [table] :as args :or {table bq-table}}]
   (bq/query "pici-internal"
             (u/expand-template
              (str "select " q)
              (merge args
-                    {:from (format " FROM `%s` " bq-table)})
+                    {:from (format " FROM `%s` " table)})
              :key-fn keyword)))
 
+;;; Not presently used
 (defmethod wd/data :cohort
   [_]
   (select "Tumor_Diagnosis,
@@ -44,43 +47,42 @@ count(distinct(sample_id)) as samples,
 count(distinct(feature_variable)) as features
 {from} group by Tumor_Diagnosis"))
 
+;;; Not presently used
 (defmethod wd/data :samples
   [_]
-  (select "sample_id, 
-any_value(patient_id) as patient_id, 
-any_value(WHO_grade) as WHO_grade,
-any_value(Tumor_Diagnosis) as Tumor_Diagnosis,
-any_value(Recurrence) as Recurrence,
-any_value(immunotherapy) as immunotherapy,
-{from}
-group by sample_id"))
+  (select "patient_id, sample_id, who_grade, final_diagnosis_simple, immunotherapy, site {from}" {:table metadata-table}))
 
-
-;;; Sketch towards the patient table in Munson design
-;;; Not actually called yet, and needs more fields
 (defmethod wd/data :patients
   [_]
   (select "patient_id,
-array_agg(distinct sample_id) as sample_id,
-any_value(WHO_grade) as WHO_grade
-{from}
-group by patient_id"))
+array_agg(sample_id) as samples,
+any_value(who_grade) as who_grade,
+any_value(final_diagnosis_simple) as diagnosis,
+any_value(immunotherapy) as immunotherapy,
+any_value(site) as site
+{from} group by patient_id"
+          {:table metadata-table})
+  )
 
 
+;;; TODO is this still necessary/valid?
 (defn clean-data
   [d]
   (map (fn [x] (update x :feature_value (fn [v] (if (= v "NA") nil (u/coerce-numeric v)))))
        d))
 
 ;;; General trick to convert maps in get params back into their real form.
-;;; → Way
+;;; → Way, this should be done before methods get called 
 (defn params-remap
   [params]
   (reduce-kv (fn [params k v]
                (if (= v "null")         ;fix "null"s
                  (dissoc params k)      
-                 (if (and (string? k) (re-find #"\[.*\]" k)) 
-                   (dissoc (assoc-in params (mapv keyword (re-seq #"\w+" k)) v) k) ;TODO a bit hacky
+                 (if (and (string? k) (re-find #"\[.*\]" k))
+                   (let [base (keyword (re-find   #"^\w*" k)) ;eg "filters"
+                         keys (map (comp keyword second) (re-seq  #"\[(.*?)\]" k))]
+                     (dissoc (assoc-in params (cons base keys) v)
+                             k))
                    params)))
              params params))
 
@@ -160,14 +162,17 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
   [a b]
   (if (empty? a) b a))
 
-;;; Misnamed now
 (u/defn-memoized bio_feature_type-features
   [bio_feature_type]
   (map :feature_variable                ;(comp patch-feature
-       (eor (select "distinct feature_variable {from} where bio_feature_type = '{bio_feature_type}'"
-                    :bio_feature_type bio_feature_type)
-            (select "distinct feature_variable {from} where feature_type = '{bio_feature_type}'"
-                    :bio_feature_type bio_feature_type))))
+       (select "distinct feature_variable {from} where bio_feature_type = '{bio_feature_type}'"
+               :bio_feature_type bio_feature_type)))
+
+(u/defn-memoized feature-feature_type-features
+  [feature_type]
+  (map :feature_variable
+       (select "distinct feature_variable {from} where feature_type = '{feature_type}'"
+               :feature_type feature_type)))
 
 (defmethod wd/data :universal
   [params]
@@ -179,8 +184,13 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
 
 (defmethod wd/data :features
   [params]
-  (bio_feature_type-features (:bio_feature_type params)))
-
+  (let [{:keys [bio_feature_type feature-feature_type]} (params-remap params)]
+    (sort
+     (cond bio_feature_type
+           (bio_feature_type-features bio_feature_type)
+           feature-feature_type
+           (feature-feature_type-features feature-feature_type)))))
+          
 (defmethod wd/data :heatmap
   [params]
   (heatmap (params-remap params)))

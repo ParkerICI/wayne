@@ -1,0 +1,4 @@
+# See wayne.frontend.samples
+
+themeQuartz
+withParams
