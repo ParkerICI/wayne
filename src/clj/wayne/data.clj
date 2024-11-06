@@ -185,10 +185,11 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
 (defmethod wd/data :features
   [params]
   (let [{:keys [bio_feature_type feature-feature_type]} (params-remap params)]
-    (cond bio_feature_type
-          (bio_feature_type-features bio_feature_type)
-          feature-feature_type
-          (feature-feature_type-features feature-feature_type))))
+    (sort
+     (cond bio_feature_type
+           (bio_feature_type-features bio_feature_type)
+           feature-feature_type
+           (feature-feature_type-features feature-feature_type)))))
           
 (defmethod wd/data :heatmap
   [params]

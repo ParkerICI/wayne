@@ -128,23 +128,7 @@
            ;; :tooltip {:value "boxx"}
            }}}
 
-        ;; Points
-        {:type "symbol",
-         :from {:data "source"},
-         :encode
-         {:enter {:y {:value 0}                  
-                  ;; Not very interesting (could be if they included the full row)
-                  ;; :tooltip {:signal "datum"}  
-                  },
-          :update
-          {:stroke {:value "black"},
-           :fill {:value "black"},
-           :size {:value 25},
-           :yc {:signal "blobWidth / 2 + jitter*(random() - 0.5)"}, ;should scale with fatness
-           :strokeWidth {:value 1},
-           :opacity {:signal "points ? 0.3 : 0"},
-           :shape {:value "circle"},
-           :x {:scale "xscale", :field "feature_value"}}}}
+        
         
         ;; Box
         #_
@@ -204,7 +188,39 @@
                    }}}
 
 
-        ]}],
+        ]}
+
+      {:type "group",
+       :from {:facet {:data "source", :name "points", :groupby dim}},
+       :encode
+       {:update
+        {:yc {:scale "layout", :field dim, :band 0.5},
+         :height {:signal "blobWidth"},
+         :width {:signal "width"}
+         }},
+       :marks
+       [
+        ;; Points
+        {:type "symbol",
+         :from {:data "points"},
+         :encode
+         {:enter {;; :y #_ {:value 0} {:field dim}
+                  ;; Not very interesting (could be if they included the full row)
+                  :tooltip {:signal "datum"}  
+                  },
+          :update
+          {:stroke {:value "black"},
+           :fill {:value "black"},
+           :size {:value 25},
+           :yc {:signal "blobWidth / 2 + jitter*(random() - 0.5)"}, ;should scale with fatness
+           :strokeWidth {:value 1},
+           :opacity {:signal "points ? 0.3 : 0"},
+           :shape {:value "circle"},
+
+           :x {:scale "xscale", :field "feature_value"}}}}]}
+
+
+      ],
      }))
 
 #_
