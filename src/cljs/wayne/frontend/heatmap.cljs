@@ -39,16 +39,21 @@
 (defn feature-list-ui
   []
   (let [feature @(rf/subscribe [:selected-feature])
-        feature-list @(rf/subscribe [:param :heatmap2 :feature-list])]
+        feature-type @(rf/subscribe [:param :features :feature-feature_type])
+        feature-list @(rf/subscribe [:param :heatmap2 :feature-list])
+        rna? (contains? #{"Immune_Low" "Immune_High"} feature-type)
+        ]
     [:div
      [row "variable to add:"
       [:span
        (wu/humanize feature)
-       (when (not (contains? feature-list feature))
-         [:button.btn.btn-sm.btn-secondary.mx-2 ;TODO none of these boostrap stules are present any more
-          {:href "#"
-           :on-click #(rf/dispatch [:update-param :heatmap2 :feature-list conjs feature])}
-          "add"])
+       (cond (contains? feature-list feature) ""
+             rna? [:span.alert.p-2 "RNA features coming soon"]
+             :else
+             [:button.btn.btn-sm.btn-secondary.mx-2 ;TODO none of these boostrap stules are present any more
+              {:href "#"
+               :on-click #(rf/dispatch [:update-param :heatmap2 :feature-list conjs feature])}
+              "add"])
        ]]
      ;; TODO lozenge UI
      [row

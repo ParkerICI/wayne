@@ -1245,7 +1245,8 @@ fieldset {
   background-color: pink;
   border: 2x solid red;
   padding: 3px;
-  border-radius: 10px;
+  border-radius: 5px;
+  margin-left: 5px;
 }
 
 /* from boosttrap */
