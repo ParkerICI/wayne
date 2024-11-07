@@ -187,26 +187,32 @@
          :height {:signal "blobWidth"},
          :width {:signal "width"}
          }},
+       :data [
+              {:name "pointx"
+               :source "points",
+               ;; Add jitter here so stable when slider changed
+               :transform [{:type "formula", :as "jit" :expr "random() - 0.5"}],               
+               }]
        :marks
        [
         ;; Points
         {:type "symbol",
-         :from {:data "points"},
+         :from {:data "pointx"},
+
          :encode
          {:enter {;; :y #_ {:value 0} {:field dim}
                   ;; Not very interesting (could be if they included the full row)
-                  :tooltip {:signal "datum"}  
+                  ;; :tooltip {:signal "datum"}  
                   },
           :update
           {:stroke {:value "black"},
            :fill {:value "black"},
            :size {:value 25},
-           :yc {:signal "blobWidth / 2 + jitter*(random() - 0.5)"}, ;should scale with fatness
+           :x {:scale "xscale", :field "feature_value"}}}}]}
+           :yc {:signal "blobWidth / 2 + jitter*datum.jit"}, ;should scale with fatness
            :strokeWidth {:value 1},
            :opacity {:signal "points ? 0.3 : 0"},
            :shape {:value "circle"},
-
-           :x {:scale "xscale", :field "feature_value"}}}}]}
       ],
      }))
 
@@ -289,7 +295,7 @@
       [:table.table
        [:tr
         [:td [:span.slider "scale " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])]]
-        [:td [slider :id "blobWidth" :min 100 :max 1000 :default 100]]]
+        [:td [slider :id "blobWidth" :min 50 :max 500 :default 100]]]
        [:tr
         [:td [slider :id "jitter" :min 0 :max 200 :default 25]]
         [:td [slider :id "blobSpace" :min 100 :max 2000 :default 700]] ;should be 150 and height = blobwidthh * domain, but not working

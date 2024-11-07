@@ -107,14 +107,6 @@
   [project n]
   (u/some-thing #(= (dataset-name %) n) (datasets project)))
 
-
-;;; Do a query
-
-;; (defn query
-;;   [table sql]
-;;   (let [config (.build (QueryJobConfiguration/newBuilder sql))
-;;         job-id (.build)
-
 (defn get-value
   [field thing & [repeat]]
   (if (instance? FieldValue thing)
@@ -127,9 +119,7 @@
           (.getValue thing))
     thing))
 
-
-
-;;; Nevermind, simpler! Table is provided in select.
+;;; Table is provided in select.
 (defn query
   [project sql]
   (let [config (.build (QueryJobConfiguration/newBuilder sql))
