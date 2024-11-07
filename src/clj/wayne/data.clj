@@ -38,6 +38,16 @@
                     {:from (format " FROM `%s` " table)})
              :key-fn keyword)))
 
+;;; Can do deletes, etc
+(defn sql
+  [q & {:keys [table] :as args :or {table bq-table}}]
+  (bq/query "pici-internal"
+            (u/expand-template
+             q
+             (merge args
+                    {:from (format " FROM `%s` " table)})
+             :key-fn keyword)))
+
 ;;; Not presently used
 (defmethod wd/data :cohort
   [_]
@@ -113,6 +123,8 @@ any_value(site) as site
     (-> (select "feature_value, {dim} {from} 
 where feature_variable = '{feature}'
 AND feature_type = '{feature_type}'
+AND NOT {dim} = 'NA'
+AND NOT {dim} = 'Unknown'
 AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of differe
                 (assoc params
                        :where (str (joint-where-clause (dissoc filters (keyword feature)))  ))) ; " and cell_meta_cluster_final = 'APC'"

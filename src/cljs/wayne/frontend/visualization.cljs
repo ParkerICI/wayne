@@ -89,7 +89,7 @@
      [{:name "layout",
        :type "band",
        :range "height",
-       :domain {:data "source", :field dim},
+       :domain {:data "source", :field dim :sort true},
        :paddingOuter 0.5}
       (merge
        {:name "xscale",
@@ -208,11 +208,12 @@
           {:stroke {:value "black"},
            :fill {:value "black"},
            :size {:value 25},
-           :x {:scale "xscale", :field "feature_value"}}}}]}
+           :x {:scale "xscale", :field "feature_value"}
            :yc {:signal "blobWidth / 2 + jitter*datum.jit"}, ;should scale with fatness
            :strokeWidth {:value 1},
            :opacity {:signal "points ? 0.3 : 0"},
            :shape {:value "circle"},
+           }}}]}
       ],
      }))
 
