@@ -1,17 +1,24 @@
 (ns wayne.frontend.visualization
   (:require [re-frame.core :as rf]
-            [clojure.string :as str]
             [wayne.frontend.signup :as signup]
             [com.hyperphor.way.web-utils :as wu]
             [com.hyperphor.way.vega :as v]
             com.hyperphor.way.params
             [com.hyperphor.way.download :as download]
             [reagent.dom]
-            [org.candelbio.multitool.core :as u]
-            [org.candelbio.multitool.math :as um]
             [wayne.frontend.feature-select :as fui]
-            [com.hyperphor.way.cheatmap :as dendro]
+            [wayne.frontend.heatmap :as hm]
             ))
+
+;;; Violin plot and framework. 
+
+;;; TODO use elsewhere. Or a different approach, but this works
+(defn humanize-features
+  [data]
+  (map (fn [{:keys [feature_variable] :as row}]
+         ;; Was adding :feature_human but then that shows up on axis lable
+         (assoc row :feature_variable (wu/humanize feature_variable)))
+       data))
 
 (defn interpret-scale
   [scale]
@@ -24,7 +31,7 @@
 (defn violin
   [data dim feature]
   (let [dim (name dim)
-        scale (interpret-scale @(rf/subscribe [:param :features :scale]))] ;TODO wee fui/ref below
+        scale (interpret-scale @(rf/subscribe [:param :features :scale]))]
     {:description "A violin plot"
      :$schema "https://vega.github.io/schema/vega/v5.json"
      :width 800
@@ -69,7 +76,7 @@
        :zindex 1,
        :labelFontSize 18 :titleFontSize 20
        :labelAngle 90 :labelAlign "left"
-       :title (wu/humanize feature)} ;TODO want metacluster in this
+       :title (wu/humanize feature)}
 
       {:orient "left",
        :scale "layout",
@@ -127,25 +134,7 @@
            :height {:scale "hscale", :field "density"}
            ;; :tooltip {:value "boxx"}
            }}}
-
         
-        
-        ;; Box
-        #_
-        {:type "rect",                 
-         :from {:data "summary"},
-         :encode
-         {:enter {:cornerRadius {:value 4} },
-          :update
-          {:x {:scale "xscale", :field "q1"},
-           :x2 {:scale "xscale", :field "q3"},
-           :height {:signal "blobWidth / 10"}
-           :yc {:signal "blobWidth / 2"}
-           :fill {:scale "color", :field {:parent dim}}
-           }}}
-
-        ;; TODO maybe make color and fill different if violin is on
-
         ;;  Box outline
         {:type "rect",                  
          :from {:data "summary"},
@@ -159,10 +148,9 @@
            :height {:signal "blobWidth / 5"}
            :yc {:signal "blobWidth / 2"}
            :opacity {:signal "box ? 1 : 0"}
-           ;; If violins present, use black, otherwise semantic color. TODO tweak and deal with other combos
+           ;; If violins present, use black, otherwise semantic color. 
            :fill {:signal (str "violin ? '' :  scale('color', datum." dim ")")} 
            }}}
-
 
         ;; Midpoint
         {:type "rect",                  
@@ -190,6 +178,7 @@
 
         ]}
 
+      ;; Points
       {:type "group",
        :from {:facet {:data "source", :name "points", :groupby dim}},
        :encode
@@ -218,128 +207,14 @@
            :shape {:value "circle"},
 
            :x {:scale "xscale", :field "feature_value"}}}}]}
-
-
       ],
      }))
 
-#_
-(defn boxplot
-  [data dim]
-  (let [scale (interpret-scale @(rf/subscribe [:param :features :scale]))]
-    {
-     :$schema "https://vega.github.io/schema/vega-lite/v5.json",
-     :data {:values data}
-     :mark {:type "boxplot" :tooltip true}, ; :extent "min-max"
-     :encoding {:x {:field "feature_value", :type "quantitative"
-                    :scale scale},
-                :y {:field dim :type "nominal"}
-                ;; TODO this doesn't work, I think to get jitter you need to use Vega, in which case it really should be combined with violin plot I think
-                ;; :yc {:signal "80*(random() - 0.5)"}
-                :color {:field dim :type "nominal", :legend nil}
-                }
-     }))
 
-;;; TODO use elsewhere. Or a different approach, but this works
-(defn humanize-features
-  [data]
-  (map (fn [{:keys [feature_variable] :as row}]
-         ;; Was adding :feature_human but then that shows up on axis lable
-         (assoc row :feature_variable (wu/humanize feature_variable)))
-       data))
 
-(defn z-transform
-  [ds field]
-  (let [values (map field ds)
-        mean (um/mean values)
-        std (um/standard-deviation values)
-        xvalues (map #(/ (- % mean) std) values)]
-    (map (fn [row xformed] (assoc row field xformed))
-         ds xvalues)))
 
-;;; TODO belongs in way
-(defn z-transform-columns
-  [ds field column-field]
-  (mapcat #(z-transform % field)
-          (vals (group-by column-field ds))))
 
-(defn conjs
-  [coll thing]
-  (if (nil? coll)
-    #{thing}
-    (conj coll thing)))
 
-(defn row
-  [label contents]
-  [:div.row.my-2
-   [:div.col-3 [:label.small.pt-2 [:b label]]]
-   [:div.col-9 contents]])
-
-;;; This is actually part of the he
-(defn feature-list-ui
-  []
-  (let [feature @(rf/subscribe [:selected-feature])
-        feature-list @(rf/subscribe [:param :heatmap2 :feature-list])]
-    [:div
-     [row "variable to add:"
-      [:span
-       (wu/humanize feature)
-       (when (not (contains? feature-list feature))
-         [:button.btn.btn-sm.btn-secondary.mx-2 ;TODO none of these boostrap stules are present
-          {:href "#"
-           :on-click #(rf/dispatch [:update-param :heatmap2 :feature-list conjs feature])}
-          "add"])
-       ]]
-     ;; TODO lozenge UI
-     [row
-      [:span "feature list:"
-       (when-not (empty? feature-list)
-         [:button.btn.btn-sm.btn-secondary.mx-2 {:href "#" :on-click #(rf/dispatch [:set-param :heatmap2 :feature-list #{}])} "clear"])]
-      (str/join ", " (map wu/humanize feature-list))]]))
-
-;;; TODO The "n rows, zeros omitted, Download" row doesn't really apply
-(defn heatmap2
-  [dim]
-  (let [data (humanize-features @(rf/subscribe [:data :heatmap2]))]
-    [:div
-     [:fieldset {:style {:margin-top "5px" :height "auto"}} [:legend "feature selection"]
-      [feature-list-ui]]
-     (if (empty? data)
-       [:div.alert.alert-info
-        "No data, you probably need to add some features to the feature list"]
-       (let [data (z-transform-columns data :mean :feature_variable)]
-         ;; TODO the title or something should indicate z-score applied
-         (dendro/heatmap data
-                         dim
-                         :feature_variable
-                         :mean
-                         {:color-scheme "magma"
-                          ;; TODO :overrides, angle x labels
-                          ;; :cluster-rows? false
-                          ;; TODO labels should be on left in this case
-                          ;; TODO color scale is too small.
-                          :aggregate-fn :mean
-                          :patches [[{:orient :bottom :scale :sx}
-                                     {:labelAngle 90
-                                      :labelFontSize 12
-                                      :titleFontSize 14
-                                      :titleAnchor :start ;without this, titles will grow the grid section and make it come loose from trees...prob should be default
-                                      }]
-                                    [{:orient :right :scale :sy}
-                                     {:labelFontSize 12
-                                      :titleFontSize 14
-                                      :titleAnchor :start
-                                      }]
-                                    [{:fill :color :type :gradient}
-                                     {:titleFontSize 14
-                                      :gradientLength {:signal "max(hm_height,100)"}
-                                      }
-                                     ]
-                                    ]}
-                         )
-         ))
-
-     ]))
 
 
 
@@ -424,28 +299,20 @@
   [dim feature data]
   (when dim
     [:div
-     ;; TODO pluralize
      (if (empty? data)
        "No data"
        [:div.m-1
-        [:span.mx-2 (str (count data) " rows")]
+        [:span.mx-2 (str (count data) " rows")]     ;; TODO pluralize
         (when (trim-zeros?)
           [:span.badge.text-bg-info "Zeros omitted"])   ; could do this but it is  wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows")
         [:span.m-2 (signup/with-signup (download/button data (str "bruce-export-" feature ".tsv")))]])
-     ;; TODO of course you might want to see these together, so tabs are not good design
-     [munson-tabs                       ;TODO need to split or be an arg or simething
+     [munson-tabs
       :uviz
       (array-map
        :plot (fn [] [:div
                        [control-panel]
                        [v/vega-view (violin data dim feature) data]
                        ])
-       #_ :boxplot #_ (fn [] [:div.vstack
-                        [v/vega-lite-view (boxplot data dim) data]
-                        [scale-chooser]
-                        ])
-       ;; :heatmap (fn [] [heatmap dim])
-       :heatmap (fn [] [heatmap2 dim])
-       ;; :dendrogram (fn [] [dendrogram dim])
+       :heatmap (fn [] [hm/heatmap2 dim (humanize-features @(rf/subscribe [:data :heatmap2]))])
        )]])
   )
