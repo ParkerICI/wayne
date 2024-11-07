@@ -38,6 +38,7 @@
                :icon "question-icon.svg"
                :values  ["2" "3" "4" "Unknown"]}
    :Immunotherapy {:label "Immunotherapy"
+                   :icon "cell-therapy-2.png"
                    :info "Treatment status"
                    :values [["false" "No"] ["true" "Yes"]]}
    :treatment {:label "Treatment"
@@ -54,9 +55,11 @@
                 :icon "recurrence-icon.svg"
                 :values ["No" "Yes"]}
    :Longitudinal {:label "Longitudinal"
+                  :icon "time_b.png"
                   :info "Patient samples with paired primary and recurrent events"
                   :values ["Yes" "No"]}
    :Progression {:label "Progression"
+                 :icon "data.png"
                  :info "Patients that progressed from lower grade to higher grades. later event catagories denotes the recurrent tumor."
                  :values ["No" "No_later_event" "Yes" "Yes_later_event"]}
    :Tumor_Region {:label "Tumor Region"
@@ -69,6 +72,7 @@
                       :values ["Mutant" "Wild_type"]
                       }
    :Sex {:label "Sex"
+         :icon "gender.png"
          :values [["F" "Female"] ["M" "Male"] "Unknown"]}
    ))
 
@@ -97,7 +101,7 @@
                    (open "collapser-viz" "collapsed") ;TODO maybe open only on feature selection
                    )}
      (when icon
-       [:img.icon {:src (str "../assets/icons/" icon), :alt text}])
+       [:img.icon {:src (str "../assets/icons/" icon), :alt text :height "18px"}])
      text]))
 
 (defn filter-values-ui
@@ -207,6 +211,21 @@
   [:div.my-3
    [:span.alert.alert-info.text-nowrap "↓  Next select a feature below ↓"]])
 
+;;; TODO with size adjust, use for LH buttons
+(defn dim-display
+  [dim]
+  (let [icon (get-in dims [dim :icon])
+        text (get-in dims [dim :label])]
+    [:span [:img.icon {:src (str "../assets/icons/" icon),
+                       :alt text
+                       :height "40px"
+                       :style {:vertical-align :middle
+                               :margin-left "5px"
+                               :margin-right "5px"
+}}]
+     text]))
+
+
 (defn munson-new
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
@@ -238,8 +257,8 @@
 
          ;; Compare dim panel
          [collapse-panel :dim
-          (if-let [dim (get-in dims [@(rf/subscribe [:param :universal :dim]) :label])]
-            (str "Selected category: " dim)
+          (if dim
+            [:span "Selected category: " [dim-display dim]]
             "←  Select a category to compare across")
           [:div#selectedFilterView
            [filter-view]
