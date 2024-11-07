@@ -83,8 +83,11 @@
        :tickCount 5,
        :labelFontSize 18 :titleFontSize 20
        :title (wu/humanize (name dim))
-       :zindex 1}],
-
+       :zindex 1
+       :encode
+       {:labels                         ;Replae _ with space in violin labels
+        {:update {:text {:signal "replace(datum.value, /_/, ' ')"}}}},
+       }],
      :scales
      [{:name "layout",
        :type "band",
@@ -216,13 +219,6 @@
            }}}]}
       ],
      }))
-
-
-
-
-
-
-
 
 
 (defn munson-tabs
