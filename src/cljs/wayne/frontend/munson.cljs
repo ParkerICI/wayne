@@ -5,6 +5,7 @@
    com.hyperphor.way.feeds
    [com.hyperphor.way.ui.init :as init]
    [wayne.frontend.visualization :as viz]
+   [wayne.frontend.sample-dist :as smatrix]
    [wayne.frontend.feature-select :as fui]
    [org.candelbio.multitool.core :as u]
    [com.hyperphor.way.api :as api]
@@ -268,13 +269,16 @@
 
          ;; Heatmap
          [collapse-panel :heatmap "Sample Distribution Matrix"
-          [:img {:src "../assets/images/graph-frame.png"}]
+          #_ [:img {:src "../assets/images/graph-frame.png"}]
+          [smatrix/sample-matrix]
           ]
 
          ;; Feature selection
          [collapse-panel :feature "Feature Selection"
           (if dim
             [:div {:style {:width "500px"}} ;TODO
+             ;; Turned this off, it flashes distractingly, we always have a feature selected basiclal
+             #_                             
              (when-not feature
                [feature-second-warning])
              [fui/ui]]
