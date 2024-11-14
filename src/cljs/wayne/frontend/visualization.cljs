@@ -80,20 +80,22 @@
 
       {:orient "left",
        :scale "layout",
-       :tickCount 5,
+       :ticks false
        :labelFontSize 18 :titleFontSize 20
+       :labelPadding 7
        :title (wu/humanize (name dim))
        :zindex 1
        :encode
-       {:labels                         ;Replae _ with space in violin labels
-        {:update {:text {:signal "replace(datum.value, /_/, ' ')"}}}},
+       {:labels
+        ;; Replace _ with space in violin labels. Note: ? is to hide a bogus undefined row that refuses to go away
+        {:update {:text {:signal "datum.value ? replace(datum.value, /_/, ' ') : ''"}}}},
        }],
      :scales
      [{:name "layout",
        :type "band",
        :range "height",
        :domain {:data "source", :field dim :sort true},
-       :paddingOuter 0.5}
+       :paddingOuter 0 :paddingInner 0}
       (merge
        {:name "xscale",
         :range "width",
