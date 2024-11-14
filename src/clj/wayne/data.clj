@@ -278,9 +278,14 @@ and feature_variable like '{prefix}%%'  order by feature_variable limit 20"
          :values [["F" "Female"] ["M" "Male"] "Unknown"]}
    ))
 
+;;; TODO why don't I have a macro for this?
+(u/def-lazy matrix-data
+  (mapcat (fn [d]
+            (select "Tumor_Diagnosis, {dim} as value, '{dim}' as dim, count(distinct(sample_id)) as samples {from} group by Tumor_Diagnosis, {dim}"
+                    {:dim (name d)}))
+          (rest (keys dims))))
+
 (defmethod wd/data :dist-matrix
   [_]
-  (mapcat (fn [d]
-              (select "Tumor_Diagnosis, {dim}, count(distinct(sample_id)) as samples {from} group by Tumor_Diagnosis, {dim}"
-                      {:dim (name d)}))
-          (rest (keys dims))))
+  @matrix-data)
+
