@@ -279,10 +279,16 @@ and feature_variable like '{prefix}%%'  order by feature_variable limit 20"
    ))
 
 ;;; TODO why don't I have a macro for this?
+;;; Add this to eliminate nullish values: WHERE NOT {dim} {na1} AND NOT {dim} {na2}
 (u/def-lazy matrix-data
   (mapcat (fn [d]
-            (select "Tumor_Diagnosis, {dim} as value, '{dim}' as dim, count(distinct(sample_id)) as samples {from} group by Tumor_Diagnosis, {dim}"
-                    {:dim (name d)}))
+            (select "Tumor_Diagnosis, {dim} as value, '{dim}' as dim, count(distinct(sample_id)) as samples
+{from}
+GROUP BY Tumor_Diagnosis, {dim}"
+                    {:dim (name d)
+                     :na1 (if (= d :Immunotherapy) "IS NULL" "= 'NA'") ;Kludge!
+                     :na2 (if (= d :Immunotherapy) "IS NULL" "= 'Unknown'")
+                     :cond (when-not (= d :Immunotherapy) )}))
           (rest (keys dims))))
 
 (defmethod wd/data :dist-matrix
