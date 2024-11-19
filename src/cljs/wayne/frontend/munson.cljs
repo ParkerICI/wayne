@@ -3,6 +3,7 @@
    [re-frame.core :as rf]
    [com.hyperphor.way.web-utils :as wu]
    com.hyperphor.way.feeds
+   [com.hyperphor.way.modal :as modal]
    [com.hyperphor.way.ui.init :as init]
    [wayne.frontend.visualization :as viz]
    [wayne.frontend.sample-dist :as smatrix]
@@ -326,7 +327,7 @@
 (defn app-ui
   []
   [:div
-   ;; Stand in
+   [modal/modal]
    [munson-new]
    ])
 

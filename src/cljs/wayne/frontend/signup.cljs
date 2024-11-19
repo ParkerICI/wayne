@@ -2,6 +2,9 @@
   (:require [re-frame.core :as rf]
             [com.hyperphor.way.web-utils :as wu]))
 
+;;; Hard to get a hook into form completion, this might do it
+;;; https://docs.google.com/forms/d/1UN9R0kCr59UQNNV3XuX6nrs9kvwHTm7O3ZuxBzLcPVI/edit#settings
+
 ;;; Idea: copy the actual HTML of the form and serve it up, then all the iframe security shit goes away.
 
 (defn signup
@@ -17,7 +20,7 @@
 
 (defn expose
   []
-  (rf/dispatch [:modal {:show? true :contents signup}]))
+  (rf/dispatch [:modal {:show? true :contents signup}])) ;TODO modal adjust header 
 
 ;;; Not used, testing the modal thing. But no way to detect when form is submitted? TODO
 (defn button
@@ -31,7 +34,7 @@
 (rf/reg-sub
  :registered?
  (fn [db _]
-   (or (wu/get-local-storage "wayne.signup")
+   (or (= "true" (wu/get-local-storage "wayne.signup"))
        (:registered? db))))
 
 (rf/reg-event-db
