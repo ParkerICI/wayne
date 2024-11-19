@@ -55,12 +55,13 @@
     :twitter "https://x.com/mackalllab/"
     }
 
-   {:name "Robert Prins",
-    :image "https://robertprinslab.healthsciences.ucla.edu/sites/g/files/oketem1351/files/styles/1_1_960px/public/media/images/prins-robert.jpg.webp"
+   {:name "Robert M. Prins"
+    :title "Professor, Neurosurgery and Pharmacology, David Geffen School of Medicine at UCLA"
     :link "https://robertprinslab.healthsciences.ucla.edu/"
-    :link2 "https://bri.ucla.edu/people/robert-prins/"
+    :image "https://robertprinslab.healthsciences.ucla.edu/sites/g/files/oketem1351/files/styles/1_1_960px/public/media/images/prins-robert.jpg.webp"
+    :linkedin "https://www.linkedin.com/in/robert-prins-50a62743/"
     :twitter "https://x.com/UCLANsgy/"
-    :title "Associate Professor, University of California, Los Angeles"
+    :link2 "https://bri.ucla.edu/people/robert-prins/"
     }
 
    {:name "Hideho Okada",
@@ -90,6 +91,21 @@
     :link2 "https://pathology.med.upenn.edu/department/people/1699/derek-alan-oldridge"
     :title "Assistant Professor, Children's Hospital of Philadelphia"
     :twitter "https://twitter.com/oldridgederek"
+    }
+
+
+
+   {:name "Joanna J. Phillips"
+    :title "Professor, Brain Tumor Center, UCSF"
+    :link "https://phillipslab.ucsf.edu/"
+    :image "https://phillipslab.ucsf.edu/sites/default/files/styles/person/public/2020-01/PhillipsJ_Headshot_20160921_0072_740x864.jpg"
+    }
+
+   {:name "EnJun Yang"
+    :title "Research Director, PICI"
+    :image "https://www.parkerici.org/wp-content/uploads/EnJun-Yang-PhD-1.jpeg"
+    :link "https://www.parkerici.org/person/enjun-yang-phd/"
+    :linkedin "https://www.linkedin.com/in/enjun-yang-82689638/"
     }
    ]
   )
