@@ -15,7 +15,7 @@
   [text]
   [:span {:data-tooltip text}
    [:img.info
-    {:src "https://www.iconpacks.net/icons/3/free-information-icon-6276.png"
+    {:src "../assets/icons/help-icon-16997.png"
      :height 20
      :style {:cursor "pointer"      ;TODO move to .css
              :vertical-align "middle"
