@@ -99,6 +99,7 @@
       :on-click #(do
                    (rf/dispatch [:set-param :universal :dim dim])
                    (rf/dispatch [:set-param :heatmap2 :dim dim])
+                   (rf/dispatch [:open-filter-pane dim])
                    (open "collapser-feature" "collapsed")
                    (open "collapser-viz" "collapsed") ;TODO maybe open only on feature selection
                    )}
@@ -107,7 +108,7 @@
      text]))
 
 (defn filter-values-ui
-  [id dim]
+  [dim collapsed?]
   (let [all-values (get-in dims [dim :values])
         feature @(rf/subscribe [:param :universal [:feature]])
         filters @(rf/subscribe [:param :universal [:filters]])
@@ -115,7 +116,7 @@
         ;; TODO also filter needs to be cleaned/regularized for matching
         in-values @(rf/subscribe [:data [:populate dim] {:dim dim :feature feature :filters filters}])
         ] 
-    [:div.accordian-panel.collapsed {:id id}
+    [:div.accordian-panel {:class (when collapsed? "collapsed")}
      (for [value-spec all-values
            :let [value (if (vector? value-spec) (first value-spec) value-spec)
                  label (wu/humanize (if (vector? value-spec) (second value-spec) value-spec))
@@ -154,22 +155,39 @@
       }
      "Clear All"]))
 
+(rf/reg-sub
+ :filter-pane
+ (fn [db _]
+   (:filter-pane db)))
+
+(rf/reg-event-db
+ :toggle-filter-pane
+ (fn [db [_ pane]]
+   (update db :filter-pane #(if (= % pane) nil pane))))
+
+(rf/reg-event-db
+ :open-filter-pane
+ (fn [db [_ pane]]
+   (assoc db :filter-pane pane)))
+
 (defn filter-ui
   []
-  [:div.filters
-   [:h3.mb-30.font-bold.filter-subheader
-    "FILTER" [info "Select molecular and clinical criteria to filter the data for visualization"] [clear-all-filters-button]]
-   [:div.filter-list
-    (for [dim (keys dims)]
-      (let [collapse-id (str "collapse" (name dim))]
-        [:div.accordian.accordian-collapsed
-         [:div.accordian-title {:on-click #(toggle collapse-id "collapsed")}
+  (let [open-pane @(rf/subscribe [:filter-pane])]
+    [:div.filters
+     [:h3.mb-30.font-bold.filter-subheader
+      "FILTER"
+      [info "Select molecular and clinical criteria to filter the data for visualization"]
+      [clear-all-filters-button]]
+     [:div.filter-list
+      (for [dim (keys dims)]
+        [:div.accordian.accordian-collapsed 
+         [:div.accordian-title {:on-click #(rf/dispatch [:toggle-filter-pane dim])}
           [:h3 (get-in dims [dim :label])
            (when-let [info-text (get-in dims [dim :info])]
              [info info-text])]
           [:img {:src "../assets/icons/minus-grey.svg"}]]
-         [filter-values-ui collapse-id dim]
-         ]))]])
+         [filter-values-ui dim (not (= dim open-pane))]
+         ])]]))
 
 (defn filter-view
   []
