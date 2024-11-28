@@ -8,6 +8,7 @@
             [clojure.string :as str]
             [clojure.data.json :as json]
             [environ.core :as env]
+            [clojure.java.io :as io]
             ))
 
 ;;; See https://console.cloud.google.com/bigquery?authuser=1&project=pici-internal&ws=!1m0
@@ -295,3 +296,17 @@ GROUP BY Tumor_Diagnosis, {dim}"
   [_]
   @matrix-data)
 
+
+(defn read-csv-maps
+  "Given a tsv file with a header line, returns seq where each elt is a map of field names to strings"
+  [f & [separator]]
+  (let [rows (ju/read-tsv-rows f #"\,")]
+    (map #(zipmap (map keyword (first rows)) %)
+         (rest rows))))
+
+(u/def-lazy vitessce-data
+  (read-csv-maps (io/resource "data/vitessce_samples.csv")))
+
+(defmethod wd/data :vitessce
+  [_]
+  @vitessce-data)

@@ -80,3 +80,15 @@
   height: 13px;
   background-color: #4586FF
 }
+
+
+/* ag-grid */
+
+.sample-table {
+  height: 600px;
+}
+
+/* Not sure why this is necessary but it is */
+.ag-theme-balham {
+  height: 600px;
+}

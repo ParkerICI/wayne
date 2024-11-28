@@ -39,6 +39,7 @@
                        :modules {:dev-main {:entries [wayne.frontend.core
                                                       wayne.frontend.munson
                                                       wayne.frontend.samples
+                                                      wayne.frontend.vitessce
                                                       ]}}
                        :devtools {:preloads [day8.re-frame-10x.preload.react-18]}
                        :dev {:compiler-options

@@ -16,6 +16,7 @@
 ;;   [wayne.frontend.sites :as sites]
    [wayne.frontend.cohort :as cohort]
    [wayne.frontend.samples :as samples]
+   [wayne.frontend.vitessce :as vitessce]
    ;; [wayne.frontend.dotplot :as dotplot]
    ;; [wayne.frontend.barchart :as barchart]
    ;; [wayne.frontend.universal :as universal]

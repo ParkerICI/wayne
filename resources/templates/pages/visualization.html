@@ -38,20 +38,23 @@
             </div>
             <h1>Visualization</h1>
             <p>
-The Vitessce Visualization tool is an web-based platform tailored for interactive exploration of our single cell MIBI images. Here, you can explore protein expression, various cell types, and their spatial organization within the extensive glioma tissue cohort.
+	      The Vitessce Visualization tool is an web-based platform tailored for interactive exploration of our single cell MIBI images. Here, you can explore protein expression, various cell types, and their spatial organization within the extensive glioma tissue cohort.
             </p>
           </div>
         </div>
       </section>
       <section id="vitessce">
         <div class="container">
-          <img src="../assets/images/vitessce.png" />
-        </div>
+          <div class="sample-data-table">
+	    <div id="app" class="tab-content active"></div>
+          </div>
+	</div>
       </section>
       {{faq}}
     </main>
-{{footer}}
+    {{footer}}
   </body>
-  <script src="../js/accordion.js"></script>
+  <script src="/cljs-out/dev-main.js"></script>
+  <script>window.onload = function() { wayne.frontend.vitessce.init(); }</script>
 </html>
-q
+
