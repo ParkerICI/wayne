@@ -59,6 +59,7 @@
                                                })
                         :sideBar nil
                         :statusBar nil
+                        :pagination false
                         }
       ])])
 
