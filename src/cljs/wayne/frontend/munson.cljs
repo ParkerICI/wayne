@@ -10,7 +10,7 @@
    [wayne.frontend.feature-select :as fui]
    [org.candelbio.multitool.core :as u]
    [com.hyperphor.way.api :as api]
-   wayne.frontend.examples
+   [wayne.frontend.examples :as examples]
    ))
 
 (defn info
@@ -283,6 +283,10 @@
         [:p.query-builder-section-subheadline
          "Explore multiomic features of glioma tumor microenvironment."]
         [:div.selected-filter-wrapper
+
+         [collapse-panel :examples "Examples"
+          [examples/example-chooser]
+          ]
 
          ;; Compare dim panel
          [collapse-panel :dim
