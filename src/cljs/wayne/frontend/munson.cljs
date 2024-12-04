@@ -10,6 +10,7 @@
    [wayne.frontend.feature-select :as fui]
    [org.candelbio.multitool.core :as u]
    [com.hyperphor.way.api :as api]
+   wayne.frontend.examples
    ))
 
 (defn info
@@ -177,7 +178,15 @@
      [:h3.mb-30.font-bold.filter-subheader
       "FILTER"
       [info "Select molecular and clinical criteria to filter the data for visualization"]
-      [clear-all-filters-button]]
+      [clear-all-filters-button]
+      ;; temp
+      [:button.btn.btn-sm.btn-secondary.mx-2
+       {:on-click #(rf/dispatch [:remember-example])}
+       "Remember"]
+      [:button.btn.btn-sm.btn-secondary.mx-2
+       {:on-click #(rf/dispatch [:recall-example])}
+       "Recall"]
+      ]
      [:div.filter-list
       (for [dim (keys dims)]
         [:div.accordian.accordian-collapsed 
