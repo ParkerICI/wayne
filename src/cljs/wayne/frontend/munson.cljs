@@ -211,8 +211,11 @@
                                      (if in v))
                                    vals)]
                ;; TODO :span not quite right, and maybe we want to show col/dim?
-               ;; TODO implement close icon
-               [:span (map (fn [v] [:div.tag (wu/humanize v) [:img {:src "../assets/icons/close.svg"}]]) in-vals)]))
+               [:span (map (fn [v]
+                             [:div.tag {:on-click #(rf/dispatch [:set-param :universal [:filters col v] false])}
+                              (wu/humanize v)
+                              [:img {:src "../assets/icons/close.svg"}]])
+                           in-vals)]))
            @(rf/subscribe [:param :universal [:filters]]))
    ])
 
