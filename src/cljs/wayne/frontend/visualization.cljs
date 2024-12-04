@@ -300,6 +300,8 @@
         [:td [slider :id "blobSpace" :min 100 :max 2000 :default 700]] ;should be 150 and height = blobwidthh * domain, but not working
         ]]]]]])
 
+(def saved-vega-params ["blobWidth" "blobSpace" "jitter" "scale" "box" "violin" "points"])
+
 (defn visualization 
   [dim feature data]
   (when dim
@@ -316,7 +318,13 @@
       (array-map
        :plot (fn [] [:div
                        [control-panel]
-                       [v/vega-view (violin data dim feature) data]
+                     [v/vega-view
+                      (violin data dim feature)
+                      data
+                      ;; This saves the vega signals in params db – but they aren't used yet. 
+                      :listeners (zipmap saved-vega-params
+                                         (repeat (fn [param v] (rf/dispatch [:set-param :violin param v]))))
+                      ]
                        ])
        :heatmap (fn [] [hm/heatmap2 dim (humanize-features @(rf/subscribe [:data :heatmap2]))])
        )]])

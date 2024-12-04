@@ -180,9 +180,11 @@
       [info "Select molecular and clinical criteria to filter the data for visualization"]
       [clear-all-filters-button]
       ;; temp
+      #_
       [:button.btn.btn-sm.btn-secondary.mx-2
        {:on-click #(rf/dispatch [:remember-example])}
        "Remember"]
+      #_
       [:button.btn.btn-sm.btn-secondary.mx-2
        {:on-click #(rf/dispatch [:recall-example])}
        "Recall"]

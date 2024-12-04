@@ -198,7 +198,8 @@
 (defn select-widget-minimal
   [id values & [extra-action]]
   (let [current-value @(rf/subscribe [:param :features id])]
-    (when (and (not (empty? values))
+    ;; This breaks example retrieval, and seems otherwise wrong, not sure why it is here
+    #_ (when (and (not (empty? values))
                (not (contains? (set values) current-value)))
       (rf/dispatch [:set-param :features id (safe-name (first values)) ])) 
     (wu/select-widget
