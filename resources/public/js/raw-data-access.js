@@ -1,48 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Sample JSON data
   const data = [
-    {
-      "document_id": "15897",
-      "title1": "Cell Text",
-      "title2": "Cell Text",
-      "title3": "Cell Text",
-      "title4": "Cell Text"
-    },
-    {
-      "document_id": "15897",
-      "title1": "Cell Text",
-      "title2": "Cell Text",
-      "title3": "Cell Text",
-      "title4": "Cell Text"
-    },
-    {
-      "document_id": "15897",
-      "title1": "Cell Text",
-      "title2": "Cell Text",
-      "title3": "Cell Text",
-      "title4": "Cell Text"
-    },
-    {
-      "document_id": "15897",
-      "title1": "Cell Text",
-      "title2": "Cell Text",
-      "title3": "Cell Text",
-      "title4": "Cell Text"
-    },
-    {
-      "document_id": "15897",
-      "title1": "Cell Text",
-      "title2": "Cell Text",
-      "title3": "Cell Text",
-      "title4": "Cell Text"
-    },
-    {
-      "document_id": "15897",
-      "title1": "Cell Text",
-      "title2": "Cell Text",
-      "title3": "Cell Text",
-      "title4": "Cell Text"
-    },
+      {
+	  "title": "Master Feature Table",
+	  "name": "20240810_master_feature_table_na_removed_metadata.rds",
+	  "size": "35M",
+	  "format": "rds"
+      },
+      {
+	  "title": "Cell Table (immune)",
+	  "name": "cell_table_immune_thresholded.parquet",
+	  "size": "1G",
+	  "format": "parquet"
+      },
+      {
+	  "title": "Cell Table (tumor)",
+	  "name": "cell_table_tumor_thresholded.parquet",
+	  "size": "1G",
+	  "format": "parquet"
+      }
   ];
 
   // Function to populate the table
@@ -56,12 +32,13 @@ document.addEventListener('DOMContentLoaded', () => {
         <td>
             <input type="checkbox">
         </td>
-        <td>${item.document_id}</td>
-        <td>${item.title1}</td>
-        <td>${item.title2}</td>
-        <td>${item.title3}</td>
-        <td>${item.title4}</td>
-        <td style="text-align: right;width: 120px"><img src="../assets/icons/download-dark.svg" /></td>
+        <td>${item.title}</td>
+        <td>${item.name}</td>
+        <td>${item.size}</td>
+        <td>${item.format}</td>
+        <td style="text-align: right;width: 120px">
+<a href="https://storage.googleapis.com/pici-bruce-vitessce-public/other/${item.name}" download="${item.name}"><img src="../assets/icons/download-dark.svg" />
+</a></td>
       `;
 
       tableBody.appendChild(row);
