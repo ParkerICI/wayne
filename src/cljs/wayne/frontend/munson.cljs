@@ -11,19 +11,8 @@
    [org.candelbio.multitool.core :as u]
    [com.hyperphor.way.api :as api]
    [wayne.frontend.examples :as examples]
+   [wayne.frontend.utils :as wwu]
    ))
-
-(defn info
-  [text]
-  [:span {:data-tooltip text}
-   [:img.info
-    {:src "../assets/icons/help-icon-16997.png"
-     :height 20
-     :style {:cursor "pointer"      ;TODO move to .css
-             :vertical-align "middle"
-             :margin-left "7px"
-             :margin-bottom "3px"}
-     }]])
 
 (def dims
   (array-map                            ; Order is important 
@@ -168,7 +157,7 @@
     [:div.filters
      [:h3.mb-30.font-bold.filter-subheader
       "FILTER"
-      [info "Select molecular and clinical criteria to filter the data for visualization"]
+      [wwu/info "Select molecular and clinical criteria to filter the data for visualization"]
       [clear-all-filters-button]
       ;; temp
       #_
@@ -186,7 +175,7 @@
          [:div.accordian-title {:on-click #(rf/dispatch [:toggle-filter-pane dim])}
           [:h3 (get-in dims [dim :label])
            (when-let [info-text (get-in dims [dim :info])]
-             [info info-text])]
+             [wwu/info info-text])]
           [:img {:src "../assets/icons/minus-grey.svg"}]]
          [filter-values-ui dim (not (= dim open-pane))]
          ])]]))

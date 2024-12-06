@@ -5,6 +5,7 @@
             [reagent.dom]
             [org.candelbio.multitool.core :as u]
             [wayne.frontend.autocomplete :as autocomplete] ;TEMP
+            [wayne.frontend.utils :as wwu]
             )
   )
 
@@ -173,6 +174,30 @@
    "Tcell_FoxP3"
    "Tumor_cells"])
 
+(def feature-definitions
+  {"Relative_Intensity" "Mean glycan intensity / Σ (all glycan intensity)"
+   "Tumor_Antigens_Intensity" "Mean cell intensity"
+   "Functional_marker_intensity" "Mean cell intensity"
+   "Phenotype_marker_intensity" "Mean cell intensity"
+   ;; Cell Abundance – Cell abundance
+   ;; Ratios – Cell ratios
+   "Neighborhood_Frequencies"  "Box 1 – cell type 1. Box 2 is % of cell type 2 within 50-micron radius of cell type 1"
+   "Spatial_Density" "Clustered regions of spatial enrichment. See extended doc (Data access) for cluster compositions"
+   "Area_Density" "Cell counts over FOV area"
+   "Immune_High" "Transcripts collected from CD45 high regions"
+   "Immune_Low" "Transcripts collected from CD45 low regions"
+   "Relative_to_all_tumor_cells" "Relative abundance of cell types – Denominator is total tumor cells. "
+   "Relative_to_all_immune_cells" "Relative abundance of cell types – Denominator is total immune cells."
+   ;; rename to “Immune & functional marker to tumor & antigen” –
+   "Cells_and_functional_markers"  "X/(X + Y) –  X  = Counts of any combination of immune cells and functional marker. Y = Counts of tumor cells expressing a specific tumor antigen"
+   ;; rename to “Immune to immune”
+   "Immune_cells"  "X/(X + Y) –  X  = Counts of a immune cell. Y = Counts of an immune cell"
+   "Immune_to_Tumor_cells" "X/(X + Y) –  X  = Counts of a immune cell. Y = Counts of an immune cell"
+   ;; Rename to tumor to tumor (?)
+   "Tumor_cells" "(X/Y) - Count of tumor cells coexpression 2 (Antigen A and Antigen B) tumor antigens/ Counts of tumor cells expressing either antigen A or B. X/(X+Y) – X = Counts of tumor cells expressing a specific antigen. Y = Counts of tumor cells expressing a specific antigen"
+   })
+
+
 ;;; ⊛✪⊛ Utilities ✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪
 
 ;;; → Multitool?
@@ -202,24 +227,28 @@
       (when (and (not (empty? values))
                  (not (contains? (set values) current-value)))
         (rf/dispatch [:set-param :features id (safe-name (first values)) ])) )
-    (wu/select-widget
-     id
-     current-value
-     #(do
-        (rf/dispatch [:set-param :features id %])
-        (when extra-action (extra-action %) )) ;ugn
-     (map (fn [v]
-            {:value v :label (if v (wu/humanize v)  "---")})
-          values)
-     nil
-     nil
-     {:display "inherit" :width "inherit" :margin-left "2px"}))) ;TODO tooltips
+    [:span {:style {:width "80%"}}
+     (wu/select-widget
+      id
+      current-value
+      #(do
+         (rf/dispatch [:set-param :features id %])
+         (when extra-action (extra-action %) )) ;ugn
+      (map (fn [v]
+             {:value v :label (if v (wu/humanize v)  "---")})
+           values)
+      nil
+      nil
+      {:display "inherit" :width "inherit" :margin-left "2px"})
+     (when-let [d (get feature-definitions current-value)]
+       (wwu/info d))])) ;TODO tooltips
 
 (defn select-widget
   [id values & [extra-action believe-param?]]
   [row
    (wu/humanize (trim-prefix id))
-   (select-widget-minimal id values extra-action believe-param?)])
+   (select-widget-minimal id values extra-action believe-param?)
+   ])
 
 ;;; Hack and temporary
 
