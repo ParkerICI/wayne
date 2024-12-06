@@ -23,18 +23,30 @@
              }
     }
    {:text "Find mean intensity of EGFR expression on tumor cells in primary WHO grade 3 and 4 samples."
-    :params {:universal {:dim :WHO_grade, :feature "EGFR", :filters {:Tumor_Diagnosis {"Astrocytoma" false, "GBM" false, "Oligodendroglioma" false}, :recurrence {"No" true}, :WHO_grade {"3" true, "4" true}}},
+    :params {:universal {:dim :WHO_grade,
+                         :feature "EGFR",
+                         :filters {:recurrence {"No" true},
+                                   :WHO_grade {"3" true, "4" true}}},
              :heatmap2 {:dim :WHO_grade, :filter {:Tumor_Diagnosis {"Astrocytoma" false, "GBM" false, "Oligodendroglioma" false}, :recurrence {"No" true}, :WHO_grade {"3" true, "4" true}}},
              :features {:feature-bio-feature-type nil, :feature-supertype "nonspatial", :scale "linear", :feature-broad_feature_type "Protein", :feature-feature_type "Tumor_Antigens_Intensity", :feature-feature_variable "EGFR"}
              :violin {"blobWidth" 100 "blobSpace" 328}}
     
     }
    {:text "Find mean intensity of TOX expression in recurrent GBM samples and compare between control and Neoadjuvant PD1 Trial 1"
-    :params {:universal {:dim :treatment, :feature "Tox", :filters {:Tumor_Diagnosis {"GBM" true}, :Immunotherapy {"true" false}, :treatment {"Neoadjuvant_PD1_Trial_1" true, "Treatment_Naive" true}, :recurrence {"Yes" true}}}, :heatmap2 {:dim :treatment, :filter {:Tumor_Diagnosis {"Astrocytoma" false, "GBM" true, "Oligodendroglioma" false}, :recurrence {"No" true, "Yes" true}, :WHO_grade {"3" true, "4" true}, :Immunotherapy {"true" false}, :treatment {"Neoadjuvant_PD1_Trial_1" true, "Treatment_Naive" true}}}, :features {:feature-bio-feature-type nil, :feature-supertype "nonspatial", :scale "linear", :feature-broad_feature_type "Protein", :feature-feature_type "Functional_marker_intensity", :feature-feature_variable "Tox"}, :heatmap {:filter {}}},
+    :params {:universal {:dim :treatment,
+                         :feature "Tox",
+                         :filters {:Tumor_Diagnosis {"GBM" true},
+                                   :treatment {"Neoadjuvant_PD1_Trial_1" true, "Treatment_Naive" true},
+                                   :recurrence {"Yes" true}}},
+             :heatmap2 {:dim :treatment, :filter {:Tumor_Diagnosis {"Astrocytoma" false, "GBM" true, "Oligodendroglioma" false}, :recurrence {"No" true, "Yes" true}, :WHO_grade {"3" true, "4" true}, :Immunotherapy {"true" false}, :treatment {"Neoadjuvant_PD1_Trial_1" true, "Treatment_Naive" true}}}, :features {:feature-bio-feature-type nil, :feature-supertype "nonspatial", :scale "linear", :feature-broad_feature_type "Protein", :feature-feature_type "Functional_marker_intensity", :feature-feature_variable "Tox"}, :heatmap {:filter {}}},
     
     }
    {:text "Find mean intensity of CD14 expression in primary WHO grade 4 samples and compare between IDH mutant and wild type"
-    :params {:universal {:dim :IDH_R132H_Status, :feature "CD14", :filters {:WHO_grade {"4" true}, :recurrence {"No" true}}}, :heatmap2 {:dim :IDH_R132H_Status, :filter {:Tumor_Diagnosis {"Astrocytoma" false, "GBM" true, "Oligodendroglioma" false}, :recurrence {"No" true, "Yes" true}, :WHO_grade {"3" true, "4" true}, :Immunotherapy {"true" false}, :treatment {"Neoadjuvant_PD1_Trial_1" true, "Treatment_Naive" true}}}, :features {:feature-bio-feature-type nil, :feature-supertype "nonspatial", :scale "linear", :feature-broad_feature_type "Protein", :feature-feature_type "Phenotype_marker_intensity", :feature-feature_variable "CD14"}, :heatmap {:filter {}}}
+    :params {:universal {:dim :IDH_R132H_Status,
+                         :feature "CD14",
+                         :filters {:WHO_grade {"4" true},
+                                   :recurrence {"No" true}}},
+             :heatmap2 {:dim :IDH_R132H_Status, :filter {:Tumor_Diagnosis {"Astrocytoma" false, "GBM" true, "Oligodendroglioma" false}, :recurrence {"No" true, "Yes" true}, :WHO_grade {"3" true, "4" true}, :Immunotherapy {"true" false}, :treatment {"Neoadjuvant_PD1_Trial_1" true, "Treatment_Naive" true}}}, :features {:feature-bio-feature-type nil, :feature-supertype "nonspatial", :scale "linear", :feature-broad_feature_type "Protein", :feature-feature_type "Phenotype_marker_intensity", :feature-feature_variable "CD14"}, :heatmap {:filter {}}}
     
     }
 

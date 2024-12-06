@@ -196,12 +196,12 @@
 ;;; TODO nil should be option (could be in values
 ;;; NOTE used to use :set-param-if which didn't work well, I think that can be removed from Way
 (defn select-widget-minimal
-  [id values & [extra-action]]
+  [id values & [extra-action believe-param?]]
   (let [current-value @(rf/subscribe [:param :features id])]
-    ;; This breaks example retrieval, and seems otherwise wrong, not sure why it is here
-    #_ (when (and (not (empty? values))
-               (not (contains? (set values) current-value)))
-      (rf/dispatch [:set-param :features id (safe-name (first values)) ])) 
+    (when-not believe-param?            ;Another epicycle, ensures this works for examples where everything gets set at once. 
+      (when (and (not (empty? values))
+                 (not (contains? (set values) current-value)))
+        (rf/dispatch [:set-param :features id (safe-name (first values)) ])) )
     (wu/select-widget
      id
      current-value
@@ -216,10 +216,10 @@
      {:display "inherit" :width "inherit" :margin-left "2px"}))) ;TODO tooltips
 
 (defn select-widget
-  [id values & [extra-action]]
+  [id values & [extra-action believe-param?]]
   [row
    (wu/humanize (trim-prefix id))
-   (select-widget-minimal id values extra-action)])
+   (select-widget-minimal id values extra-action believe-param?)])
 
 ;;; Hack and temporary
 
@@ -262,7 +262,10 @@
   [feature-type bio-feature-type]
   (select-widget :feature-feature_variable
                  @(rf/subscribe [:data :features {:feature_type feature-type
-                                                  :bio_feature_type bio-feature-type}])))
+                                                  :bio_feature_type bio-feature-type}])
+                 nil
+                 true
+                 ))
 
 (defmulti feature-from-db
   (fn [db]
