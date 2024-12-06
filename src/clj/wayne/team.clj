@@ -101,11 +101,23 @@
     :image "https://phillipslab.ucsf.edu/sites/default/files/styles/person/public/2020-01/PhillipsJ_Headshot_20160921_0072_740x864.jpg"
     }
 
+
+   ]
+  )
+
+(def pici
+  [
    {:name "EnJun Yang"
     :title "Research Director, PICI"
     :image "https://www.parkerici.org/wp-content/uploads/EnJun-Yang-PhD-1.jpeg"
     :link "https://www.parkerici.org/person/enjun-yang-phd/"
     :linkedin "https://www.linkedin.com/in/enjun-yang-82689638/"
+    }
+   {:name "Mike Travers"
+    :title "Consultant, Hyperphor"
+    :image "https://hyperphor.com/dist/mt-headshot.jpg"
+    :link  "https://www.hyperphor.com"
+    :linkedin "https://www.linkedin.com/in/mdtravers/"
     }
    ]
   )
@@ -129,6 +141,7 @@
 (defn generate
   []
   (generate-1 team "team-cards.html")
-  (generate-1 collaborators "collaborator-cards.html"))
+  (generate-1 collaborators "collaborator-cards.html")
+  (generate-1 pici "pici-cards.html"))
 
 

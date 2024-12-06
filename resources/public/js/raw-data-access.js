@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Sample JSON data
+
   const data = [
       {
 	  "title": "Master Feature Table",
@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
   ];
 
-  // Function to populate the table
   function populateTable(data) {
     const tableBody = document.querySelector("#documentTable tbody");
 
@@ -45,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Call the function to populate the table with JSON data
   populateTable(data);
 
   // Function to handle "select all" checkbox
