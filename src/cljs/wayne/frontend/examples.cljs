@@ -72,6 +72,11 @@
      (rf/dispatch [:open-collapse-panel :dim])
      (rf/dispatch [:open-collapse-panel :feature])
      (rf/dispatch [:open-collapse-panel :viz])
+     ;; Open one filter pane, best we can do now
+     (when-let [filter-dim (first (keys (get-in example [:params :universal :filters])))]
+
+       (rf/dispatch [:open-filter-pane filter-dim]))
+
      (assoc db :params (:params example))
      )))
 
