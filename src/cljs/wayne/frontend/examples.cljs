@@ -56,6 +56,10 @@
    (let [example (u/some-thing #(= (:text %) text) examples)]
      ;; TODO no this is wrong, sorry
      #_ (u/merge-recursive db example)
+     ;; Maybe be smart?
+     (rf/dispatch [:open-collapse-panel :dim])
+     (rf/dispatch [:open-collapse-panel :feature])
+     (rf/dispatch [:open-collapse-panel :viz])
      (assoc db :params (:params example))
      )))
 

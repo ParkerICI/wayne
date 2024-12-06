@@ -79,16 +79,7 @@
          :values [["F" "Female"] ["M" "Male"] "Unknown"]}
    ))
 
-;;; Very non-re-frame sue me
-(defn toggle
-  [id class]
-  (let [elt (.getElementById js/document id)]
-    (.toggle (.-classList elt) class)))
 
-(defn open
-  [id class]
-  (let [elt (.getElementById js/document id)]
-    (.remove (.-classList elt) class)))
 
 (defn dim-selector
   [dim active-dim]
@@ -101,8 +92,8 @@
                    (rf/dispatch [:set-param :universal :dim dim])
                    (rf/dispatch [:set-param :heatmap2 :dim dim])
                    (rf/dispatch [:open-filter-pane dim])
-                   (open "collapser-feature" "collapsed")
-                   (open "collapser-viz" "collapsed") ;TODO maybe open only on feature selection
+                   (rf/dispatch [:open-collapse-panel :feature])
+                   (rf/dispatch [:open-collapse-panel :viz])
                    )}
      (when icon
        [:img.icon {:src (str "../assets/icons/" icon), :alt text :height "18px"}])
@@ -222,20 +213,34 @@
    ])
 
 
+(rf/reg-sub
+ :collapse-panel-open?
+ (fn [db [_ id]]
+   (get-in db [:collapse-panel id])))
+
+(rf/reg-event-db
+ :toggle-collapse-panel
+ (fn [db [_ id]]
+   (update-in db [:collapse-panel id] not)))
+
+(rf/reg-event-db
+ :open-collapse-panel
+ (fn [db [_ id]]
+   (assoc-in db [:collapse-panel id] true)))
+
 (defn collapse-panel
   [id title content]
-  (let [id (str "collapser-" (name id))]
-    [:div.featured-view.relative
-     [:div.features-view
-      [:div.features-view-header {:on-click #(toggle id "collapsed")}
-       [:div.flex.align-center.flex-row.gap-8 [:h3 title]]
-       [:div.flex.gap-16
-        [:img#toggleSelectForm {:src "../assets/icons/merge-horizontal-grey.svg"
-                                }]
-        ]]
-      [:div.collapsed.mt-24 {:id id}              ;.collapsed if start collapsed
-       content
-       ]]]))
+  [:div.featured-view.relative
+   [:div.features-view
+    [:div.features-view-header {:on-click #(rf/dispatch [:toggle-collapse-panel id])}
+     [:div.flex.align-center.flex-row.gap-8 [:h3 title]]
+     [:div.flex.gap-16
+      [:img#toggleSelectForm {:src "../assets/icons/merge-horizontal-grey.svg"
+                              }]
+      ]]
+    [:div.mt-24 {:class (when-not @(rf/subscribe [:collapse-panel-open? id]) "collapsed")}
+     content
+     ]]])
 
 (defn dim-first-warning
   []
