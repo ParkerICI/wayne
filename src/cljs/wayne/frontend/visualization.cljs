@@ -149,12 +149,12 @@
                   },
           :update
           {;:xc {:scale "dscale" :field "dim"},
-           :xc {:signal "blobWidth"}
+           :xc {:signal "blobWidth/2"}
            :y {:scale "vscale", :field "value"}
            :opacity {:signal "violin ? 1 : 0"}
            
            :width {:scale "hscale", :field "density"}
-           :height {:scale "hscale", :field "density"}
+           :height {:value 200} #_ {:scale "hscale", :field "density"}
            ;; :tooltip {:value "boxx"}
            }}}
         
@@ -209,8 +209,8 @@
        :encode
        {:update
         {:x {:scale "dscale", :field dim, :band 0.5},
-         :height {:signal "blobWidth"}, ;TODO
-         :width {:signal "width"}       ;TODO
+         ;; :height {:signal "blobWidth"}, ;TODO
+         ;; :width {:signal "width"}       ;TODO
          }},
        :data [
               {:name "pointx"
@@ -234,7 +234,7 @@
            :fill {:value "black"},
            :size {:value 25},
            :y {:scale "vscale", :field "feature_value"}
-           :xc {:signal "jitter*datum.jit"}, ;should scale with fatness
+           :xc {:signal "jitter*datum.jit + blobWidth/2 "}, ;TODO not quite right
            :strokeWidth {:value 1},
            :opacity {:signal "points ? 0.3 : 0"},
            :shape {:value "circle"},
