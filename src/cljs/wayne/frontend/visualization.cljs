@@ -45,7 +45,8 @@
       {:name "blobWidthx" :bind {:element "#blobWidth"}} ;controls fatness of violins
       {:name "blobWidth" :update "parseInt(blobWidthx)"}             ;necessary because ext binding come in as string, bleah
       {:name "blobSpace" :bind {:element "#blobSpace"}}
-      {:name "height" :update "blobSpace" #_  "blobSpace * length(scale('dscale').domain)"} ; not working
+      {:name "height" :value 800}
+      {:name "width" :value 800 :update "blobSpace*1"} ; #_  "blobSpace * length(scale('dscale').domain)"}
       {:name "trim" :value true #_ :bind #_ {:input "checkbox"}}
       ;; TODO this didn't work, so going out of Vega. Note, see https://vega.github.io/vega/docs/signals/#bind-external
       #_ {"name" "vscales", "value" "linear" "bind"  {"input" "select" "options" ["linear" "log10" "log2" "sqrt"]}}
@@ -97,14 +98,14 @@
       ;; dim values
       {:name "dscale",
        :type "band",
-       :range "height",
+       :range "width",
        :domain {:data "source", :field dim :sort true},
        :paddingOuter 0 :paddingInner 0}
 
       ;; field values
       (merge
        {:name "vscale",
-        :range "width",
+        :range "height",
         :round true,
         :domain {:data "source", :field "feature_value"},
         :nice true}
@@ -165,10 +166,10 @@
                   :tooltip {:signal "datum"}
                   :cornerRadius {:value 4}}
           :update
-          {:x {:scale "vscale", :field "q1"},
-           :x2 {:scale "vscale", :field "q3"},
-           :height {:signal "blobWidth / 5"}
-           :yc {:signal "blobWidth / 2"}
+          {:y {:scale "vscale", :field "q1"},
+           :y2 {:scale "vscale", :field "q3"},
+           :width {:signal "blobWidth / 5"}
+           :xc {:signal "blobWidth / 2"}
            :opacity {:signal "box ? 1 : 0"}
            ;; If violins present, use black, otherwise semantic color. 
            :fill {:signal (str "violin ? '' :  scale('color', datum." dim ")")} 
@@ -178,9 +179,11 @@
         {:type "rect",                  
          :from {:data "summary"},
          :encode
-         {:enter {:fill {:value "black"}, :width {:value 2}, :height {:value 20}},
-          :update {:x {:scale "vscale", :field "median"}
-                   :yc {:signal "blobWidth / 2"}
+         {:enter {:fill {:value "black"},
+                  :height {:value 2},
+                  :width {:value 20}},
+          :update {:y {:scale "vscale", :field "median"}
+                   :xc {:signal "blobWidth / 2"}
                    :opacity {:signal "box ? 1 : 0"}
                    }}}
 
@@ -191,9 +194,9 @@
          :from {:data "summary"},
          :encode
          {:enter {:fill {:value "black"}, :width {:value 2}, :height {:value 2}},
-          :update {:x {:scale "vscale", :field "min"},
-                   :x2 {:scale "vscale", :field "max"}
-                   :yc {:signal "blobWidth / 2"}
+          :update {:y {:scale "vscale", :field "min"},
+                   :y2 {:scale "vscale", :field "max"}
+                   :xc {:signal "blobWidth / 2"}
                    :opacity {:signal "box ? 1 : 0"}
                    }}}
 
