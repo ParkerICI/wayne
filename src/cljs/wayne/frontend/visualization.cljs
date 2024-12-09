@@ -127,10 +127,11 @@
        :from {:facet {:data "density", :name "violin", :groupby dim}},
        :encode
        {:update
-        {:yc {:scale "dscale", :field dim, :band 0.5},
-         :height {:signal "blobWidth"},
-         :width {:signal "width"}
+        {:x {:scale "dscale", :field dim}, ; , :band 0.5 ??
+         :width {:signal "blobWidth"},
+         :height {:signal "width"}
          }},
+
        :data
        [{:name "summary",
          :source "stats",
@@ -139,16 +140,19 @@
        [
 
         ;; Violins
-        {:type "area",                  
+        {:type "rect",                  ;should be area but doesn't work?
          :from {:data "violin"},
          :encode
          {:enter {:fill {:scale "color", :field {:parent dim}}
                   :tooltip {:signal "datum"}   ;TODO maybe 
                   },
           :update
-          {:x {:scale "vscale", :field "value"},
-           :yc {:signal "blobWidth / 2"},
+          {;:xc {:scale "dscale" :field "dim"},
+           :xc {:signal "blobWidth"}
+           :y {:scale "vscale", :field "value"}
            :opacity {:signal "violin ? 1 : 0"}
+           
+           :width {:scale "hscale", :field "density"}
            :height {:scale "hscale", :field "density"}
            ;; :tooltip {:value "boxx"}
            }}}
