@@ -201,9 +201,9 @@
        :from {:facet {:data "source", :name "points", :groupby dim}},
        :encode
        {:update
-        {:yc {:scale "dscale", :field dim, :band 0.5},
-         :height {:signal "blobWidth"},
-         :width {:signal "width"}
+        {:x {:scale "dscale", :field dim, :band 0.5},
+         :height {:signal "blobWidth"}, ;TODO
+         :width {:signal "width"}       ;TODO
          }},
        :data [
               {:name "pointx"
@@ -226,8 +226,8 @@
           {:stroke {:value "black"},
            :fill {:value "black"},
            :size {:value 25},
-           :x {:scale "vscale", :field "feature_value"}
-           :yc {:signal "blobWidth / 2 + jitter*datum.jit"}, ;should scale with fatness
+           :y {:scale "vscale", :field "feature_value"}
+           :xc {:signal "jitter*datum.jit"}, ;should scale with fatness
            :strokeWidth {:value 1},
            :opacity {:signal "points ? 0.3 : 0"},
            :shape {:value "circle"},
