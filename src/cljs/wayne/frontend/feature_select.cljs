@@ -294,7 +294,7 @@
                  @(rf/subscribe [:data :features {:feature_type feature-type
                                                   :bio_feature_type bio-feature-type}])
                  nil
-                 true
+                 true                   ;kludge so this works with examples
                  ))
 
 (defmulti feature-from-db

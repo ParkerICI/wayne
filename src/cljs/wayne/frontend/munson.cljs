@@ -249,7 +249,6 @@
 
          ;; Heatmap
          [collapse-panel :heatmap "Sample Distribution Matrix"
-          #_ [:img {:src "../assets/images/graph-frame.png"}]
           [smatrix/sample-matrix]
           ]
 
@@ -257,7 +256,7 @@
          [collapse-panel :feature "Feature Selection"
           (if dim
             [:div {:style {:width "500px"}} ;TODO
-             ;; Turned this off, it flashes distractingly, we always have a feature selected basiclal
+             ;; Turned this off, it flashes distractingly, and we always have a feature selected
              #_                             
              (when-not feature
                [feature-second-warning])
