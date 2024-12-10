@@ -11,7 +11,8 @@
 
 ;;; ⊛✪⊛ Data defintions ✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪
 
-;;; To generate these, see scrap/data-curation
+;;; To generate these, see scrap/data-curation.
+;;; TODO might want to mvoe to wayne.data-defs
 
 ;;; Feature tree generation (select widget hierarchy etc) 
 
