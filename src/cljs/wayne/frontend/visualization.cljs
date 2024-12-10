@@ -87,6 +87,7 @@
        :labelPadding 7
        :title (wu/humanize (name dim))
        :zindex 1
+       :labelAngle 90 :labelAlign "left"
        :encode
        {:labels
         ;; Replace _ with space in violin labels. Note: ? is to hide a bogus undefined row that refuses to go away
@@ -154,7 +155,7 @@
            :opacity {:signal "violin ? 1 : 0"}
            
            :width {:scale "hscale", :field "density"}
-           :height {:value 200} #_ {:scale "hscale", :field "density"}
+           :height {:value 50} #_ {:scale "hscale", :field "density"}
            ;; :tooltip {:value "boxx"}
            }}}
         
