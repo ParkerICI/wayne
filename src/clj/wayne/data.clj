@@ -164,7 +164,10 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
                        :else [])]
     (when (and dim (not (empty? feature-list)))
       (-> (select "avg(feature_value) as mean, feature_variable, {dim} {from} 
- where feature_variable in {feature-list}  and {where}
+ where feature_variable in {feature-list}
+ AND NOT {dim} = 'NA'
+ AND NOT {dim} = 'Unknown'
+ and {where}
  group by feature_variable, {dim}"
                   :feature-list (bq/sql-lit-list feature-list)
                   :dim dim
