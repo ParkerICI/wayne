@@ -92,13 +92,13 @@
 
    {:text "Heatmap of all Cell Abundance relative to Immune Cell features" ;TODO 
     :params {:universal {:dim :Tumor_Diagnosis, :feature "Endothelial_cells_over_all_immune_count_prop"},
-             :heatmap2 {:dim :Tumor_Diagnosis, :feature-list #{"Bcells_over_all_immune_count_prop" "DC_Mac_CD209_over_all_immune_count_prop" "APC_over_all_immune_count_prop"}},
+             :heatmap2 {:dim :Tumor_Diagnosis,
+                        ;; TODO need a good way for users to make this list
+                        :feature-list #{"APC_over_all_immune_count_prop" "Bcells_over_all_immune_count_prop" "DC_Mac_CD209_over_all_immune_count_prop" "Endothelial_cells_over_all_immune_count_prop" "Macrophage_CD206_over_all_immune_count_prop" "Macrophage_CD68_CD163_over_all_immune_count_prop" "Macrophage_CD68_over_all_immune_count_prop" "Mast_cells_over_all_immune_count_prop" "Microglia_CD163_over_all_immune_count_prop" "Microglia_over_all_immune_count_prop" "Myeloid_CD11b_HLADRminus_over_all_immune_count_prop" "Myeloid_CD11b_HLADRplus_over_all_immune_count_prop" "Myeloid_CD141_over_all_immune_count_prop" "Myeloid_CD14_CD163_over_all_immune_count_prop" "Myeloid_CD14_over_all_immune_count_prop" "Neurons_over_all_immune_count_prop" "Neutrophils_over_all_immune_count_prop" "Tcell_CD4_over_all_immune_count_prop" "Tcell_CD8_over_all_immune_count_prop" "Tcell_FoxP3_over_all_immune_count_prop" "Unassigned_over_all_immune_count_prop"}},
              :features {:feature-bio-feature-type "Relative_to_all_immune_cells", :feature-supertype "nonspatial", :scale "linear", :feature-broad_feature_type "Cells", :feature-feature_type "Cell_Abundance", :feature-feature_variable "Endothelial_cells_over_all_immune_count_prop"}}
-
-    :active-tab {:uviz :heatmap}        ;TODO
+    :active-tab {:uviz :heatmap}
     }
    ])
-
 
 (rf/reg-event-db
  :remember-example
@@ -114,9 +114,7 @@
  :recall-example
  (fn [db [_ text]]
    (let [example (u/some-thing #(= (:text %) text) examples)]
-     ;; TODO no this is wrong, sorry
-     #_ (u/merge-recursive db example)
-     ;; Maybe be smart?
+
      (rf/dispatch [:open-collapse-panel :dim])
      (rf/dispatch [:open-collapse-panel :feature])
      (rf/dispatch [:open-collapse-panel :viz])
@@ -125,10 +123,11 @@
 
        (rf/dispatch [:open-filter-pane filter-dim]))
 
-     (assoc db
-            :params (:params example)
-            :active-tab (:active-tab example))
-     )))
+     (-> db
+         (assoc :params (:params example)
+                :active-tab (:active-tab example))
+         (assoc-in [:data-status :heatmap2] :invalid) ;kludge to ensure data is refreshed. Really only need this for heatmap examples
+         ))))
 
 (defn example-chooser
   []
