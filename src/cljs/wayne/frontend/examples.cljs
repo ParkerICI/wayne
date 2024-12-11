@@ -90,6 +90,13 @@
    :params {:universal {:dim :WHO_grade, :feature "B7H3_func_EGFR_func_over_EGFR_func_prop", :filters {}}, :heatmap2 {:dim :WHO_grade, :filter {:Tumor_Diagnosis {"Astrocytoma" true, "GBM" true, "Oligodendroglioma" true, "PXA" true}, :recurrence {"No" true}, :WHO_grade {"3" true, "4" true, "2" true}, :treatment {"Neoadjuvant_PD1_Trial_2" true, "Treatment_Naive" true}, :Tumor_Region {"Tumor_core" true, "Tumor_infiltrating" true}}}, :features {:feature-broad_feature_type "Cells", :feature-feature_variable "B7H3_func_EGFR_func_over_EGFR_func_prop", :scale "linear", :feature-bio-feature-type "Tumor_cells", :feature-feature_type "Cell_Ratios", :subfeature-0 "Macrophage_CD68_Ki67", :subfeature-2 "Tcell_CD8", :subfeature-4 "B7H3", :feature-supertype "nonspatial"}, :violin {"blobWidth" 100, "blobSpace" "530"}, :heatmap {:filter {}}}}
 
 
+   {:text "Heatmap of all Cell Abundance relative to Immune Cell features" ;TODO 
+    :params {:universal {:dim :Tumor_Diagnosis, :feature "Endothelial_cells_over_all_immune_count_prop"},
+             :heatmap2 {:dim :Tumor_Diagnosis, :feature-list #{"Bcells_over_all_immune_count_prop" "DC_Mac_CD209_over_all_immune_count_prop" "APC_over_all_immune_count_prop"}},
+             :features {:feature-bio-feature-type "Relative_to_all_immune_cells", :feature-supertype "nonspatial", :scale "linear", :feature-broad_feature_type "Cells", :feature-feature_type "Cell_Abundance", :feature-feature_variable "Endothelial_cells_over_all_immune_count_prop"}}
+
+    :active-tab {:uviz :heatmap}        ;TODO
+    }
    ])
 
 
@@ -97,6 +104,7 @@
  :remember-example
  (fn [db _]
    (let [example (select-keys db [:params             ;includes query and feature selector param
+                                  :active-tab
                                   ])]
      (prn :example example)
      (assoc db
@@ -117,7 +125,9 @@
 
        (rf/dispatch [:open-filter-pane filter-dim]))
 
-     (assoc db :params (:params example))
+     (assoc db
+            :params (:params example)
+            :active-tab (:active-tab example))
      )))
 
 (defn example-chooser
