@@ -224,10 +224,12 @@
 (defn select-widget-minimal
   [id values & [extra-action believe-param?]]
   (let [current-value @(rf/subscribe [:param :features id])]
-    (when-not believe-param?            ;Another epicycle, ensures this works for examples where everything gets set at once. 
-      (when (and (not (empty? values))
-                 (not (contains? (set values) current-value)))
-        (rf/dispatch [:set-param :features id (safe-name (first values)) ])) )
+    (when (and (not (empty? values))
+               (not (contains? (set values) current-value)))
+      (rf/dispatch [:set-param :features id (safe-name (if believe-param? ;Another epicycle, ensures this works for examples where everything gets set at once. 
+                                                         (or current-value (first values))
+                                                         (first values)))
+                                                         ]))
     [:span {:style {:width "80%"}}
      (wu/select-widget
       id

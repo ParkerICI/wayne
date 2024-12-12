@@ -17,6 +17,7 @@
                :icon "question-icon.svg"
                :values  ["2" "3" "4" "Unknown"]}
    :Immunotherapy {:label "Immunotherapy"
+                   :type :boolean
                    :icon "cell-therapy-2.png"
                    :info "Treatment status"
                    :values [["false" "No"] ["true" "Yes"]]}

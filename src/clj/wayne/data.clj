@@ -119,18 +119,31 @@ any_value(site) as site
              "1 = 1"
              (format "%s in %s" (name dim) (bq/sql-lit-list vals)))))))))
 
+(defn dim-type?
+  [d]
+  (get-in dd/dims [(keyword d) :type] :string))
+
+(defn dim-boolean?
+  [d]
+  (= :boolean (dim-type? d)))
+
 (defn query1
   [{:keys [feature dim filters] :as params}]
+  #_ (log/info :query1 params)
   (when (and feature dim)
     (-> (select "feature_value, {dim} {from} 
 where feature_variable = '{feature}'
 AND feature_type = '{feature_type}'
-AND NOT {dim} = 'NA'
-AND NOT {dim} = 'Unknown'
+AND NOT {dim} {na1}
+AND NOT {dim} {na2}
 AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of differe
                 (assoc params
-                       :where (str (joint-where-clause (dissoc filters (keyword feature)))  ))) ; " and cell_meta_cluster_final = 'APC'"
+                       :where (str (joint-where-clause (dissoc filters (keyword feature)))  )
+                       :na1 (if (dim-boolean? dim) "IS NULL" "= 'NA'") ;Kludge TODO :type :boolean
+                       :na2 (if (dim-boolean? dim) "IS NULL" "= 'Unknown'"))
+                ) ; " and cell_meta_cluster_final = 'APC'"
         clean-data)))
+
 
 ;;; Allowable feature values for a single dim, given feature and filters
 ;;; TODO should delete dim from filters, here or upstream
@@ -165,19 +178,16 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
     (when (and dim (not (empty? feature-list)))
       (-> (select "avg(feature_value) as mean, feature_variable, {dim} {from} 
  where feature_variable in {feature-list}
- AND NOT {dim} = 'NA'
- AND NOT {dim} = 'Unknown'
+ AND NOT {dim} {na1}
+ AND NOT {dim} {na2}
  and {where}
  group by feature_variable, {dim}"
                   :feature-list (bq/sql-lit-list feature-list)
                   :dim dim
+                  :na1 (if (dim-boolean? dim) "IS NULL" "= 'NA'")
+                  :na2 (if (dim-boolean? dim) "IS NULL" "= 'Unknown'")
                   :where (joint-where-clause filter))
           ))))
-
-;;; → Multitool
-(defn eor
-  [a b]
-  (if (empty? a) b a))
 
 (u/defn-memoized bio_feature_type-features
   [bio_feature_type]
@@ -229,16 +239,16 @@ and feature_variable like '{prefix}%%'  order by feature_variable limit 20"
                params)))
 
 ;;; TODO why don't I have a macro for this?
-;;; Add this to eliminate nullish values: WHERE NOT {dim} {na1} AND NOT {dim} {na2}
 (u/def-lazy matrix-data
   (mapcat (fn [d]
             (select "Tumor_Diagnosis, {dim} as value, '{dim}' as dim, count(distinct(sample_id)) as samples
 {from}
+WHERE NOT ({dim} {na1} OR {dim} {na2})
 GROUP BY Tumor_Diagnosis, {dim}"
                     {:dim (name d)
-                     :na1 (if (= d :Immunotherapy) "IS NULL" "= 'NA'") ;Kludge!
+                     :na1 (if (= d :Immunotherapy) "IS NULL" "= 'NA'") ;Kludge TODO :type :boolean
                      :na2 (if (= d :Immunotherapy) "IS NULL" "= 'Unknown'")
-                     :cond (when-not (= d :Immunotherapy) )}))
+                     }))
           (rest (keys dd/dims))))
 
 (defmethod wd/data :dist-matrix
