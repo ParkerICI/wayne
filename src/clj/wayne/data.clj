@@ -10,6 +10,7 @@
             [clojure.data.json :as json]
             [environ.core :as env]
             [clojure.java.io :as io]
+            [wayne.csv :as csv]
             ))
 
 ;;; See https://console.cloud.google.com/bigquery?authuser=1&project=pici-internal&ws=!1m0
@@ -256,15 +257,16 @@ GROUP BY Tumor_Diagnosis, {dim}"
   @matrix-data)
 
 
+
 (defn read-csv-maps
   "Given a tsv file with a header line, returns seq where each elt is a map of field names to strings"
-  [f & [separator]]
-  (let [rows (ju/read-tsv-rows f #"\,")]
+  [f]
+  (let [rows (csv/read-csv-file f)]
     (map #(zipmap (map keyword (first rows)) %)
          (rest rows))))
 
 (u/def-lazy vitessce-data
-  (read-csv-maps (io/resource "data/vitessce_samples.csv")))
+  (read-csv-maps (io/resource "data/20241213_vitesscesamples.txt")))
 
 (defmethod wd/data :vitessce
   [_]
