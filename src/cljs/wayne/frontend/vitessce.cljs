@@ -9,8 +9,10 @@
             )
   )
 
+;;; TODO :sample should link to something?
+
 (def col-defs
-  [:sampleID :panel :FOV])
+  [:sampleID :sample :panel :FOV])
 
 ;;; NOTE: for this to work, you need ./externs/app.txt containing at least withParams
 (defn ag-grid-theme
@@ -58,8 +60,8 @@
                                                :accentColor "#4586FF"
                                                })
                         :sideBar nil
-                        :statusBar nil
-                        :pagination false
+                        :statusBar true
+                        :pagination true
                         }
       ])])
 

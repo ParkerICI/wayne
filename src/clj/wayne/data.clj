@@ -1,5 +1,6 @@
 (ns wayne.data
   (:require [wayne.bigquery :as bq]
+            [wayne.data-defs :as dd]
             [taoensso.timbre :as log]
             [org.candelbio.multitool.core :as u]
             [org.candelbio.multitool.cljcore :as ju]
@@ -9,6 +10,7 @@
             [clojure.data.json :as json]
             [environ.core :as env]
             [clojure.java.io :as io]
+            [wayne.csv :as csv]
             ))
 
 ;;; See https://console.cloud.google.com/bigquery?authuser=1&project=pici-internal&ws=!1m0
@@ -118,18 +120,31 @@ any_value(site) as site
              "1 = 1"
              (format "%s in %s" (name dim) (bq/sql-lit-list vals)))))))))
 
+(defn dim-type?
+  [d]
+  (get-in dd/dims [(keyword d) :type] :string))
+
+(defn dim-boolean?
+  [d]
+  (= :boolean (dim-type? d)))
+
 (defn query1
   [{:keys [feature dim filters] :as params}]
+  #_ (log/info :query1 params)
   (when (and feature dim)
     (-> (select "feature_value, {dim} {from} 
 where feature_variable = '{feature}'
 AND feature_type = '{feature_type}'
-AND NOT {dim} = 'NA'
-AND NOT {dim} = 'Unknown'
+AND NOT {dim} {na1}
+AND NOT {dim} {na2}
 AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of differe
                 (assoc params
-                       :where (str (joint-where-clause (dissoc filters (keyword feature)))  ))) ; " and cell_meta_cluster_final = 'APC'"
+                       :where (str (joint-where-clause (dissoc filters (keyword feature)))  )
+                       :na1 (if (dim-boolean? dim) "IS NULL" "= 'NA'") ;Kludge TODO :type :boolean
+                       :na2 (if (dim-boolean? dim) "IS NULL" "= 'Unknown'"))
+                ) ; " and cell_meta_cluster_final = 'APC'"
         clean-data)))
+
 
 ;;; Allowable feature values for a single dim, given feature and filters
 ;;; TODO should delete dim from filters, here or upstream
@@ -163,17 +178,17 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
                        :else [])]
     (when (and dim (not (empty? feature-list)))
       (-> (select "avg(feature_value) as mean, feature_variable, {dim} {from} 
- where feature_variable in {feature-list}  and {where}
+ where feature_variable in {feature-list}
+ AND NOT {dim} {na1}
+ AND NOT {dim} {na2}
+ and {where}
  group by feature_variable, {dim}"
                   :feature-list (bq/sql-lit-list feature-list)
                   :dim dim
+                  :na1 (if (dim-boolean? dim) "IS NULL" "= 'NA'")
+                  :na2 (if (dim-boolean? dim) "IS NULL" "= 'Unknown'")
                   :where (joint-where-clause filter))
           ))))
-
-;;; → Multitool
-(defn eor
-  [a b]
-  (if (empty? a) b a))
 
 (u/defn-memoized bio_feature_type-features
   [bio_feature_type]
@@ -224,88 +239,34 @@ where bio_feature_type = 'spatial_RNA'
 and feature_variable like '{prefix}%%'  order by feature_variable limit 20"
                params)))
 
-;;; Copied from Munson, should be in common place
-(def dims
-  (array-map                            ; Order is important 
-   :Tumor_Diagnosis {:label "Tumor Diagnosis"
-                     :info "Glial tumor subtypes"
-                     :icon "diagnosis-icon.svg"
-                     :values ["Astrocytoma"
-                              "GBM"
-                              "Oligodendroglioma"
-                              "PXA"
-                              "Pediatric DIPG"
-                              "Pediatric HGG (other)"]}
-   :WHO_grade {:label "WHO Grade"
-               :info "World Health Organization tumor grade classification"
-               :icon "question-icon.svg"
-               :values  ["2" "3" "4" "Unknown"]}
-   :Immunotherapy {:label "Immunotherapy"
-                   :icon "cell-therapy-2.png"
-                   :info "Treatment status"
-                   :values [["false" "No"] ["true" "Yes"]]}
-   :treatment {:label "Treatment"
-               :info "Various pre-sample collection treatments"
-               :icon "treatment-icon.svg"
-               :values ["Combinatorial_CD27_and_SPORE_Vaccine"
-                        "Lysate_Vaccine"
-                        "Neoadjuvant_PD1_Trial_1"
-                        "Neoadjuvant_PD1_Trial_2"
-                        "SPORE_Vaccine"
-                        "Treatment_Naive"]}
-   :recurrence {:label "Recurrence"
-                :info "Recurrent tumor"
-                :icon "recurrence-icon.svg"
-                :values ["No" "Yes"]}
-   :Longitudinal {:label "Longitudinal"
-                  :icon "time_b.png"
-                  :info "Patient samples with paired primary and recurrent events"
-                  :values ["Yes" "No"]}
-   :Progression {:label "Progression"
-                 :icon "data.png"
-                 :info "Patients that progressed from lower grade to higher grades. later event catagories denotes the recurrent tumor."
-                 :values ["No" "No_later_event" "Yes" "Yes_later_event"]}
-   :Tumor_Region {:label "Tumor Region"
-                  :info "Anatomical regions of the tumor"
-                  :icon "roi-icon.svg"
-                  :values   ["Other" "Tumor_core" "Tumor_core_to_infiltrating" "Tumor_infiltrating"]}
-   :IDH_R132H_Status {:label "IDH Status"
-                      :info "R132H - Common IDH mutation"
-                      :icon "file-chart-icon.svg"
-                      :values ["Mutant" "Wild_type"]
-                      }
-   :Sex {:label "Sex"
-         :icon "gender.png"
-         :values [["F" "Female"] ["M" "Male"] "Unknown"]}
-   ))
-
 ;;; TODO why don't I have a macro for this?
-;;; Add this to eliminate nullish values: WHERE NOT {dim} {na1} AND NOT {dim} {na2}
 (u/def-lazy matrix-data
   (mapcat (fn [d]
             (select "Tumor_Diagnosis, {dim} as value, '{dim}' as dim, count(distinct(sample_id)) as samples
 {from}
+WHERE NOT ({dim} {na1} OR {dim} {na2})
 GROUP BY Tumor_Diagnosis, {dim}"
                     {:dim (name d)
-                     :na1 (if (= d :Immunotherapy) "IS NULL" "= 'NA'") ;Kludge!
+                     :na1 (if (= d :Immunotherapy) "IS NULL" "= 'NA'") ;Kludge TODO :type :boolean
                      :na2 (if (= d :Immunotherapy) "IS NULL" "= 'Unknown'")
-                     :cond (when-not (= d :Immunotherapy) )}))
-          (rest (keys dims))))
+                     }))
+          (rest (keys dd/dims))))
 
 (defmethod wd/data :dist-matrix
   [_]
   @matrix-data)
 
 
+
 (defn read-csv-maps
   "Given a tsv file with a header line, returns seq where each elt is a map of field names to strings"
-  [f & [separator]]
-  (let [rows (ju/read-tsv-rows f #"\,")]
+  [f]
+  (let [rows (csv/read-csv-file f)]
     (map #(zipmap (map keyword (first rows)) %)
          (rest rows))))
 
 (u/def-lazy vitessce-data
-  (read-csv-maps (io/resource "data/vitessce_samples.csv")))
+  (read-csv-maps (io/resource "data/20241213_vitesscesamples.txt")))
 
 (defmethod wd/data :vitessce
   [_]

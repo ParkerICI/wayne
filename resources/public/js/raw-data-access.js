@@ -28,14 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const row = document.createElement("tr");
 
       row.innerHTML = `
-        <td>
-            <input type="checkbox">
-        </td>
         <td>${item.title}</td>
         <td>${item.name}</td>
         <td>${item.size}</td>
         <td>${item.format}</td>
-        <td style="text-align: right;width: 120px">
+        <td style="text-align: center">
 <a href="https://storage.googleapis.com/pici-bruce-vitessce-public/other/${item.name}" download="${item.name}"><img src="../assets/icons/download-dark.svg" />
 </a></td>
       `;

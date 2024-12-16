@@ -35,7 +35,6 @@
    [:div.col-3 [:label.small.pt-2 [:b label]]]
    [:div.col-9 contents]])
 
-;;; This is actually part of the he
 (defn feature-list-ui
   []
   (let [feature @(rf/subscribe [:selected-feature])

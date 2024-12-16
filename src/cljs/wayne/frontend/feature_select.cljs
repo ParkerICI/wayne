@@ -11,7 +11,8 @@
 
 ;;; ⊛✪⊛ Data defintions ✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪
 
-;;; To generate these, see scrap/data-curation
+;;; To generate these, see scrap/data-curation.
+;;; TODO might want to mvoe to wayne.data-defs
 
 ;;; Feature tree generation (select widget hierarchy etc) 
 
@@ -223,10 +224,12 @@
 (defn select-widget-minimal
   [id values & [extra-action believe-param?]]
   (let [current-value @(rf/subscribe [:param :features id])]
-    (when-not believe-param?            ;Another epicycle, ensures this works for examples where everything gets set at once. 
-      (when (and (not (empty? values))
-                 (not (contains? (set values) current-value)))
-        (rf/dispatch [:set-param :features id (safe-name (first values)) ])) )
+    (when (and (not (empty? values))
+               (not (contains? (set values) current-value)))
+      (rf/dispatch [:set-param :features id (safe-name (if believe-param? ;Another epicycle, ensures this works for examples where everything gets set at once. 
+                                                         (or current-value (first values))
+                                                         (first values)))
+                                                         ]))
     [:span {:style {:width "80%"}}
      (wu/select-widget
       id
@@ -293,7 +296,7 @@
                  @(rf/subscribe [:data :features {:feature_type feature-type
                                                   :bio_feature_type bio-feature-type}])
                  nil
-                 true
+                 true                   ;kludge so this works with examples
                  ))
 
 (defmulti feature-from-db
