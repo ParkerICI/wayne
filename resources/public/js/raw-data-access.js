@@ -1,12 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   const data = [
-      {
-	  "title": "Master Feature Table",
-	  "name": "20240810_master_feature_table_na_removed_metadata.rds",
-	  "size": "35M",
-	  "format": "rds"
-      },
+      // TEMP removed pending approval
+      // {
+      // 	  "title": "Master Feature Table",
+      // 	  "name": "20240810_master_feature_table_na_removed_metadata.rds",
+      // 	  "size": "35M",
+      // 	  "format": "rds"
+      // },
       {
 	  "title": "Cell Table (immune)",
 	  "name": "cell_table_immune_thresholded.parquet",
