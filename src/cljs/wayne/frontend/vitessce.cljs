@@ -19,10 +19,6 @@
   [base params]
   (.withParams base (clj->js params)))
 
-(defn expand-template
-  [template vals]
-  (u/expand-template template vals :key-fn keyword))
-
 ;;; TODO → way, somehow
 (defmethod ag/ag-col-def :FOV 
   [col {:keys [url-template label-template] :as col-def}]
@@ -33,8 +29,8 @@
                      (reagent.dom/render ;TODO this is not approved for React 18, but I couldn't figure a better way.
                        [:span.ag-cell-wrap-text   ;; .ag-cell-auto-height doesn't work, unfortunately.
                         [:a.ent
-                         {:href (expand-template url-template values) :target "_ext"}
-                         (expand-template label-template values)]]
+                         {:href (u/expand-template url-template values) :target "_ext"}
+                         (u/expand-template label-template values)]]
                        (.-eGridCell params))))
    }
   )
@@ -48,8 +44,8 @@
       fovs
       :columns col-defs
       :class "sample-table"
-      :col-defs {:FOV {:url-template "{vitessce_link}"
-                       :label-template "{FOV}"
+      :col-defs {:FOV {:url-template "{{vitessce_link}}"
+                       :label-template "{{FOV}}"
                        }}
       :ag-grid-options {:theme (ag-grid-theme agx/themeQuartz
                                               {:headerBackgroundColor "#020000",

@@ -201,8 +201,6 @@
 
 ;;; ⊛✪⊛ Utilities ✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪
 
-;;; → Multitool?
-
 (defn trim-prefix
   [id]
   (subs (name id) (count "feature-")))

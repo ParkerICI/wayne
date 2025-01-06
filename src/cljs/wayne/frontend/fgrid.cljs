@@ -9,7 +9,7 @@
   [dim]
   {:data {:url "filter-grid.js"}
    :transform (if dim
-                [{:filter (u/expand-template "test(/^{dim}/, datum.dim1) && !(test(/^{dim}/, datum.dim2))"
+                [{:filter (u/expand-template "test(/^{{dim}}/, datum.dim1) && !(test(/^{{dim}}/, datum.dim2))"
                                              {"dim" (name dim)})}]
                 [])
    :mark {:type "rect", :tooltip {:content "data"} },
@@ -31,7 +31,7 @@
      :format {:type "json"},
      :transform
      [{:type "filter", :expr (if dim
-                               (u/expand-template "test(/^{dim}/, datum.dim1) && !(test(/^{dim}/, datum.dim2))"
+                               (u/expand-template "test(/^{{dim}}/, datum.dim1) && !(test(/^{{dim}}/, datum.dim2))"
                                                   {"dim" (name dim)})
                                "true")}
       {:type "filter", :expr "isValid(datum[\"count\"]) && isFinite(+datum[\"count\"])"}

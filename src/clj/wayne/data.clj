@@ -31,7 +31,7 @@
   [q]
   (bq/query "pici-internal" q))
 
-;;; q is a template with {from} to plae the FROM clause. Kind of confusing
+;;; q is a template with {{from}} to plae the FROM clause. Kind of confusing
 (defn select
   [q & {:keys [table] :as args :or {table bq-table}}]
   (bq/query "pici-internal"
@@ -39,7 +39,7 @@
              (str "select " q)
              (merge args
                     {:from (format " FROM `%s` " table)})
-             :key-fn keyword)))
+             )))
 
 ;;; Can do deletes, etc
 (defn sql
@@ -49,7 +49,7 @@
              q
              (merge args
                     {:from (format " FROM `%s` " table)})
-             :key-fn keyword)))
+             )))
 
 ;;; Not presently used
 (defmethod wd/data :cohort
@@ -58,12 +58,12 @@
 count(distinct(patient_id)) as patients,
 count(distinct(sample_id)) as samples,
 count(distinct(feature_variable)) as features
-{from} group by Tumor_Diagnosis"))
+{{from}} group by Tumor_Diagnosis"))
 
 ;;; Not presently used
 (defmethod wd/data :samples
   [_]
-  (select "patient_id, sample_id, who_grade, final_diagnosis_simple, immunotherapy, site {from}" {:table metadata-table}))
+  (select "patient_id, sample_id, who_grade, final_diagnosis_simple, immunotherapy, site {{from}}" {:table metadata-table}))
 
 (defmethod wd/data :patients
   [_]
@@ -73,7 +73,7 @@ any_value(who_grade) as who_grade,
 any_value(final_diagnosis_simple) as diagnosis,
 any_value(immunotherapy) as immunotherapy,
 any_value(site) as site
-{from} group by patient_id"
+{{from}} group by patient_id"
           {:table metadata-table})
   )
 
@@ -132,12 +132,12 @@ any_value(site) as site
   [{:keys [feature dim filters] :as params}]
   #_ (log/info :query1 params)
   (when (and feature dim)
-    (-> (select "feature_value, {dim} {from} 
-where feature_variable = '{feature}'
-AND feature_type = '{feature_type}'
-AND NOT {dim} {na1}
-AND NOT {dim} {na2}
-AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of differe
+    (-> (select "feature_value, {{dim}} {{from}} 
+where feature_variable = '{{feature}}'
+AND feature_type = '{{feature_type}}'
+AND NOT {{dim}} {{na1}}
+AND NOT {{dim}} {{na2}}
+AND {{where}}" ; tried AND feature_value != 0 but didn't make a whole lot of differe
                 (assoc params
                        :where (str (joint-where-clause (dissoc filters (keyword feature)))  )
                        :na1 (if (dim-boolean? dim) "IS NULL" "= 'NA'") ;Kludge TODO :type :boolean
@@ -152,9 +152,9 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
   [{:keys [dim feature filters] :as params}]
   (when dim
     (->>
-     (select "distinct {dim} {from} where {feature-clause} AND {where}"
+     (select "distinct {{dim}} {{from}} where {{feature-clause}} AND {{where}}"
              (assoc params
-                    :feature-clause (if feature (u/expand-template "feature_variable = '{feature}'" {:feature feature} :key-fn keyword) "1=1")
+                    :feature-clause (if feature (u/expand-template "feature_variable = '{{feature}}'" {:feature feature} :key-fn keyword) "1=1")
                     :where (joint-where-clause (dissoc filters (keyword dim)))))
      (map (comp second first))
      set)))
@@ -162,9 +162,9 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
 (defn heatmap
   [{:keys [dim filter]}]
   (when dim
-    (-> (select "avg(feature_value) as mean, feature_variable, {dim} {from} 
- where feature_type = 'marker_intensity' and {where}
- group by feature_variable, {dim}"
+    (-> (select "avg(feature_value) as mean, feature_variable, {{dim}} {{from}} 
+ where feature_type = 'marker_intensity' and {{where}}
+ group by feature_variable, {{dim}}"
                 :dim dim
                 :where (joint-where-clause filter))
         )))
@@ -177,12 +177,12 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
                        (vector? feature-list) feature-list
                        :else [])]
     (when (and dim (not (empty? feature-list)))
-      (-> (select "avg(feature_value) as mean, feature_variable, {dim} {from} 
+      (-> (select "avg(feature_value) as mean, feature_variable, {{dim}} {{from}} 
  where feature_variable in {feature-list}
- AND NOT {dim} {na1}
- AND NOT {dim} {na2}
- and {where}
- group by feature_variable, {dim}"
+ AND NOT {{dim}} {{na1}}
+ AND NOT {{dim}} {{na2}}
+ and {{where}}
+ group by feature_variable, {{dim}}"
                   :feature-list (bq/sql-lit-list feature-list)
                   :dim dim
                   :na1 (if (dim-boolean? dim) "IS NULL" "= 'NA'")
@@ -193,13 +193,13 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
 (u/defn-memoized bio_feature_type-features
   [bio_feature_type]
   (map :feature_variable                ;(comp patch-feature
-       (select "distinct feature_variable {from} where bio_feature_type = '{bio_feature_type}'"
+       (select "distinct feature_variable {{from}} where bio_feature_type = '{{bio_feature_type}}'"
                :bio_feature_type bio_feature_type)))
 
 (u/defn-memoized feature-feature_type-features
   [feature_type]
   (map :feature_variable
-       (select "distinct feature_variable {from} where feature_type = '{feature_type}'"
+       (select "distinct feature_variable {{from}} where feature_type = '{{feature_type}}'"
                :feature_type feature_type)))
 
 (defmethod wd/data :universal
@@ -234,18 +234,18 @@ AND {where}" ; tried AND feature_value != 0 but didn't make a whole lot of diffe
 (defmethod wd/data :rna-autocomplete
   [params]
   (map :feature_variable
-       (select "distinct(feature_variable) {from}
+       (select "distinct(feature_variable) {{from}}
 where bio_feature_type = 'spatial_RNA'
-and feature_variable like '{prefix}%%'  order by feature_variable limit 20"
+and feature_variable like '{{prefix}}%%'  order by feature_variable limit 20"
                params)))
 
 ;;; TODO why don't I have a macro for this?
 (u/def-lazy matrix-data
   (mapcat (fn [d]
-            (select "Tumor_Diagnosis, {dim} as value, '{dim}' as dim, count(distinct(sample_id)) as samples
-{from}
-WHERE NOT ({dim} {na1} OR {dim} {na2})
-GROUP BY Tumor_Diagnosis, {dim}"
+            (select "Tumor_Diagnosis, {{dim}} as value, '{{dim}}' as dim, count(distinct(sample_id)) as samples
+{{from}}
+WHERE NOT ({{dim}} {{na1}} OR {{dim}} {{na2}})
+GROUP BY Tumor_Diagnosis, {{dim}}"
                     {:dim (name d)
                      :na1 (if (= d :Immunotherapy) "IS NULL" "= 'NA'") ;Kludge TODO :type :boolean
                      :na2 (if (= d :Immunotherapy) "IS NULL" "= 'Unknown'")
