@@ -78,12 +78,6 @@ any_value(site) as site
   )
 
 
-;;; TODO is this still necessary/valid?
-(defn clean-data
-  [d]
-  (map (fn [x] (update x :feature_value (fn [v] (if (= v "NA") nil (u/coerce-numeric v)))))
-       d))
-
 ;;; General trick to convert maps in get params back into their real form.
 ;;; → Way, this should be done before methods get called 
 (defn params-remap
@@ -124,30 +118,29 @@ any_value(site) as site
   [d]
   (get-in dd/dims [(keyword d) :type] :string))
 
+;;; A kludge, we have one boolean field and it needs different handling
 (defn dim-boolean?
   [d]
   (= :boolean (dim-type? d)))
 
 (defn query1
   [{:keys [feature dim filters] :as params}]
-  #_ (log/info :query1 params)
+  (log/info :query1 params)
   (when (and feature dim)
-    (-> (select "feature_value, {{dim}} {{from}} 
+    (select "feature_value, {{dim}} {{from}} 
 where feature_variable = '{{feature}}'
 AND feature_type = '{{feature_type}}'
 AND NOT {{dim}} {{na1}}
 AND NOT {{dim}} {{na2}}
-AND {{where}}" ; tried AND feature_value != 0 but didn't make a whole lot of differe
-                (assoc params
-                       :where (str (joint-where-clause (dissoc filters (keyword feature)))  )
-                       :na1 (if (dim-boolean? dim) "IS NULL" "= 'NA'") ;Kludge TODO :type :boolean
-                       :na2 (if (dim-boolean? dim) "IS NULL" "= 'Unknown'"))
-                ) ; " and cell_meta_cluster_final = 'APC'"
-        clean-data)))
-
+AND {{where}}" 
+            (assoc params
+                   :where (str (joint-where-clause (dissoc filters (keyword feature))))
+                   :na1 (if (dim-boolean? dim) "IS NULL" "= 'NA'")
+                   :na2 (if (dim-boolean? dim) "IS NULL" "= 'Unknown'"))
+            )
+    ))
 
 ;;; Allowable feature values for a single dim, given feature and filters
-;;; TODO should delete dim from filters, here or upstream
 (defn query1-pop
   [{:keys [dim feature filters] :as params}]
   (when dim
@@ -236,10 +229,9 @@ AND {{where}}" ; tried AND feature_value != 0 but didn't make a whole lot of dif
   (map :feature_variable
        (select "distinct(feature_variable) {{from}}
 where bio_feature_type = 'spatial_RNA'
-and feature_variable like '{{prefix}}%%'  order by feature_variable limit 20"
+and feature_variable like '{{prefix}}%%' order by feature_variable limit 20"
                params)))
 
-;;; TODO why don't I have a macro for this?
 (u/def-lazy matrix-data
   (mapcat (fn [d]
             (select "Tumor_Diagnosis, {{dim}} as value, '{{dim}}' as dim, count(distinct(sample_id)) as samples
@@ -247,16 +239,14 @@ and feature_variable like '{{prefix}}%%'  order by feature_variable limit 20"
 WHERE NOT ({{dim}} {{na1}} OR {{dim}} {{na2}})
 GROUP BY Tumor_Diagnosis, {{dim}}"
                     {:dim (name d)
-                     :na1 (if (= d :Immunotherapy) "IS NULL" "= 'NA'") ;Kludge TODO :type :boolean
-                     :na2 (if (= d :Immunotherapy) "IS NULL" "= 'Unknown'")
+                     :na1 (if (dim-boolean? d) "IS NULL" "= 'NA'")
+                     :na2 (if (dim-boolean? d) "IS NULL" "= 'Unknown'")
                      }))
           (rest (keys dd/dims))))
 
 (defmethod wd/data :dist-matrix
   [_]
   @matrix-data)
-
-
 
 (defn read-csv-maps
   "Given a tsv file with a header line, returns seq where each elt is a map of field names to strings"

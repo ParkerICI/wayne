@@ -11,7 +11,6 @@
 
 ;; Alternative: Selmer but easier to roll my own https://github.com/yogthos/Selmer
 
-;;; TODO in multitool (java) but I wish it could give resource paths instead of files
 (defn get-resources
   [path]
   (->> path

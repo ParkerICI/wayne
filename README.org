@@ -24,4 +24,22 @@ Credentials are supplied through Heroku config vars:
 
 
 
+* Data
+
+** Bigquery
+
+pici-internal.bruce_external.feature_table_20240810_metadata_oct1
+pici-internal.bruce_external.metadata_complete
+
+gcloud alpha bq tables list --dataset bruce_external
+
+In data.clj
+(def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240810_metadata_oct1"))
+
+
+** GS
+
+gs://pici-bruce-vitessce-public
+gs://bruce-external-data/
+
 
