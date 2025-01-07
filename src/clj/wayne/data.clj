@@ -51,32 +51,6 @@
                     {:from (format " FROM `%s` " table)})
              )))
 
-;;; Not presently used
-(defmethod wd/data :cohort
-  [_]
-  (select "Tumor_Diagnosis,
-count(distinct(patient_id)) as patients,
-count(distinct(sample_id)) as samples,
-count(distinct(feature_variable)) as features
-{{from}} group by Tumor_Diagnosis"))
-
-;;; Not presently used
-(defmethod wd/data :samples
-  [_]
-  (select "patient_id, sample_id, who_grade, final_diagnosis_simple, immunotherapy, site {{from}}" {:table metadata-table}))
-
-(defmethod wd/data :patients
-  [_]
-  (select "patient_id,
-array_agg(sample_id) as samples,
-any_value(who_grade) as who_grade,
-any_value(final_diagnosis_simple) as diagnosis,
-any_value(immunotherapy) as immunotherapy,
-any_value(site) as site
-{{from}} group by patient_id"
-          {:table metadata-table})
-  )
-
 
 ;;; General trick to convert maps in get params back into their real form.
 ;;; → Way, this should be done before methods get called 

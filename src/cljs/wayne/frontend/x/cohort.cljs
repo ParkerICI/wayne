@@ -2,6 +2,7 @@
   (:require [re-frame.core :as rf]
             [com.hyperphor.way.vega :as v]
             [wayne.frontend.x.fgrid :as fgrid]
+            [com.hyperphor.way.aggrid :as ag]
             )
   )
 
@@ -29,9 +30,12 @@
   [:div
    [:h3 "About the cohort and analysis"]
    ;; Debug
-   (let [cohorts @(rf/subscribe [:data [:cohort]])]
+   (let [cohorts @(rf/subscribe [:data :cohort {:fake :it}])]
      [:div
       [v/vega-lite-view (bar-spec cohorts) cohorts]
+      [ag/ag-table 
+       cohorts
+       ]
       [fgrid/ui]
       ])]
   )

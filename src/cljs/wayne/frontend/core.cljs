@@ -7,9 +7,11 @@
    [com.hyperphor.way.modal :as modal]
 
    [wayne.frontend.x.cohort :as cohort]
+   [wayne.frontend.x.sites :as sites]
+
    ;; TODO remove or expose these somehow
    ;; [wayne.frontend.patients :as patients]
-   ;  [wayne.frontend.sites :as sites]
+
    ;; [wayne.frontend.dotplot :as dotplot]
    ;; [wayne.frontend.barchart :as barchart]
    ;; [wayne.frontend.universal :as universal]
@@ -51,8 +53,8 @@
     (array-map
      :home about
      :signup signup/signup
-      :cohort cohort/ui
-     ;; :sites sites/sites
+     :cohort cohort/ui
+     :sites sites/sites
      ;; :patients patients/patients
      ;; :dotplot dotplot/plot
      ;; :barchart barchart/plot
