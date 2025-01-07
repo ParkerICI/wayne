@@ -33,20 +33,24 @@ array_agg(sample_id) as samples,
 any_value(who_grade) as who_grade,
 any_value(final_diagnosis_simple) as diagnosis,
 any_value(immunotherapy) as immunotherapy,
-any_value(site) as site
+any_value(site) as site,
+any_value(sex) as sex,
 {{from}} group by patient_id"
           {:table metadata-table})
   )
 
+;;; Full metadata
 (defmethod wd/data :metadata
   [_]
-  (query (u/expand-template "select * from {{metadata}}" {:metadata metadata-table})))
+  (select "* {{from}}" {:table metadata-table}))
 
 (defmethod wd/data :sites
   [_]
-  (query (u/expand-template
-          "select site,
+  (select
+   "site,
 count(distinct(patient_id)) as patients,
 count(distinct(sample_id)) as samples
- from {{metadata}} group by site"
-          {:metadata metadata-table})))
+ {{from}}  group by site"
+   {:table metadata-table})))
+
+

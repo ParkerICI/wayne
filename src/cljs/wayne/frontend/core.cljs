@@ -10,9 +10,9 @@
    [wayne.frontend.x.sites :as sites]
 
    ;; TODO remove or expose these somehow
-   ;; [wayne.frontend.patients :as patients]
+   [wayne.frontend.x.patients :as patients]
 
-   ;; [wayne.frontend.dotplot :as dotplot]
+   [wayne.frontend.x.dotplot :as dotplot]
    ;; [wayne.frontend.barchart :as barchart]
    ;; [wayne.frontend.universal :as universal]
    ;; [wayne.frontend.dendrogram :as dend]
@@ -55,8 +55,9 @@
      :signup signup/signup
      :cohort cohort/ui
      :sites sites/sites
-     ;; :patients patients/patients
-     ;; :dotplot dotplot/plot
+     :patients patients/patients
+     :metadata patients/metadata-full
+     :dotplot dotplot/plot
      ;; :barchart barchart/plot
      ;; :dendrogram dend/dev-ui
      ;; :data_grid fgrid/ui

@@ -1,4 +1,4 @@
-(ns wayne.frontend.dotplot
+(ns wayne.frontend.x.dotplot
   (:require [re-frame.core :as rf]
             [wayne.frontend.data :as data] ;temp
             [com.hyperphor.way.vega :as v]
@@ -42,7 +42,7 @@
 
 (defn plot
   []
-  (let [data @(rf/subscribe [:data :dotplot])]
+  (let [data @(rf/subscribe [:data :dotplot {:fake :it}])]
     [:div
      [:nav.navbar.navbar-expand-sm
       [:div.container-fluid
