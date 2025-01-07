@@ -1,4 +1,4 @@
-(ns wayne.frontend.fgrid
+(ns wayne.frontend.x.fgrid
   (:require [com.hyperphor.way.vega :as v]
             [com.hyperphor.way.web-utils :as wu]
             [org.candelbio.multitool.core :as u]

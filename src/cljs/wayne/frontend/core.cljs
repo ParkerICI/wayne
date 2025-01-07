@@ -6,7 +6,7 @@
    [com.hyperphor.way.flash :as flash]
    [com.hyperphor.way.modal :as modal]
 
-   ;; [wayne.frontend.cohort :as cohort]
+   [wayne.frontend.x.cohort :as cohort]
    ;; TODO remove or expose these somehow
    ;; [wayne.frontend.patients :as patients]
    ;  [wayne.frontend.sites :as sites]
@@ -51,7 +51,7 @@
     (array-map
      :home about
      :signup signup/signup
-     ;; :cohort cohort/ui
+      :cohort cohort/ui
      ;; :sites sites/sites
      ;; :patients patients/patients
      ;; :dotplot dotplot/plot
