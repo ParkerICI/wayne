@@ -42,18 +42,22 @@
  :register
  (fn [db _]
    (wu/set-local-storage "wayne.signup" "true")
-   (assoc db :registered true)))
+   (assoc db :registered? true)))
+
+(defn signup-button
+  []
+  [:button.btn.btn-outlined
+   {:on-click #(do
+                 (.preventDefault %)
+                 (expose)
+                 (rf/dispatch [:register])
+                 )}
+   "Register to Download"])
 
 (defn with-signup
-  [button]
+  [post-signup-ui]
   (if @(rf/subscribe [:registered?])
-    button
-    [:button.btn.btn-outlined
-     {:on-click #(do
-                   (.preventDefault %)
-                   (expose)
-                   (rf/dispatch [:register])
-                   )}
-     "Register to Download"]))
+    post-signup-ui
+    [signup-button]))
 
 
