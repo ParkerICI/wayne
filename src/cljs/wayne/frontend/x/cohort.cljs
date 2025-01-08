@@ -1,7 +1,6 @@
 (ns wayne.frontend.x.cohort
   (:require [re-frame.core :as rf]
             [com.hyperphor.way.vega :as v]
-            [wayne.frontend.x.fgrid :as fgrid]
             [com.hyperphor.way.aggrid :as ag]
             )
   )
@@ -36,6 +35,5 @@
       [ag/ag-table 
        cohorts
        ]
-      [fgrid/ui]
       ])]
   )

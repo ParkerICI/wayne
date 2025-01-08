@@ -51,6 +51,26 @@ any_value(sex) as sex,
 count(distinct(patient_id)) as patients,
 count(distinct(sample_id)) as samples
  {{from}}  group by site"
-   {:table metadata-table})))
+   {:table metadata-table}))
+
+;;; Grid
+
+
+(u/def-lazy grid-data
+  (u/forcat [dim1 (keys dd/dims)
+             dim2 (keys dd/dims)]
+    (map (fn [row]
+           (-> row
+               (update :dim1 #(str (name dim1) ": " %))
+               (update :dim2 #(str (name dim2) ": " %))
+               ))
+         #_ (select (format "%s as dim1, %s as dim2, count(distinct(patient_id)) as count {from} group by %s, %s" (name dim1) (name dim2)(name dim1) (name dim2)))
+         (select "{{dim1}} as dim1, {{dim2}} as dim2, count(distinct(patient_id)) as count {{from}} group by {{dim1}}, {{dim2}}" {:dim1 (name dim1) :dim2 (name dim2)})
+
+         )))
+
+(defmethod wd/data :grid
+  [_]
+  @grid-data)
 
 

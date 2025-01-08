@@ -12,11 +12,10 @@
    ;; TODO remove or expose these somehow
    [wayne.frontend.x.patients :as patients]
 
-   [wayne.frontend.x.dotplot :as dotplot]
+   ;; [wayne.frontend.x.dotplot :as dotplot]
    ;; [wayne.frontend.barchart :as barchart]
-   ;; [wayne.frontend.universal :as universal]
    ;; [wayne.frontend.dendrogram :as dend]
-   ;; [wayne.frontend.fgrid :as fgrid]
+   [wayne.frontend.x.fgrid :as fgrid]
    [wayne.frontend.signup :as signup]
    )) 
 
@@ -57,10 +56,10 @@
      :sites sites/sites
      :patients patients/patients
      :metadata patients/metadata-full
-     :dotplot dotplot/plot
+     ;; :dotplot dotplot/plot
      ;; :barchart barchart/plot
      ;; :dendrogram dend/dev-ui
-     ;; :data_grid fgrid/ui
+     :data_grid fgrid/ui
      )]
    ])
 
