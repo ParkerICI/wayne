@@ -122,20 +122,12 @@
    ]
   )
 
-;;; Dupe from templating because namespace issues
-(defn expand-template
-  [template params]
-  (u/expand-template template
-                     params
-                     :param-regex u/double-braces
-                     :key-fn keyword))
-
 (defn generate-1
   [list output]
   (let [template (slurp (io/resource "templates/components/team-member-card.html"))]
     (spit (str "resources/templates/components/" output)
           (apply str
-           (map (partial expand-template template)
+           (map (partial u/expand-template template)
                 list)))))
 
 (defn generate

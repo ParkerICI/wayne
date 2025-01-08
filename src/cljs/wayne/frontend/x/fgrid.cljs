@@ -1,15 +1,16 @@
-(ns wayne.frontend.fgrid
-  (:require [com.hyperphor.way.vega :as v]
+(ns wayne.frontend.x.fgrid
+  (:require [re-frame.core :as rf]
+            [com.hyperphor.way.vega :as v]
             [com.hyperphor.way.web-utils :as wu]
             [org.candelbio.multitool.core :as u]
             )
   )
 
 (defn spec
-  [dim]
-  {:data {:url "filter-grid.js"}
+  [dim data]
+  {:data {:values data}
    :transform (if dim
-                [{:filter (u/expand-template "test(/^{dim}/, datum.dim1) && !(test(/^{dim}/, datum.dim2))"
+                [{:filter (u/expand-template "test(/^{{dim}}/, datum.dim1) && !(test(/^{{dim}}/, datum.dim2))"
                                              {"dim" (name dim)})}]
                 [])
    :mark {:type "rect", :tooltip {:content "data"} },
@@ -23,15 +24,15 @@
 ;;; Full Vega spec, compiled from above with some hand additions
 ;;; TODO generate spec via compile + merge
 (defn vspec
-  [dim]
+  [dim data]
   {
    :data
    [{:name "source_0",
-     :url "filter-grid.js",           
-     :format {:type "json"},
+     :values data
+
      :transform
      [{:type "filter", :expr (if dim
-                               (u/expand-template "test(/^{dim}/, datum.dim1) && !(test(/^{dim}/, datum.dim2))"
+                               (u/expand-template "test(/^{{dim}}/, datum.dim1) && !(test(/^{{dim}}/, datum.dim2))"
                                                   {"dim" (name dim)})
                                "true")}
       {:type "filter", :expr "isValid(datum[\"count\"]) && isFinite(+datum[\"count\"])"}
@@ -118,6 +119,7 @@
     ],
    })
 
+#_
 (defn lite-ui
   [& [dim]]
   [:div.p-5
@@ -126,4 +128,5 @@
 (defn ui
   [& [dim]]
   [:div.p-5
-   [v/vega-view (vspec dim) []]])
+   (let [data @(rf/subscribe [:data :grid {:fake :it}])]
+     [v/vega-view (vspec dim data) []])])

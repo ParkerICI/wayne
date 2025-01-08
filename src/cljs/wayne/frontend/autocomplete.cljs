@@ -1,10 +1,9 @@
 (ns wayne.frontend.autocomplete
   (:require [re-frame.core :as rf]
             [clojure.string :as str]
-            [org.candelbio.multitool.core :as u]
             ))
 
-;;; → Way (but needs to be generalized)
+;;; TODO → Way (but needs to be generalized)
 ;;; Loosely based on Alzabo's autocomplete
 
 (rf/reg-event-db
@@ -13,7 +12,7 @@
    ;; Using [:data] machinery, save some work
    (-> db
        (assoc :user-string user-string)
-       ;; Shouldn't be necessary, should be automated in subscription TODO
+       ;; TODO Shouldn't be necessary, should be automated in subscription
        (assoc-in [:data-status :rna-autocomplete] :invalid)
        )))
 

@@ -5,6 +5,7 @@
             [wayne.handler :as handler]
             wayne.templating
             wayne.data                  ;for the defmethods
+            wayne.x.data                  ;for the defmethods
             [org.candelbio.multitool.cljcore :as ju]
             [taoensso.timbre :as log]
             [environ.core :as env]))

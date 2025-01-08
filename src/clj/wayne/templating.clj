@@ -11,7 +11,6 @@
 
 ;; Alternative: Selmer but easier to roll my own https://github.com/yogthos/Selmer
 
-;;; TODO in multitool (java) but I wish it could give resource paths instead of files
 (defn get-resources
   [path]
   (->> path
@@ -29,16 +28,9 @@
     (zipmap (map #(keyword (second (re-find #"([^/]+)\.html$" %))) comps)
             (map slurp comps))))
 
-(defn expand-template
-  [template params]
-  (u/expand-template template
-                     params
-                     :param-regex u/double-braces
-                     :key-fn keyword))
-
 (defn expand-page
   [page-text component-map]
-  (expand-template page-text component-map))
+  (u/expand-template page-text component-map))
 
 ;; Called at Uberjar build time. Won't work at runtime on Heroku
 (defn expand-pages
