@@ -3,6 +3,8 @@
             [com.hyperphor.way.aggrid :as ag]
             [com.hyperphor.way.ui.init :as init]
             [org.candelbio.multitool.core :as u]
+            [com.hyperphor.way.modal :as modal]
+            [wayne.frontend.signup :as signup]
             [reagent.dom]
             ["ag-grid-community" :as agx]
             )
@@ -37,21 +39,20 @@
   [:Description :File :Size :Format :download])
 
 (defmethod ag/ag-col-def :download 
-  [col {:keys [url-template label-template] :as col-def}]
-  {:headerName "DOWNLOAD ASSHOLE"
+  [col _]
+  {:headerName "Download"
    :field col
    :cellRenderer (fn [params]
                    (let [item (js->clj (.-data params) :keywordize-keys true)]
                      (reagent.dom/render ;TODO this is not approved for React 18, but I couldn't figure a better way.
                        [:span.ag-cell-wrap-text   ;; .ag-cell-auto-height doesn't work, unfortunately.
-                        [:a
-                         {:href (u/expand-template
-                                 "https://storage.googleapis.com/pici-bruce-vitessce-public/other/{{File}}"
-                                 item)
-                          :target "_ext"
-                          :download (:File item)
-                          }
-                         [:img {:src "../assets/icons/download-dark.svg"}]]]
+                        (signup/with-signup
+                          [:a
+                           {:href (u/expand-template
+                                   "https://storage.googleapis.com/pici-bruce-vitessce-public/other/{{File}}"
+                                   item)
+                            :download (:File item)}
+                           [:img {:src "../assets/icons/download-dark.svg"}]])]
                        (.-eGridCell params))))
    }
   )
@@ -65,6 +66,7 @@
 (defn ui
   []
   [:div
+   [modal/modal]
      [ag/ag-table 
       data
       :columns cols

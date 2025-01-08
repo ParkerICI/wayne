@@ -208,32 +208,27 @@ td a:hover {
 }
 
 .btn {
-  padding: 10px 20px;
+  /* padding: 10px 20px; */
   border: none;
   cursor: pointer;
-  font-size: 20px;
-  height: 56px;
-  width: 222px;
+  font-size: 14px;
+  /* height: 56px; */
+  width: 180px; 
+  padding: 3px;
+  margin-left: -15px;		/* weird but helps with table alignment */
   border-radius: 4px;
   transition: background-color 0.3s ease, color 0.3s ease;
   border-radius: 30px;
+  background-color: #ddd;
 }
 
-.btn-primary {
-  background-color: #000;
-  color: #fff;
-}
-
-.btn-primary:hover {
+.btn:hover {
   opacity: 0.8;
   background-color: #000;
 }
 
 .btn-outlined {
-  background: transparent;
-  border: 2px solid #000;
-  font-size: 20px;
-  height: 56px;
+  border: 1px solid #000;
 }
 
 .btn-outlined:hover {

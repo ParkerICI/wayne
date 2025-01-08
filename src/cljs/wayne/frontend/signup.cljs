@@ -7,6 +7,8 @@
 
 ;;; Idea: copy the actual HTML of the form and serve it up, then all the iframe security shit goes away.
 
+;;; Note: page has to have modal included.
+
 (defn signup
   []
   [:div
@@ -29,7 +31,6 @@
    {:on-click expose}
    "Signup"])
 
-
 ;;; Should be a simple way to say, here's a state variable but I want it backed in localStorage (or elsewhere)
 (rf/reg-sub
  :registered?
@@ -47,7 +48,7 @@
   [button]
   (if @(rf/subscribe [:registered?])
     button
-    [:button.btn.btn-outline-primary
+    [:button.btn.btn-outlined
      {:on-click #(do
                    (.preventDefault %)
                    (expose)
