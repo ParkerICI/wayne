@@ -40,6 +40,7 @@
                                                       wayne.frontend.munson
                                                       wayne.frontend.samples
                                                       wayne.frontend.vitessce
+                                                      wayne.frontend.access
                                                       ]}}
                        :devtools {:preloads [day8.re-frame-10x.preload.react-18]}
                        :dev {:compiler-options
