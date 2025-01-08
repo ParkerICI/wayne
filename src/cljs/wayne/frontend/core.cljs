@@ -8,14 +8,11 @@
 
    [wayne.frontend.x.cohort :as cohort]
    [wayne.frontend.x.sites :as sites]
-
-   ;; TODO remove or expose these somehow
    [wayne.frontend.x.patients :as patients]
-
-   ;; [wayne.frontend.x.dotplot :as dotplot]
-   ;; [wayne.frontend.barchart :as barchart]
-   ;; [wayne.frontend.dendrogram :as dend]
    [wayne.frontend.x.fgrid :as fgrid]
+
+   ;; [wayne.frontend.dendrogram :as dend]
+
    [wayne.frontend.signup :as signup]
    )) 
 
@@ -36,7 +33,7 @@
     [:a {:href "https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit?usp=sharing"} "Design document"]
     ]
    [:p
-    [:a {:href "munson/pages/query-builder.html"} "Munson Design"]
+    [:a {:href "pages/query-builder.html"} "Real site"]
     ]
    ])
 
@@ -56,8 +53,6 @@
      :sites sites/sites
      :patients patients/patients
      :metadata patients/metadata-full
-     ;; :dotplot dotplot/plot
-     ;; :barchart barchart/plot
      ;; :dendrogram dend/dev-ui
      :data_grid fgrid/ui
      )]

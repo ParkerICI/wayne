@@ -8,9 +8,6 @@
 (defn bar-spec
   [data]
   {:data {:values data}
-   :transform [{:calculate "'/site/' + datum.site", ;TODO make this work or leave it out
-                :as "url"
-                }],
    :repeat ["patients", "samples"]  ; , "features"
    :spec {:mark {:type "bar", :tooltip true },
           ;; :header {:title "foo"}
@@ -20,7 +17,6 @@
            :color {:field "Tumor_Diagnosis", :type "nominal" ;Color optional
                    :scale {:scheme "tableau20"}
                    :legend false}       ;don't really need it with the labels
-           :href {:field "url"}
            }}
    })
 

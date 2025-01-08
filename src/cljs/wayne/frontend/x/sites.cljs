@@ -12,9 +12,6 @@
 (defn pie-spec
   [data]
   {:data {:values data}
-   :transform [{:calculate "'/site/' + datum.site", ;TODO make this work or leave it out
-                :as "url"
-                }],
    :repeat ["patients", "samples"]
    :spec {:title {:text {:repeat "repeat"}} ;TODO argh, can't figure out how to do this simple task. My guess: you can do it with expressions, somehow.
           :mark {:type "arc", :tooltip {:content "data"} },
@@ -48,7 +45,6 @@
            :color {:field "site", :type "nominal" ;Color optional
                    :scale {:scheme "tableau20"}
                    :legend false}       ;don't really need it with the labels
-           :href {:field "url"}
            }}
    })
 
