@@ -46,28 +46,17 @@
           </div>
         </div>
       </section>
-      <section id="raw-data-access-table">
+
+      <section>
         <div class="container">
           <div class="table-wrapper">
             <div class="table-container">
-              <table id="documentTable">
-                <thead>
-                  <tr>
-                    <th>Description</th>
-                    <th>File</th>
-                    <th>Size</th>
-                    <th>Format</th>
-                    <th style="text-align: center">Download</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <!-- Table rows will be populated here -->
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+              <div id="app" class="tab-content active"></div>
+	    </div>
+	  </div>
+	</div>
       </section>
+
       <section id="raw-data-access">
         <div class="container">
           <div class="flex">
@@ -88,6 +77,6 @@
     </main>
 {{footer}}
   </body>
-  <script src="../js/raw-data-access.js"></script>
-  <script src="../js/accordion.js"></script>
+  <script src="/cljs-out/dev-main.js"></script>
+  <script>window.onload = function() { wayne.frontend.access.init(); }</script>
 </html>

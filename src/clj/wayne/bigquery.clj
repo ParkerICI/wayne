@@ -114,6 +114,8 @@
           (map #(get-value field % true) (.getValue thing))
           (= "FLOAT" (.name (.getType field))) 
           (.getDoubleValue thing)
+          (= "INTEGER" (.name (.getType field))) 
+          (.getLongValue thing)
           ;; TODO fill this out
           :else 
           (.getValue thing))

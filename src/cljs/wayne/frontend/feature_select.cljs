@@ -12,7 +12,7 @@
 ;;; ⊛✪⊛ Data defintions ✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪
 
 ;;; To generate these, see scrap/data-curation.
-;;; TODO might want to mvoe to wayne.data-defs
+;;; TODO might want to move to wayne.data-defs
 
 ;;; Feature tree generation (select widget hierarchy etc) 
 
@@ -201,8 +201,6 @@
 
 ;;; ⊛✪⊛ Utilities ✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪⊛✪
 
-;;; → Multitool?
-
 (defn trim-prefix
   [id]
   (subs (name id) (count "feature-")))
@@ -219,7 +217,6 @@
     (or (.-name thing)
         thing)))
 
-;;; TODO nil should be option (could be in values
 ;;; NOTE used to use :set-param-if which didn't work well, I think that can be removed from Way
 (defn select-widget-minimal
   [id values & [extra-action believe-param?]]

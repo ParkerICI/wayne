@@ -3,7 +3,7 @@
   :min-lein-version "2.0.0"
   :plugins [[lein-shadow "0.4.1"]]
   :dependencies [[org.clojure/clojure "1.12.0"]
-                 [org.candelbio/multitool "0.1.7"]
+                 [org.candelbio/multitool "0.1.8"]
                  [com.hyperphor/way "0.1.10"] 
                  [org.clojure/data.json "2.5.0"]
                  [environ "1.2.0"]
@@ -40,6 +40,7 @@
                                                       wayne.frontend.munson
                                                       wayne.frontend.samples
                                                       wayne.frontend.vitessce
+                                                      wayne.frontend.access
                                                       ]}}
                        :devtools {:preloads [day8.re-frame-10x.preload.react-18]}
                        :dev {:compiler-options

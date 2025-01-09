@@ -1,4 +1,4 @@
-(ns wayne.frontend.patients
+(ns wayne.frontend.x.patients
   (:require [re-frame.core :as rf]
             [wayne.frontend.data :as data]
             [com.hyperphor.way.aggrid :as ag]
@@ -11,13 +11,18 @@
   []
   [:div
    [:h3 "Patients"]
-   (let [patients @(rf/subscribe [:data :patients])] ;OBSO?
+   (let [patients @(rf/subscribe [:data :patients])] 
      [ag/ag-table 
-      :patients
-      (keys (first patients))
       patients
-      {}
-      :col-defs data/col-defs
+      ])])
+
+(defn metadata-full
+  []
+  [:div
+   [:h3 "Metadata"]
+   (let [metadata @(rf/subscribe [:data :metadata {:fake :it}])] 
+     [ag/ag-table 
+      metadata
       ])])
 
 (defmethod tab/set-tab [:tab :patients]
