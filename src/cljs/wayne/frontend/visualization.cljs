@@ -129,7 +129,7 @@
        :from {:facet {:data "density", :name "violin", :groupby dim}},
        :encode
        {:update
-        {:x {:scale "dscale", :field dim}, ; , :band 0.5 ??
+        {:xc {:scale "dscale", :field dim :band 0.5}
          :width {:signal "blobWidth"},
          :height {:signal "width"}
          }},
@@ -202,44 +202,46 @@
                    }}}
 
 
+        ;; Points
+        {:type "group",
+         :from {:facet {:data "source", :name "points", :groupby dim}},
+         :encode
+         {:update
+          {:xc {:scale "dscale", :field dim} ,
+           ;; :height {:signal "blobWidth"}, ;TODO
+           ;; :width {:signal "width"}       ;TODO
+           }},
+         :data [
+                {:name "pointx"
+                 :source "points",
+                 ;; Add jitter here so stable when slider changed
+                 :transform [{:type "formula", :as "jit" :expr "random() - 0.5"}],               
+                 }]
+         :marks
+         [
+          ;; Points
+          {:type "symbol",
+           :from {:data "pointx"},
+
+           :encode
+           {:enter {;; :y #_ {:value 0} {:field dim}
+                    ;; Not very interesting (could be if they included the full row)
+                    :tooltip {:signal "datum"}  
+                    },
+            :update
+            {:stroke {:value "black"},
+             :fill {:value "black"},
+             :size {:value 25},
+             :y {:scale "vscale", :field "feature_value"}
+             :xc {:signal "jitter*datum.jit + blobWidth/2 "}, ;TODO not quite right
+             :strokeWidth {:value 1},
+             :opacity {:signal "points ? 0.3 : 0"},
+             :shape {:value "circle"},
+             }}}]}
+
         ]}
 
-      ;; Points
-      {:type "group",
-       :from {:facet {:data "source", :name "points", :groupby dim}},
-       :encode
-       {:update
-        {:x {:scale "dscale", :field dim, :band 0.5},
-         ;; :height {:signal "blobWidth"}, ;TODO
-         ;; :width {:signal "width"}       ;TODO
-         }},
-       :data [
-              {:name "pointx"
-               :source "points",
-               ;; Add jitter here so stable when slider changed
-               :transform [{:type "formula", :as "jit" :expr "random() - 0.5"}],               
-               }]
-       :marks
-       [
-        ;; Points
-        {:type "symbol",
-         :from {:data "pointx"},
 
-         :encode
-         {:enter {;; :y #_ {:value 0} {:field dim}
-                  ;; Not very interesting (could be if they included the full row)
-                  ;; :tooltip {:signal "datum"}  
-                  },
-          :update
-          {:stroke {:value "black"},
-           :fill {:value "black"},
-           :size {:value 25},
-           :y {:scale "vscale", :field "feature_value"}
-           :xc {:signal "jitter*datum.jit + blobWidth/2 "}, ;TODO not quite right
-           :strokeWidth {:value 1},
-           :opacity {:signal "points ? 0.3 : 0"},
-           :shape {:value "circle"},
-           }}}]}
       ],
      }))
 
