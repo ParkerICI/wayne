@@ -129,7 +129,7 @@
        :from {:facet {:data "density", :name "violin", :groupby dim}},
        :encode
        {:update
-        {:x {:scale "dscale", :field dim}, ; , :band 0.5 ??
+        {:x {:scale "dscale", :field dim }, ; , :band 0.5 ??
          :width {:signal "blobWidth"},
          :height {:signal "width"}
          }},
@@ -209,7 +209,7 @@
        :from {:facet {:data "source", :name "points", :groupby dim}},
        :encode
        {:update
-        {:x {:scale "dscale", :field dim, :band 0.5},
+        {:x {:scale "dscale", :field dim},
          ;; :height {:signal "blobWidth"}, ;TODO
          ;; :width {:signal "width"}       ;TODO
          }},
@@ -227,8 +227,8 @@
 
          :encode
          {:enter {;; :y #_ {:value 0} {:field dim}
-                  ;; Not very interesting (could be if they included the full row)
-                  ;; :tooltip {:signal "datum"}  
+                  ;; Not very interesting
+                  :tooltip {:signal "datum"}  
                   },
           :update
           {:stroke {:value "black"},
