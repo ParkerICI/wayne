@@ -36,7 +36,7 @@
      :$schema "https://vega.github.io/schema/vega/v5.json"
      :padding 5
      :width 800
-     ;; :autosize :fit-x
+     :autosize :fit-y
      :signals
      [{:name "box" :value true :bind {:input "checkbox"  :element "#pchecks"}}
       {:name "violin" :value true :bind  {:input "checkbox" :element "#pchecks"}}
@@ -45,9 +45,9 @@
       {:name "blobWidthx" :bind {:element "#blobWidth"}} ;controls fatness of violins
       {:name "blobWidth" :update "parseInt(blobWidthx)"}             ;necessary because ext binding come in as string, bleah
       {:name "blobSpace" :bind {:element "#blobSpace"}}
-      {:name "height" :value 800}
+      {:name "height" :value 700}
       {:name "width" :value 800 :update "blobSpace*1"} ; #_  "blobSpace * length(scale('dscale').domain)"}
-      {:name "trim" :value true #_ :bind #_ {:input "checkbox"}}
+      
       ;; TODO this didn't work, so going out of Vega. Note, see https://vega.github.io/vega/docs/signals/#bind-external
       #_ {"name" "vscales", "value" "linear" "bind"  {"input" "select" "options" ["linear" "log10" "log2" "sqrt"]}}
       {:name "bandwidth" :value 0 #_ :bind #_ {:input "range" :min 0 :max 1.0E-4 :step 1.0E-6}}]
@@ -61,7 +61,7 @@
          :groupby [dim]
          :bandwidth {:signal "bandwidth"}
          :resolve "shared"
-         #_ :extent #_ {:signal "trim ? null : [0.0003, 0.0005]"}}]}
+         }]}
       {:name "stats"
        :source "source"
        :transform
@@ -107,9 +107,10 @@
       (merge
        {:name "vscale",
         :range "height",
-        :round true,
         :domain {:data "source", :field "feature_value"},
-        :nice true}
+        :round true,
+        :nice true
+        }
        scale)
 
       ;; Controls width of blobs
@@ -142,19 +143,17 @@
        [
 
         ;; Violins
-        {:type "rect",                  ;should be area but doesn't work?
+        {:type "area",                  ;should be area but doesn't work?
          :from {:data "violin"},
          :encode
          {:enter {:fill {:scale "color", :field {:parent dim}}
                   :tooltip {:signal "datum"}   ;TODO maybe 
+                  :orient {:value "horizontal"} 
                   },
           :update
           {:xc {:signal "blobWidth / 2"}
            :width {:scale "hscale", :field "density"}
-
            :y {:scale "vscale", :field "value"}
-           :height {:value 50} #_ {:scale "hscale", :field "density"}
-
            :opacity {:signal "violin ? 1 : 0"}
 
            ;; :tooltip {:value "boxx"}
