@@ -101,7 +101,7 @@
        :type "band",
        :range "width",
        :domain {:data "source", :field dim :sort true},
-       :paddingOuter 0 :paddingInner 0}
+       }
 
       ;; field values
       (merge
@@ -112,7 +112,7 @@
         :nice true}
        scale)
 
-      ;; ???
+      ;; Controls width of blobs
       {:name "hscale",
        :type "linear",
        :range [0 {:signal "blobWidth"}],
@@ -129,7 +129,7 @@
        :from {:facet {:data "density", :name "violin", :groupby dim}},
        :encode
        {:update
-        {:x {:scale "dscale", :field dim }, ; , :band 0.5 ??
+        {:xc {:scale "dscale", :field dim :band 0.5},
          :width {:signal "blobWidth"},
          :height {:signal "width"}
          }},
@@ -149,13 +149,14 @@
                   :tooltip {:signal "datum"}   ;TODO maybe 
                   },
           :update
-          {;:xc {:scale "dscale" :field "dim"},
-           :xc {:signal "blobWidth/2"}
-           :y {:scale "vscale", :field "value"}
-           :opacity {:signal "violin ? 1 : 0"}
-           
+          {:xc {:signal "blobWidth / 2"}
            :width {:scale "hscale", :field "density"}
+
+           :y {:scale "vscale", :field "value"}
            :height {:value 50} #_ {:scale "hscale", :field "density"}
+
+           :opacity {:signal "violin ? 1 : 0"}
+
            ;; :tooltip {:value "boxx"}
            }}}
         
@@ -209,9 +210,7 @@
        :from {:facet {:data "source", :name "points", :groupby dim}},
        :encode
        {:update
-        {:x {:scale "dscale", :field dim},
-         ;; :height {:signal "blobWidth"}, ;TODO
-         ;; :width {:signal "width"}       ;TODO
+        {:xc {:scale "dscale", :field dim :band 0.5},
          }},
        :data [
               {:name "pointx"
@@ -235,7 +234,7 @@
            :fill {:value "black"},
            :size {:value 25},
            :y {:scale "vscale", :field "feature_value"}
-           :xc {:signal "jitter*datum.jit + blobWidth/2 "}, ;TODO not quite right
+           :xc {:signal "jitter*datum.jit"}
            :strokeWidth {:value 1},
            :opacity {:signal "points ? 0.3 : 0"},
            :shape {:value "circle"},
