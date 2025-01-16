@@ -34,8 +34,9 @@
         scale (interpret-scale @(rf/subscribe [:param :features :scale]))]
     {:description "A violin plot"
      :$schema "https://vega.github.io/schema/vega/v5.json"
+     :padding 5
      :width 800
-     :autosize :fit-x
+     :autosize :fit-y
      :signals
      [{:name "box" :value true :bind {:input "checkbox"  :element "#pchecks"}}
       {:name "violin" :value true :bind  {:input "checkbox" :element "#pchecks"}}
@@ -44,10 +45,11 @@
       {:name "blobWidthx" :bind {:element "#blobWidth"}} ;controls fatness of violins
       {:name "blobWidth" :update "parseInt(blobWidthx)"}             ;necessary because ext binding come in as string, bleah
       {:name "blobSpace" :bind {:element "#blobSpace"}}
-      {:name "height" :update "blobSpace" #_  "blobSpace * length(scale('layout').domain)"} ; not working
-      {:name "trim" :value true #_ :bind #_ {:input "checkbox"}}
+      {:name "height" :value 700}
+      {:name "width" :value 800 :update "blobSpace*1"} ; #_  "blobSpace * length(scale('dscale').domain)"}
+      
       ;; TODO this didn't work, so going out of Vega. Note, see https://vega.github.io/vega/docs/signals/#bind-external
-      #_ {"name" "xscales", "value" "linear" "bind"  {"input" "select" "options" ["linear" "log10" "log2" "sqrt"]}}
+      #_ {"name" "vscales", "value" "linear" "bind"  {"input" "select" "options" ["linear" "log10" "log2" "sqrt"]}}
       {:name "bandwidth" :value 0 #_ :bind #_ {:input "range" :min 0 :max 1.0E-4 :step 1.0E-6}}]
      :data
      [{:name "source" :values data}
@@ -59,7 +61,7 @@
          :groupby [dim]
          :bandwidth {:signal "bandwidth"}
          :resolve "shared"
-         #_ :extent #_ {:signal "trim ? null : [0.0003, 0.0005]"}}]}
+         }]}
       {:name "stats"
        :source "source"
        :transform
@@ -71,53 +73,68 @@
 
      :config {:axisBand {:bandPosition 1, :tickExtra true, :tickOffset 0}},
      :axes
-     [{:orient "bottom",
-       :scale "xscale",
+     [{:orient "left",
+       :scale "vscale",
        :zindex 1,
        :labelFontSize 18 :titleFontSize 20
-       :labelAngle 90 :labelAlign "left"
+       ;; :labelAngle 90 :labelAlign "left"
        :title (wu/humanize feature)}
 
-      {:orient "left",
-       :scale "layout",
+      {:orient "bottom",
+       :scale "dscale",
        :ticks false
        :labelFontSize 18 :titleFontSize 20
        :labelPadding 7
        :title (wu/humanize (name dim))
        :zindex 1
+       :labelAngle 90 :labelAlign "left"
        :encode
        {:labels
         ;; Replace _ with space in violin labels. Note: ? is to hide a bogus undefined row that refuses to go away
         {:update {:text {:signal "datum.value ? replace(datum.value, /_/, ' ') : ''"}}}},
        }],
+
      :scales
-     [{:name "layout",
+     [
+      ;; dim values
+      {:name "dscale",
        :type "band",
-       :range "height",
+       :range "width",
        :domain {:data "source", :field dim :sort true},
-       :paddingOuter 0 :paddingInner 0}
+       }
+
+      ;; field values
       (merge
-       {:name "xscale",
-        :range "width",
-        :round true,
+       {:name "vscale",
+        :range "height",
         :domain {:data "source", :field "feature_value"},
-        :nice true}
+        :round true,
+        :nice true
+        }
        scale)
+
+      ;; Controls width of blobs
       {:name "hscale",
        :type "linear",
        :range [0 {:signal "blobWidth"}],
        :domain {:data "density", :field "density"}}
-      {:name "color", :type "ordinal", :domain {:data "source", :field dim}, :range "category"}],
-     :padding 5,
+
+      ;; Color
+      {:name "color",
+       :type "ordinal",
+       :domain {:data "source", :field dim},
+       :range "category"}],
+
      :marks
      [{:type "group",
        :from {:facet {:data "density", :name "violin", :groupby dim}},
        :encode
        {:update
-        {:yc {:scale "layout", :field dim, :band 0.5},
-         :height {:signal "blobWidth"},
-         :width {:signal "width"}
+        {:xc {:scale "dscale", :field dim :band 0.5},
+         :width {:signal "blobWidth"},
+         :height {:signal "width"}
          }},
+
        :data
        [{:name "summary",
          :source "stats",
@@ -126,17 +143,19 @@
        [
 
         ;; Violins
-        {:type "area",                  
+        {:type "area",                  ;should be area but doesn't work?
          :from {:data "violin"},
          :encode
          {:enter {:fill {:scale "color", :field {:parent dim}}
                   :tooltip {:signal "datum"}   ;TODO maybe 
+                  :orient {:value "horizontal"} 
                   },
           :update
-          {:x {:scale "xscale", :field "value"},
-           :yc {:signal "blobWidth / 2"},
+          {:xc {:signal "blobWidth / 2"}
+           :width {:scale "hscale", :field "density"}
+           :y {:scale "vscale", :field "value"}
            :opacity {:signal "violin ? 1 : 0"}
-           :height {:scale "hscale", :field "density"}
+
            ;; :tooltip {:value "boxx"}
            }}}
         
@@ -148,10 +167,10 @@
                   :tooltip {:signal "datum"}
                   :cornerRadius {:value 4}}
           :update
-          {:x {:scale "xscale", :field "q1"},
-           :x2 {:scale "xscale", :field "q3"},
-           :height {:signal "blobWidth / 5"}
-           :yc {:signal "blobWidth / 2"}
+          {:y {:scale "vscale", :field "q1"},
+           :y2 {:scale "vscale", :field "q3"},
+           :width {:signal "blobWidth / 5"}
+           :xc {:signal "blobWidth / 2"}
            :opacity {:signal "box ? 1 : 0"}
            ;; If violins present, use black, otherwise semantic color. 
            :fill {:signal (str "violin ? '' :  scale('color', datum." dim ")")} 
@@ -161,9 +180,11 @@
         {:type "rect",                  
          :from {:data "summary"},
          :encode
-         {:enter {:fill {:value "black"}, :width {:value 2}, :height {:value 20}},
-          :update {:x {:scale "xscale", :field "median"}
-                   :yc {:signal "blobWidth / 2"}
+         {:enter {:fill {:value "black"},
+                  :height {:value 2},
+                  :width {:value 20}},
+          :update {:y {:scale "vscale", :field "median"}
+                   :xc {:signal "blobWidth / 2"}
                    :opacity {:signal "box ? 1 : 0"}
                    }}}
 
@@ -174,9 +195,9 @@
          :from {:data "summary"},
          :encode
          {:enter {:fill {:value "black"}, :width {:value 2}, :height {:value 2}},
-          :update {:x {:scale "xscale", :field "min"},
-                   :x2 {:scale "xscale", :field "max"}
-                   :yc {:signal "blobWidth / 2"}
+          :update {:y {:scale "vscale", :field "min"},
+                   :y2 {:scale "vscale", :field "max"}
+                   :xc {:signal "blobWidth / 2"}
                    :opacity {:signal "box ? 1 : 0"}
                    }}}
 
@@ -188,9 +209,7 @@
        :from {:facet {:data "source", :name "points", :groupby dim}},
        :encode
        {:update
-        {:yc {:scale "layout", :field dim, :band 0.5},
-         :height {:signal "blobWidth"},
-         :width {:signal "width"}
+        {:xc {:scale "dscale", :field dim :band 0.5},
          }},
        :data [
               {:name "pointx"
@@ -206,15 +225,15 @@
 
          :encode
          {:enter {;; :y #_ {:value 0} {:field dim}
-                  ;; Not very interesting (could be if they included the full row)
-                  ;; :tooltip {:signal "datum"}  
+                  ;; Not very interesting
+                  :tooltip {:signal "datum"}  
                   },
           :update
           {:stroke {:value "black"},
            :fill {:value "black"},
            :size {:value 25},
-           :x {:scale "xscale", :field "feature_value"}
-           :yc {:signal "blobWidth / 2 + jitter*datum.jit"}, ;should scale with fatness
+           :y {:scale "vscale", :field "feature_value"}
+           :xc {:signal "jitter*datum.jit"}
            :strokeWidth {:value 1},
            :opacity {:signal "points ? 0.3 : 0"},
            :shape {:value "circle"},
