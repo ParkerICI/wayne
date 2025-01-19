@@ -31,7 +31,7 @@
 (defn violin
   [data dim feature]
   (let [dim (name dim)
-        scale (interpret-scale @(rf/subscribe [:param :features :scale]))]
+        scale (interpret-scale @(rf/subscribe [:param :features :scale]))] ;TODO why is this in :features? Seems wrong
     {:description "A violin plot"
      :$schema "https://vega.github.io/schema/vega/v5.json"
      :padding 5
@@ -266,15 +266,6 @@
    (= "marker_intensity" (get-in db [:params :features :feature-type])))
    )
 
-#_
-(defn slider
-  [& {:keys [id min max default]}]
-  [:span
-   [:label (str id)]
-   ;; No :value, breaks interaction
-   [:input {:id id :type "range" :name id :min min :max max :defaultValue default}] ;Step?
-   ])
-
 (defn update-slider-value
   [id]
   (fn [e]
@@ -285,13 +276,14 @@
 
 (defn slider
   [& {:keys [id min max default]}]
+  (let [v @(rf/subscribe [:param :violin id])]
   [:span.slider
    [:label (str id)]
-   ;; No :value, breaks interaction
    [:input {:id id :type "range" :name id :min min :max max :defaultValue default
             :on-input (update-slider-value id)
+            :value v
             }] ;Step?
-   [:output default]])
+   [:output v]]))
 
 #_
 (defn checkbox

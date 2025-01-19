@@ -1,6 +1,6 @@
 ;;; Wayne config
 {:app-title "BRUCE Data Portal"
  :app-main "wayne.frontend.core.init" ; the static pages define their own entry points, this is for x stuff
- :colophon  ["Copyright © " [:a {:href "http://parkerici.org" :style "color: white;"} "Parker Institute"] " 2023-2024"] 
+ :colophon  ["Copyright © " [:a {:href "http://parkerici.org" :style "color: white;"} "Parker Institute"] " 2023-2025"] 
  :heroku {:force-ssl true}
  }
