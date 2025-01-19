@@ -143,7 +143,7 @@
        [
 
         ;; Violins
-        {:type "area",                  ;should be area but doesn't work?
+        {:type "area",
          :from {:data "violin"},
          :encode
          {:enter {:fill {:scale "color", :field {:parent dim}}
