@@ -145,7 +145,7 @@ AND {{where}}"
                        :else [])]
     (when (and dim (not (empty? feature-list)))
       (-> (select "avg(feature_value) as mean, feature_variable, {{dim}} {{from}} 
- where feature_variable in {feature-list}
+ where feature_variable in {{feature-list}}
  AND NOT {{dim}} {{na1}}
  AND NOT {{dim}} {{na2}}
  and {{where}}
