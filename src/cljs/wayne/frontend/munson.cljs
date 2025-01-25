@@ -166,17 +166,19 @@
 
 (defn collapse-panel
   [id title content]
-  [:div.featured-view.relative
-   [:div.features-view
-    [:div.features-view-header {:on-click #(rf/dispatch [:toggle-collapse-panel id])}
-     [:div.flex.align-center.flex-row.gap-8 [:h3 title]]
-     [:div.flex.gap-16
-      [:img#toggleSelectForm {:src "../assets/icons/merge-horizontal-grey.svg"
-                              }]
-      ]]
-    [:div.mt-24 {:class (when-not @(rf/subscribe [:collapse-panel-open? id]) "collapsed")}
-     content
-     ]]])
+  (let [collapsed? (not @(rf/subscribe [:collapse-panel-open? id]))]
+    [:div.featured-view.relative
+     [:div.features-view
+      [:div.features-view-header {:on-click #(rf/dispatch [:toggle-collapse-panel id])}
+       [:div.flex.align-center.flex-row.gap-8 [:h3 title]]
+       [:div.flex.gap-16
+        [:img#toggleSelectForm {:src (if collapsed?
+                                       "../assets/icons/show-info.svg"                                       
+                                       "../assets/icons/merge-horizontal.svg")}]
+        ]]
+      [:div.mt-24 {:class (when collapsed? "collapsed")}
+       content
+       ]]]))
 
 (defn dim-first-warning
   []
