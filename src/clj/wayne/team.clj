@@ -47,30 +47,12 @@
 
 (def collaborators
   [
-   {:name "Crystal Mackall",
-    :image "https://med.stanford.edu/services/api/cap/profiles/photocache.73276.jpg"
-    :link "https://med.stanford.edu/mackalllab/People.html"
-    :link2 "https://med.stanford.edu/profiles/crystal-mackall"
-    :title "Professor, Stanford University"
-    :twitter "https://x.com/mackalllab/"
+   {:name "Michael Barish"
+    :title "Professor, Department of Stem Cell Biology and Regenerative Medicine, City of Hope"
+    :image "https://media.istockphoto.com/vectors/male-default-avatar-profile-icon-man-face-silhouette-person-vector-vector-id1223477625?k=20&m=1223477625&s=612x612&w=0&h=g4kpwsrDHQdRW8K-wBj_JwPl0YnP8k6PPQO1OGjS2oU="
     }
 
-   {:name "Robert M. Prins"
-    :title "Professor, Neurosurgery and Pharmacology, David Geffen School of Medicine at UCLA"
-    :link "https://robertprinslab.healthsciences.ucla.edu/"
-    :image "https://robertprinslab.healthsciences.ucla.edu/sites/g/files/oketem1351/files/styles/1_1_960px/public/media/images/prins-robert.jpg.webp"
-    :linkedin "https://www.linkedin.com/in/robert-prins-50a62743/"
-    :twitter "https://x.com/UCLANsgy/"
-    :link2 "https://bri.ucla.edu/people/robert-prins/"
-    }
 
-   {:name "Hideho Okada",
-    :image "https://braintumorcenter.ucsf.edu/sites/default/files/styles/person/public/2018-04/okada_hideho_740x864.jpg"
-    :link "https://okadalab.ucsf.edu/"
-    :link2 "https://profiles.ucsf.edu/hideho.okada"
-    :twitter "https://twitter.com/okadalabucsf1"
-    :title "Professor, University of California, San Francisco"
-    }
 
    {:name "Christine Brown",
     :image "https://www.cityofhope.org/sites/www/files/styles/small_bio_portrait_315x450_/public/image/christine-brown.jpg"
@@ -85,6 +67,25 @@
     :title "Associate Professor, Children's Hospital of Philadelphia"
     }
 
+   {:name "Crystal Mackall",
+    :image "https://med.stanford.edu/services/api/cap/profiles/photocache.73276.jpg"
+    :link "https://med.stanford.edu/mackalllab/People.html"
+    :link2 "https://med.stanford.edu/profiles/crystal-mackall"
+    :title "Professor, Stanford University"
+    :twitter "https://x.com/mackalllab/"
+    }
+
+   {:name "Hideho Okada",
+    :image "https://braintumorcenter.ucsf.edu/sites/default/files/styles/person/public/2018-04/okada_hideho_740x864.jpg"
+    :link "https://okadalab.ucsf.edu/"
+    :link2 "https://profiles.ucsf.edu/hideho.okada"
+    :twitter "https://twitter.com/okadalabucsf1"
+    :title "Professor, University of California, San Francisco"
+    }
+
+
+
+
    {:name "Derek Oldridge",
     :image "https://pathology.med.upenn.edu/sites/default/files/styles/person/public/oldridge_derek_20232.jpg"
     :link "https://www.theoldridgelab.com/"
@@ -93,13 +94,22 @@
     :twitter "https://twitter.com/oldridgederek"
     }
 
-
-
    {:name "Joanna J. Phillips"
     :title "Professor, Brain Tumor Center, UCSF"
     :link "https://phillipslab.ucsf.edu/"
     :image "https://phillipslab.ucsf.edu/sites/default/files/styles/person/public/2020-01/PhillipsJ_Headshot_20160921_0072_740x864.jpg"
     }
+
+   {:name "Robert M. Prins"
+    :title "Professor, Neurosurgery and Pharmacology, David Geffen School of Medicine at UCLA"
+    :link "https://robertprinslab.healthsciences.ucla.edu/"
+    :image "https://robertprinslab.healthsciences.ucla.edu/sites/g/files/oketem1351/files/styles/1_1_960px/public/media/images/prins-robert.jpg.webp"
+    :linkedin "https://www.linkedin.com/in/robert-prins-50a62743/"
+    :twitter "https://x.com/UCLANsgy/"
+    :link2 "https://bri.ucla.edu/people/robert-prins/"
+    }
+
+
 
 
    ]
