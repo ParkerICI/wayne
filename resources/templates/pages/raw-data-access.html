@@ -4,10 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Data Access - Bruce data portal</title>
+    <link rel="stylesheet" href="/styles/wayne.css" /> 
     <link rel="stylesheet" href="../styles/raw-data-access.css" />
     {{analytics}}
   </head>
   <body>
+
     <header>
       <div class="container flex justify-between align-center">
         <a class="logo" href="query-builder.html">
@@ -24,9 +26,7 @@
             </li>
             <li><a href="about-us.html">About Us</a></li>
             <li>
-              <a href="raw-data-access.html" class="active-rda"
-                >Data Access</a
-              >
+              <a href="raw-data-access.html" class="active-rda">Data Access</a>
             </li>
           </ul>
         </nav>
@@ -34,7 +34,7 @@
     </header>
     <main>
       <section class="page-title page-title--rda">
-        <div class="container">
+        <div class="container flex align-center ">
           <div class="page-headline">
             <div class="page-tag">
               <div class="line"></div>
@@ -44,7 +44,35 @@
             <p>
             </p>
           </div>
-        </div>
+
+          <div class="publications publications-raw">
+            <div class="publication">
+              <div class="publication-header">
+                <p>External Repositories</p>
+              </div>
+              <div class="publication-content">
+                <div class="publication-item">
+                  <div class="publication-text-wrapper">
+		    <div class="publication-title">
+		      Source <a href="https://github.com/angelolab/publications/tree/main/2024-Piyadasa_Oberlton_etal_Glioma">Github</a>
+		    </div>
+		  </div>
+                </div>
+                <div class="divider"></div>
+                <div class="publication-item">
+                  <div class="publication-text-wrapper">
+		    <div class="publication-title">
+		      Image Repository <a href="https://www.ebi.ac.uk/biostudies/bioimages/studies/S-BIAD1579">BioImage</a>
+		    </div>
+		  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+        </div> <!-- container -->
       </section>
 
       <section>
@@ -73,9 +101,9 @@
           </div>
         </div>
       </section>
-{{faq}}
+      {{faq}}
     </main>
-{{footer}}
+    {{footer}}
   </body>
   <script src="/cljs-out/dev-main.js"></script>
   <script>window.onload = function() { wayne.frontend.access.init(); }</script>

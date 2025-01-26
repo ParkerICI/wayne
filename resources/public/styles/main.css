@@ -278,6 +278,12 @@ nav ul li a.active-qb::after {
   gap: 24px;
 }
 
+.publications-raw {
+  margin-left: 24px;
+  margin-bottom: 30px;
+  height: 300px;
+}
+
 .publication-header {
   display: flex;
   align-items: center;
