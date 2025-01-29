@@ -3,6 +3,7 @@
    [re-frame.core :as rf]
    [org.candelbio.multitool.core :as u]
    [com.hyperphor.way.web-utils :as wu]
+   [wayne.frontend.nlp :as nlp]
    ))
 
 (def examples
@@ -144,8 +145,10 @@
 
 (rf/reg-event-db
  :recall-example
- (fn [db [_ text]]
-   (let [example (u/some-thing #(= (:text %) text) examples)]
+ (fn [db [_ text-or-struct]]            ;name of a canned exampl, or a struct from LLM (TODO need to verify)
+   (let [example (if (string? text-or-struct)
+                   (u/some-thing #(= (:text %) text-or-struct) examples)
+                   text-or-struct)]
 
      (rf/dispatch [:open-collapse-panel :dim])
      (rf/dispatch [:open-collapse-panel :feature])
@@ -161,9 +164,17 @@
          (assoc-in [:data-status :heatmap2] :invalid) ;kludge to ensure data is refreshed. Really only need this for heatmap examples
          ))))
 
+
+
 (defn example-chooser
   []
-  (wu/select-widget
-   :example nil #(rf/dispatch [:recall-example %])
-   (map :text examples)
-   "Choose an example"))
+  [:div
+   (wu/select-widget
+    :example nil #(rf/dispatch [:recall-example %])
+    (map :text examples)
+    "Choose an example")
+   [nlp/nlp-ui]]
+  )
+
+
+
