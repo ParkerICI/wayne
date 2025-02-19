@@ -30,26 +30,30 @@
 (defn nlp-ui
   []
    [:div
-    "or try natural language!"
+    "or try asking in natural language:"
     [:br]
-    [:textarea#nlquery {:style {:width 740}}] ;TODO manage through db so can be set from example, eg
-    [:button {:on-click #(rf/dispatch [:nl-query (.-value (.getElementById js/document "nlquery"))])} "Go"]
-    ])
+    [:div {:style {:display :flex}}
+     [:textarea#nlquery {:style {:width 540}}] ;TODO manage through db so can be set from example, eg
+     [:button.btn {:on-click #(rf/dispatch [:nl-query (.-value (.getElementById js/document "nlquery"))])} "Generate"]
+     (when @(rf/subscribe [:qgen?])
+       [wu/spinner 2])]])
 
 ;;; Start a nl query
 (rf/reg-event-db
  :nl-query
  (fn [db [_ query-text]]
- ;; turn on spinner
    (api/ajax-get "/api/querygen" {:params {:query query-text}
                                   :handler (fn [response] (rf/dispatch [:nl-query-response response]))
                                   })
-   #_ (rf/dispatch [:recall-example sample])
-   db))
+   (assoc db :qspinner true)))
 
 (rf/reg-event-db
  :nl-query-response
  (fn [db [_ response]]
- ;; turn off spinner
    (rf/dispatch [:recall-example response])
-   db))
+   (assoc db :qspinner false)))
+
+(rf/reg-sub
+ :qgen?
+ (fn [db _]
+   (get db :qspinner)))

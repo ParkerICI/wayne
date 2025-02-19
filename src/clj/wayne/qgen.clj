@@ -3,6 +3,9 @@
             [clj-http.client :as client]
             [environ.core :as env]
             [clojure.data.json :as json]
+            [clojure.string :as str]
+            [org.candelbio.multitool.nlp :as nlp]
+            [wayne.data-defs :as dd]
             ))
 
 ;;; TODO should go through [wkok.openai-clojure.api :as api] for consistency although afaict that does very little
@@ -20,7 +23,7 @@
   (-> q
       query
       (get-in [:body :choices 0 :message :content])
-      (assert "Failed to get response") ;TODO this happens a lot
+      #_ (assert "Failed to get response") ;TODO this happens a lot
       (json/read-str :key-fn keyword)))
 
 (comment
@@ -48,10 +51,24 @@
   [fs]
   (u/map-values (fn [fsv] (u/map-keys name fsv)) fs))
 
+;;; → Multitool contains, but does the sane thing for vectors
+(defn vcontains?
+  [v elt]
+  (u/position= elt v))
+
+;;; This is really inefficient, won't be suitable for bigger problems
+(u/defn-memoized best-fit
+  [key elts]
+  (if (vcontains? elts key)
+    key
+    (u/min-by #(nlp/levenshtein (str/lower-case (name key)) (str/lower-case (name %)) )
+              elts)))
+
+;;; A start, but needs more
 (defn fixup-query
   [q]
   (-> q
-      (update-in [:params :universal :dim] keyword)
+      (update-in [:params :universal :dim] #(best-fit (keyword %) (keys dd/dims)))
       (update-in [:params :universal :filters] fixup-filters)))
 
 ;;; 4 examples, more might be better?
@@ -90,14 +107,11 @@
      :feature-feature_variable "VISTA"},
     :violin {:blobWidth 100, :blobSpace 328}}})
 
-
 (defn endpoint
   [query]
-  (example-query query)
-  #_ example-response
-  )
-
-
+  (-> query
+      example-query
+  ))
 
 (comment
 ;;; For NLP - trimmed most of the heatmap stuff which is not relevant
