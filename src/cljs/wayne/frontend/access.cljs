@@ -11,6 +11,8 @@
   )
 
 ;;; Was in raw-data-access.js, moved here for signup
+;;; Source: https://drive.google.com/drive/u/0/folders/1dfcMJYpDQ_PmvacR39z-dYHl-G8KpmeB
+;;; Served from: gs://pici-bruce-vitessce-public/other
 
 (def data
   [
@@ -22,11 +24,16 @@
     :File "20240810_master_feature_table_na_removed_metadata.rds",
     :Size "35M"
     },
+
+
+   ;; Not on GDrive so removing for now
+   #_
    {
     :Description "Cell Table (immune)",
     :File "cell_table_immune_thresholded.parquet",
     :Size "1G"
     },
+   #_
    {
     :Description "Cell Table (tumor)",
     :File "cell_table_tumor_thresholded.parquet",
@@ -165,6 +172,7 @@
                                              :foregroundColor "black"
                                              :accentColor "#4586FF"
                                              })
+                      :pagination false
                       :sideBar nil
                       :statusBar nil
                       }

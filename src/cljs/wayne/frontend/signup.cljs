@@ -52,7 +52,7 @@
                  (expose)
                  (rf/dispatch [:register])
                  )}
-   "Register to Download"])
+   "Download"])
 
 (defn with-signup
   [post-signup-ui]

@@ -29,11 +29,14 @@
 
 (defn nlp-ui
   []
-   [:div
-    "or try asking in natural language:"
+   [:div {:style {:margin-top "7px"}}
+    "or try asking in natural language (experimental):"
     [:br]
     [:div {:style {:display :flex}}
-     [:textarea#nlquery {:style {:width 540}}] ;TODO manage through db so can be set from example, eg
+     [:textarea#nlquery {:style {:width 600
+                                 :margin-right "5px"
+                                 :font-family "sans-serif"
+                                 }}] ;TODO manage through db so can be set from example, eg
      [:button.btn {:on-click #(rf/dispatch [:nl-query (.-value (.getElementById js/document "nlquery"))])} "Generate"]
      (when @(rf/subscribe [:qgen?])
        [wu/spinner 2])]])

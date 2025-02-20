@@ -172,9 +172,10 @@
    (wu/select-widget
     :example nil #(rf/dispatch [:recall-example %])
     (map :text examples)
-    "Choose an example")
+    "Choose an example"
+    false
+    {:width "680px"}
+    )
    [nlp/nlp-ui]]
   )
-
-
 
