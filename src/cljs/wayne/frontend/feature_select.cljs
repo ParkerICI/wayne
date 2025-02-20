@@ -77,10 +77,6 @@
     "Endothelial_cells_GLUT1"
     "Endothelial_cells_Ki67"
     "Endothelial_cells_PDL1"
-    "Immune_unassigned_Ki67"
-    "Immune_unassigned_PDL1"
-    "Immune_unassigned_Tox"
-    "Immune_unassigned_iNOS"
     "Macrophage_CD206_CD86"
     "Macrophage_CD206_IDO1"
     "Macrophage_CD206_Ki67"
@@ -142,8 +138,7 @@
     "Tumor_cells_Ki67"
     "Tumor_cells_PDL1"
     "Tumor_cells_Tox"
-    "Unassigned_Ki67"
-    "Unassigned_PDL1"]
+    ]
    ["B7H3" "EGFR" "GM2_GD2" "GPC2" "HER2" "NG2" "VISTA"]]
   )
 
@@ -154,7 +149,6 @@
    "Endothelial"
    "Endothelial_cells"
    "Immune"
-   "Immune_unassigned"
    "Lymphoid"
    "Macrophage_CD206"
    "Macrophage_CD68"
