@@ -26,18 +26,7 @@ count(distinct(feature_variable)) as features
   [_]
   (select "patient_id, sample_id, who_grade, final_diagnosis_simple, immunotherapy, site {{from}}" {:table metadata-table}))
 
-(defmethod wd/data :patients
-  [_]
-  (select "patient_id,
-array_agg(sample_id) as samples,
-any_value(who_grade) as who_grade,
-any_value(final_diagnosis_simple) as diagnosis,
-any_value(immunotherapy) as immunotherapy,
-any_value(site) as site,
-any_value(sex) as sex,
-{{from}} group by patient_id"
-          {:table metadata-table})
-  )
+
 
 ;;; Full metadata
 (defmethod wd/data :metadata
