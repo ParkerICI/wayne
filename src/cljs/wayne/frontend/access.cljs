@@ -72,7 +72,7 @@
     :Size "2.2K"
     }
    {:File "metadata_complete.csv"
-    :Size "316K"
+    :Size "330K"
     }
    {:File "pca_subset.csv"
     :Size "982"
