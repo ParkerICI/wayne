@@ -855,18 +855,11 @@ button:hover {
   background-repeat: no-repeat;
   width: 100%;
   background-size: cover;
+  background-image: url("../assets/images/cell-background.png"); 
 }
 
-.page-title--about {
-  background-image: url("../assets/images/about-us-bg.png");
-}
-
-.page-title--vis {
-  background-image: url("../assets/images/cell-background.png"); /*TODO image is too big, trim it down*/
-}
-
-.page-title--rda {
-  background-image: url("../assets/images/raw-data-access-title-image.jpg");
+.page-title-query {
+  background-image: url("../assets/images/cell-background.png"); 
 }
 
 .page-headline {
