@@ -4,10 +4,8 @@
    [org.candelbio.multitool.core :as u]
    [com.hyperphor.way.web-utils :as wu]
    [com.hyperphor.way.api :as api]
-   
+   [com.hyperphor.way.form :as form]
    ))
-
-
 
 (def sample
   {:text  "Find the proportion of tumor cells that have high intensity B7H3 in GBM, Astrocytoma and Oligodendroglioma samples.",
@@ -29,26 +27,30 @@
 
 (defn nlp-ui
   []
-   [:div {:style {:margin-top "7px"}}
-    "or try asking in natural language (experimental):"
-    [:br]
-    [:div {:style {:display :flex}}
-     [:textarea#nlquery {:style {:width 600
-                                 :margin-right "5px"
-                                 :font-family "sans-serif"
-                                 }}] ;TODO manage through db so can be set from example, eg
-     [:button.btn {:on-click #(rf/dispatch [:nl-query (.-value (.getElementById js/document "nlquery"))])} "Generate"]
-     (when @(rf/subscribe [:qgen?])
-       [wu/spinner 2])]])
+  [:div {:style {:margin-top "7px"}}
+   "or try asking in natural language (experimental):"
+   [:br]
+   [:div {:style {:display :flex}}
+    [form/form-field {:type :textarea
+                      :path [:qgen :query-text]
+                      :style {:width 600
+                              :margin-right "5px"
+                              :font-family "sans-serif"
+                              }
+                      }]
+    [:button.btn {:on-click #(rf/dispatch [:nl-query])
+                  :style {:margin-right "3px"}} "Generate"]
+    (when @(rf/subscribe [:qgen?])
+      [wu/spinner 2])]])
 
 ;;; Start a nl query
 (rf/reg-event-db
  :nl-query
- (fn [db [_ query-text]]
-   (api/ajax-get "/api/querygen" {:params {:query query-text}
-                                  :handler (fn [response] (rf/dispatch [:nl-query-response response]))
-                                  })
-   (assoc db :qspinner true)))
+ (fn [db _]
+   (let [query-text (get-in db [:form :qgen :query-text])]
+     (api/ajax-get "/api/querygen" {:params {:query query-text}
+                                    :handler (fn [response] (rf/dispatch [:nl-query-response response]))})
+     (assoc db :qspinner true))))
 
 (rf/reg-event-db
  :nl-query-response

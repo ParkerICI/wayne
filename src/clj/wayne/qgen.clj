@@ -6,6 +6,7 @@
             [clojure.string :as str]
             [org.candelbio.multitool.nlp :as nlp]
             [wayne.data-defs :as dd]
+            [taoensso.timbre :as log]
             ))
 
 ;;; TODO should go through [wkok.openai-clojure.api :as api] for consistency although afaict that does very little
@@ -86,7 +87,7 @@
                 ]
      :response_format {:type "json_object"}
      :stream false})
-   fixup-query
+   Fixup-query
    ))
 
 #_
@@ -109,6 +110,7 @@
 
 (defn endpoint
   [query]
+  (log/info "Query gen" query)
   (-> query
       example-query
   ))

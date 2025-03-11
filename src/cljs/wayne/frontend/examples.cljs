@@ -144,7 +144,8 @@
                                   ])]
      (prn :example example)
      (assoc db
-            :example example))))
+            :example example
+            ))))
 
 (rf/reg-event-db
  :recall-example
@@ -165,6 +166,8 @@
          (assoc :params (:params example)
                 :active-tab (:active-tab example))
          (assoc-in [:data-status :heatmap2] :invalid) ;kludge to ensure data is refreshed. Really only need this for heatmap examples
+         ;; Pass text to qgen
+         (assoc-in [:form :qgen :query-text] (:text example))
          ))))
 
 
