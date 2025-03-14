@@ -6,6 +6,7 @@
             [org.candelbio.multitool.core :as u]
             [wayne.frontend.autocomplete :as autocomplete] ;TEMP
             [wayne.frontend.utils :as wwu]
+            [wayne.data-defs :as dd]
             )
   )
 
@@ -16,44 +17,7 @@
 
 ;;; Feature tree generation (select widget hierarchy etc) 
 
-(def nonspatial-feature-tree
-  [
-   ["Cells"
-    ["Cell_Abundance"
-     ["Relative_to_all_tumor_cells"]
-     ["Relative_to_all_immune_cells"]]
-    ["Cell_Ratios"
-     ["Cells_and_functional_markers"]
-     ["Immune_cells"]
-     ["Immune_to_Tumor_cells"]
-     ["Tumor_cells"]]
-    ]
-   ["Protein"
-    ["Tumor_Antigens_Intensity_Segments"]
-    ["Tumor_Antigens_Intensity"]        ;TODO metacluster
-    ["Functional_marker_intensity"]     ;ditto
-    ["Phenotype_marker_intensity"]      ;dito
-    ]
-   ["Glycan"
-    ["Relative_Intensity"]]
-   ])
 
-(def spatial-feature-tree
-  [["RNA"
-    ["Immune_High"]
-    ["Immune_Low"]]
-   ["Cells"
-    ["Neighborhood_Frequencies"]          ;?db
-    ["Spatial_Density"]
-    ["Area_Density"
-     ]]           ;db  "Cells_and_functional_markers" ?
-   ]
-  )
-
-(def feature-tree
-  `[["nonspatial" ~@nonspatial-feature-tree]
-    ["spatial" ~@spatial-feature-tree]
-    ])
 
 ;;; Values for segmented feature selectors
 
@@ -362,7 +326,7 @@
 (defn new-feature-selector
   []
   (let [l1-feature @(rf/subscribe [:param :features :feature-supertype])
-        l2-feature-tree (rest (u/some-thing #(= (first %) l1-feature) feature-tree))
+        l2-feature-tree (rest (u/some-thing #(= (first %) l1-feature) dd/feature-tree))
         l2-feature @(rf/subscribe [:param :features :feature-broad_feature_type])
         l3-feature-tree (rest (u/some-thing #(= (first %) l2-feature) l2-feature-tree))
         l3-feature @(rf/subscribe [:param :features :feature-feature_type])
@@ -372,7 +336,7 @@
                      @(rf/subscribe [:param :features :feature-bio-feature-type]))
         ]
     [:div
-     (select-widget :feature-supertype (map first feature-tree))
+     (select-widget :feature-supertype (map first dd/feature-tree))
      (select-widget :feature-broad_feature_type (map first l2-feature-tree))
      (select-widget :feature-feature_type (map first l3-feature-tree))
      (when-not (empty? l4-feature-tree)

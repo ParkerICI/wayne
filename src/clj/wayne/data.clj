@@ -248,3 +248,5 @@ any_value(sex) as sex,
 {{from}} group by patient_id"
           {:table   "pici-internal.bruce_external.metadata_complete" #_ metadata-table})
   )
+
+(u/def-lazy feature-variables (map :feature_variable (select "distinct(feature_variable) {{from}} " )))
