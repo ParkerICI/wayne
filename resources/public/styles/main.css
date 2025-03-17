@@ -274,7 +274,7 @@ nav ul li a.active-qb::after {
 
 .publications {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 24px;
 }
 
@@ -304,6 +304,7 @@ nav ul li a.active-qb::after {
 .publication-item {
   display: flex;
   align-items: center;
+  margin-top: 12px;
   gap: 16px;
   padding-left: 4px;
   padding-right: 4px;
@@ -313,7 +314,7 @@ nav ul li a.active-qb::after {
 .publication-item img {
   height: 58px;
   width: 76px;
-  object-fit: cover;
+  object-fit: scale-down;
 }
 
 .publication-text-wrapper {
@@ -335,7 +336,7 @@ nav ul li a.active-qb::after {
 .publication {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .publication,
