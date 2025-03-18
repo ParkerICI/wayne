@@ -243,7 +243,10 @@ nav ul li a.active-qb::after {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-width: 390px;
+  max-width: 700px;
+  background: rgba(0,0,0,0.3);
+  background-blend-mode: lighten;
+  padding: 10px;
 }
 
 .headline {
@@ -348,6 +351,7 @@ nav ul li a.active-qb::after {
   background-color: #2F3137
 }
 
+/* obso */
 .featured-publication-carousel {
   padding: 20px;
   width: 414px;
