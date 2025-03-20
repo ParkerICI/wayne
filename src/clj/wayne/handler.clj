@@ -3,6 +3,7 @@
             [com.hyperphor.way.handler :as wh]
             [com.hyperphor.way.views.html :as html]
             [ring.util.response :as response]
+            [wayne.qgen :as qgen]
             )
   )
 
@@ -11,7 +12,12 @@
   (GET "/x" [] (wh/spa))
   )
 
+(defroutes api-routes
+  ;; Could maybe be done under data, but seems kind of different
+  (context "/api" []
+    (GET "/querygen" [query] (wh/content-response (qgen/endpoint query)))))
+
 (defn app
   []
-  (wh/app site-routes (routes)))
+  (wh/app site-routes api-routes))
 

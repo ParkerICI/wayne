@@ -243,7 +243,10 @@ nav ul li a.active-qb::after {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-width: 390px;
+  max-width: 700px;
+  background: rgba(0,0,0,0.3);
+  background-blend-mode: lighten;
+  padding: 10px;
 }
 
 .headline {
@@ -274,14 +277,14 @@ nav ul li a.active-qb::after {
 
 .publications {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 24px;
 }
 
 .publications-raw {
   margin-left: 24px;
   margin-bottom: 30px;
-  height: 300px;
+  height: 200px;
 }
 
 .publication-header {
@@ -304,6 +307,7 @@ nav ul li a.active-qb::after {
 .publication-item {
   display: flex;
   align-items: center;
+  margin-top: 12px;
   gap: 16px;
   padding-left: 4px;
   padding-right: 4px;
@@ -313,7 +317,7 @@ nav ul li a.active-qb::after {
 .publication-item img {
   height: 58px;
   width: 76px;
-  object-fit: cover;
+  object-fit: scale-down;
 }
 
 .publication-text-wrapper {
@@ -335,7 +339,7 @@ nav ul li a.active-qb::after {
 .publication {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .publication,
@@ -347,6 +351,7 @@ nav ul li a.active-qb::after {
   background-color: #2F3137
 }
 
+/* obso */
 .featured-publication-carousel {
   padding: 20px;
   width: 414px;
@@ -855,18 +860,11 @@ button:hover {
   background-repeat: no-repeat;
   width: 100%;
   background-size: cover;
+  background-image: url("../assets/images/cell-background.png"); 
 }
 
-.page-title--about {
-  background-image: url("../assets/images/about-us-bg.png");
-}
-
-.page-title--vis {
-  background-image: url("../assets/images/cell-background.png"); /*TODO image is too big, trim it down*/
-}
-
-.page-title--rda {
-  background-image: url("../assets/images/raw-data-access-title-image.jpg");
+.page-title-query {
+  background-image: url("../assets/images/cell-background.png"); 
 }
 
 .page-headline {

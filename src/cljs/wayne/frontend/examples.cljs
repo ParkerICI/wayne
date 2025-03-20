@@ -3,6 +3,7 @@
    [re-frame.core :as rf]
    [org.candelbio.multitool.core :as u]
    [com.hyperphor.way.web-utils :as wu]
+   [wayne.frontend.nlp :as nlp]
    ))
 
 (def examples
@@ -48,6 +49,9 @@
              :heatmap2 {:dim :IDH_R132H_Status, :filter {:Tumor_Diagnosis {"Astrocytoma" false, "GBM" true, "Oligodendroglioma" false}, :recurrence {"No" true, "Yes" true}, :WHO_grade {"3" true, "4" true}, :Immunotherapy {"true" false}, :treatment {"Neoadjuvant_PD1_Trial_1" true, "Treatment_Naive" true}}}, :features {:feature-bio-feature-type nil, :feature-supertype "nonspatial", :scale "linear", :feature-broad_feature_type "Protein", :feature-feature_type "Phenotype_marker_intensity", :feature-feature_variable "CD14"}, :heatmap {:filter {}}}
     
     }
+
+   ;; Removed because too long
+   #_
    {:text "Find the frequency of CD8 T cells around a 50-micron radius of Macrophage CD206 cells between WHO grade 4,GBM, Control and Neoadjuvant PD1 Trial 2 samples. "
     :params {:universal {:dim :treatment, :feature "Macrophage_CD206-Tcell_CD8", :filters {:WHO_grade {"4" true}, :treatment {"Neoadjuvant_PD1_Trial_2" true, "Treatment_Naive" true}, :Tumor_Diagnosis {"GBM" true}}}, :heatmap2 {:dim :treatment, :filter {:Tumor_Diagnosis {"Astrocytoma" false, "GBM" true, "Oligodendroglioma" false}, :recurrence {"No" true}, :WHO_grade {"3" true, "4" true}, :treatment {"Neoadjuvant_PD1_Trial_2" true, "Treatment_Naive" true}}}, :features {:feature-bio-feature-type nil, :feature-supertype "spatial", :scale "linear", :feature-broad_feature_type "Cells", :feature-feature_type "Neighborhood_Frequencies", :feature-feature_variable "EGFR", :subfeature-0 "Macrophage_CD206", :subfeature-2 "Tcell_CD8"}, :violin {"blobWidth" 100, "blobSpace" 277}}}
 
@@ -140,12 +144,15 @@
                                   ])]
      (prn :example example)
      (assoc db
-            :example example))))
+            :example example
+            ))))
 
 (rf/reg-event-db
  :recall-example
- (fn [db [_ text]]
-   (let [example (u/some-thing #(= (:text %) text) examples)]
+ (fn [db [_ text-or-struct]]            ;name of a canned exampl, or a struct from LLM (TODO need to verify)
+   (let [example (if (string? text-or-struct)
+                   (u/some-thing #(= (:text %) text-or-struct) examples)
+                   text-or-struct)]
 
      (rf/dispatch [:open-collapse-panel :dim])
      (rf/dispatch [:open-collapse-panel :feature])
@@ -159,11 +166,22 @@
          (assoc :params (:params example)
                 :active-tab (:active-tab example))
          (assoc-in [:data-status :heatmap2] :invalid) ;kludge to ensure data is refreshed. Really only need this for heatmap examples
+         ;; Pass text to qgen
+         (assoc-in [:form :qgen :query-text] (:text example))
          ))))
+
+
 
 (defn example-chooser
   []
-  (wu/select-widget
-   :example nil #(rf/dispatch [:recall-example %])
-   (map :text examples)
-   "Choose an example"))
+  [:div
+   (wu/select-widget
+    :example nil #(rf/dispatch [:recall-example %])
+    (map :text examples)
+    "Choose an example"
+    false
+    {:width "680px"}
+    )
+   [nlp/nlp-ui]]
+  )
+

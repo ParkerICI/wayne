@@ -17,21 +17,19 @@
 ;;; or
 ;;; ⪢ gcloud alpha bq tables list --dataset bruce_external
 
-
-
 #_
 (def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240409"))
 
 ;;; New data table 
 (def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240810_metadata_oct1"))
 
-(def metadata-table  "pici-internal.bruce_external.metadata_complete")
+(def metadata-table  "pici-internal.bruce_external.metadata_complete_feb_25_2025")
 
 (defn query
   [q]
   (bq/query "pici-internal" q))
 
-;;; q is a template with {{from}} to plae the FROM clause. Kind of confusing
+;;; q is a template with {{from}} to place the FROM clause. Kind of confusing.
 (defn select
   [q & {:keys [table] :as args :or {table bq-table}}]
   (bq/query "pici-internal"
@@ -235,3 +233,20 @@ GROUP BY Tumor_Diagnosis, {{dim}}"
 (defmethod wd/data :vitessce
   [_]
   @vitessce-data)
+
+;;; For Sample page
+
+(defmethod wd/data :patients
+  [_]
+  (select "patient_id,
+array_agg(sample_id) as samples,
+any_value(who_grade) as who_grade,
+any_value(final_diagnosis_simple) as diagnosis,
+any_value(immunotherapy) as immunotherapy,
+any_value(site) as site,
+any_value(sex) as sex,
+{{from}} group by patient_id"
+          {:table   "pici-internal.bruce_external.metadata_complete" #_ metadata-table})
+  )
+
+(u/def-lazy feature-variables (map :feature_variable (select "distinct(feature_variable) {{from}} " )))

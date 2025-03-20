@@ -22,6 +22,7 @@ Credentials are supplied through Heroku config vars:
 
 =GOOGLE_CREDENTIALS:             <json string>=
 
+=OPENAI_API_KEY>: <the key>=
 
 
 * Data
