@@ -12,8 +12,9 @@
 
 ;;; Was in raw-data-access.js, moved here for signup
 ;;; Source: https://drive.google.com/drive/u/0/folders/1dfcMJYpDQ_PmvacR39z-dYHl-G8KpmeB
+;;;         https://drive.google.com/drive/u/1/folders/10UmqEQriNVxd4QZM328vwMhVaS_vace4
 ;;; Served from: gs://pici-bruce-vitessce-public/other
-
+;;;   gcloud storage cp ... gs://pici-bruce-vitessce-public/other
 (def data
   [
 
@@ -91,6 +92,12 @@
     }
    {:File "tumor_count_result.parquet"
     :Size "7.1K"
+    }
+   {:File "NS_R_files.zip"
+    :Size "83.9M"
+    }
+   {:File "20221006_GBM_NS_pipeline_cleaned.rds"
+    :Size "15.3M"
     }
    ]
   )

@@ -149,7 +149,7 @@
 
 (rf/reg-event-db
  :recall-example
- (fn [db [_ text-or-struct]]            ;name of a canned exampl, or a struct from LLM (TODO need to verify)
+ (fn [db [_ text-or-struct]]            ;name of a canned example, or a struct from LLM
    (let [example (if (string? text-or-struct)
                    (u/some-thing #(= (:text %) text-or-struct) examples)
                    text-or-struct)]
