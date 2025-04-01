@@ -190,7 +190,7 @@ nav ul li a {
   height: 40px;
   display: flex;
   align-items: center;
-  padding: 0;
+  padding: 4px;
   position: relative;
   text-transform: uppercase;
 }
@@ -205,6 +205,14 @@ nav ul li a::after {
   background-color: transparent;
   transition: background-color 0.3s; 
 }
+
+/* TODO needs design */
+nav ul li a:hover {
+  padding: 2px;
+  border: 2px solid gray;
+}
+
+
 nav ul li a.active-about::after {
   background-color: #02B192; 
 }
