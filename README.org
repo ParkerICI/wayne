@@ -10,11 +10,12 @@ See https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJ
 
 * Deploy
 
-To Heroku:
+Hosted on Heroku: https://dashboard.heroku.com/apps/nameless-plains-89326
 
 =bin/deploy.sh=
 
-Site: https://nameless-plains-89326-4086253ce8be.herokuapp.com/
+Site: https://bruce.parkerici.org/
+Alternatively: https://nameless-plains-89326-4086253ce8be.herokuapp.com/
 
 Credentials are supplied through Heroku config vars:
 

@@ -123,7 +123,9 @@
           [:h3 (get-in dims [dim :label])
            (when-let [info-text (get-in dims [dim :info])]
              [wwu/info info-text])]
-          [:img {:src "../assets/icons/minus-grey.svg"}]]
+          (if (= open-pane dim)
+            [:img {:src "../assets/icons/minus-grey.svg"}]
+            [:img {:src "../assets/icons/plus-grey.svg"}])]
          [filter-values-ui dim (not (= dim open-pane))]
          ])]]))
 
@@ -242,7 +244,7 @@
          [collapse-panel :dim
           (if dim
             [:span "Selected category: " [dim-display dim]]
-            "←  Select a category to compare across")
+            "Select a category to compare across")
           [:div#selectedFilterView
            [filter-view]
            [:div.divider.mb-24.mt-24]
