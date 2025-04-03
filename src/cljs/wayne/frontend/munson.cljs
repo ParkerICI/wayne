@@ -131,25 +131,28 @@
 
 (defn filter-view
   []
-  [:fieldset.selected-filter-list
-   {:style {:height "auto"}}
-   [:legend "Filters"]
-   [clear-all-filters-button]
-   (u/mapf (fn [[col vals]]
-             (let [in-vals (u/mapf (fn [[v in]]
-                                     (if in v))
-                                   vals)]
-               (when-not (empty? in-vals)
-                 ;; TODO :span not quite right
-                 [:span
-                  (wu/humanize col)
-                  (map (fn [v]
-                         [:div.tag {:on-click #(rf/dispatch [:set-param :universal [:filters col v] false])}
-                          (wu/humanize v)
-                          [:img {:src "../assets/icons/close.svg"}]])
-                       in-vals)])))
-           @(rf/subscribe [:param :universal [:filters]]))
-   ])
+  (let [filters @(rf/subscribe [:param :universal [:filters]])]
+    (if (empty? filters)
+      "You can select filters in the left panel" ;TODO styling
+      [:fieldset.selected-filter-list
+       {:style {:height "auto"}}
+       [:legend "Filters"]
+       [clear-all-filters-button]
+       (u/mapf (fn [[col vals]]
+                 (let [in-vals (u/mapf (fn [[v in]]
+                                         (if in v))
+                                       vals)]
+                   (when-not (empty? in-vals)
+                     ;; TODO :span not quite right
+                     [:span
+                      (wu/humanize col)
+                      (map (fn [v]
+                             [:div.tag {:on-click #(rf/dispatch [:set-param :universal [:filters col v] false])}
+                              (wu/humanize v)
+                              [:img {:src "../assets/icons/close.svg"}]])
+                           in-vals)])))
+               filters)
+       ])))
 
 (rf/reg-sub
  :collapse-panel-open?
@@ -199,7 +202,7 @@
         text (get-in dims [dim :label])]
     [:span [:img.icon {:src (str "../assets/icons/" icon),
                        :alt text
-                       :height "40px"
+                       :height "30px"
                        :style {:vertical-align :middle
                                :margin-left "5px"
                                :margin-right "5px"
@@ -245,11 +248,12 @@
           (if dim
             [:span "Selected category: " [dim-display dim]]
             "Select a category to compare across")
-          [:div#selectedFilterView
-           [filter-view]
-           [:div.divider.mb-24.mt-24]
-           ]
-          ]
+          (if dim
+            [:div#selectedFilterView
+             [filter-view]
+             ]
+            " ← Select a category in the left panel ")
+            ]
 
          ;; Heatmap
          [collapse-panel :heatmap "Sample Distribution Matrix"
