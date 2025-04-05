@@ -257,7 +257,7 @@
 
          ;; Heatmap
          [collapse-panel :heatmap "Sample Distribution Matrix"
-          [smatrix/sample-matrix]
+          [smatrix/sample-matrix-with-popout]
           ]
 
          ;; Feature selection

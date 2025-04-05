@@ -1,7 +1,8 @@
 (ns wayne.frontend.sample-dist
   (:require [re-frame.core :as rf]
             [com.hyperphor.way.vega :as v]
-            [com.hyperphor.way.web-utils :as wu]
+            [wayne.frontend.popout :as popout]
+            [com.hyperphor.way.ui.init :as init]
             ))
 
 (defn spec
@@ -30,17 +31,19 @@
    :resolve {:scale {:x "independent"}}}
   )
 
-(defn popout
-  []
-  [:button {:type "button" :title "Popout"
-            :on-click #(wu/open-in-browser-tab  (.-href (.-location js/window))
-                                                "_popout")}
-   "Popout"]
-  )
-
 (defn sample-matrix
   []
+  [v/vega-view (spec @(rf/subscribe [:data :dist-matrix {:fake :it}])) []])
+
+(defn sample-matrix-with-popout
+  []
   [:div
-   ;; TODO WIP
-   #_ [popout]
-   [v/vega-view (spec @(rf/subscribe [:data :dist-matrix {:fake :it}])) []]])
+   [:div {:style {:float :left}}
+    [popout/popout-button "/sm-popout"]]
+   [sample-matrix]
+   ])
+
+(defn ^:export sample-matrix-popout
+  []
+  (init/init sample-matrix nil))
+

@@ -10,6 +10,9 @@
 (defroutes site-routes
   (GET "/" [] (response/redirect "pages/query-builder.html"))
   (GET "/x" [] (wh/spa))
+  (GET "/sm-popout" [] (wh/spa
+                        :main "wayne.frontend.sample_dist.sample_matrix_popout"
+                        :title "BRUCE: Sample Distribution Matrix"))
   )
 
 (defroutes api-routes

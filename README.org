@@ -25,6 +25,16 @@ Credentials are supplied through Heroku config vars:
 
 =OPENAI_API_KEY>: <the key>=
 
+** Analytics
+
+https://analytics.google.com/analytics/web/?authuser=1#/p473456125/reports/intelligenthome
+
+** Signups
+
+From signup form, semi-required before data downloads:
+
+https://docs.google.com/spreadsheets/d/1EXgxXCceEEgFiss6jpdxZFxeh5aQZKE7s0vrzhTyX20/edit?gid=2037813864#gid=2037813864
+
 
 * Data
 

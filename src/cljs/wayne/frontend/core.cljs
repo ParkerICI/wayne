@@ -11,8 +11,6 @@
    [wayne.frontend.x.patients :as patients]
    [wayne.frontend.x.fgrid :as fgrid]
 
-   ;; [wayne.frontend.dendrogram :as dend]
-
    [wayne.frontend.signup :as signup]
    )) 
 
