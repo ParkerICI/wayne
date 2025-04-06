@@ -1,8 +1,8 @@
 (ns wayne.frontend.sample-dist
   (:require [re-frame.core :as rf]
             [com.hyperphor.way.vega :as v]
-            [wayne.frontend.popout :as popout]
             [com.hyperphor.way.ui.init :as init]
+            [wayne.frontend.utils :as wwu]
             ))
 
 (defn spec
@@ -38,8 +38,8 @@
 (defn sample-matrix-with-popout
   []
   [:div
-   [:div {:style {:float :left}}
-    [popout/popout-button "/sm-popout"]]
+   [:div {:style {:float :right}}
+    [wwu/popout-button "/sm-popout" :width 700 :height 800 :id "samplematrix"]]
    [sample-matrix]
    ])
 

@@ -261,7 +261,8 @@
           ]
 
          ;; Feature selection
-         [collapse-panel :feature [:span "Feature Selection" [wwu/img-info "../assets/images/feature_flow.png"]]
+         ;; Native size 5575 × 2805
+         [collapse-panel :feature [:span "Feature Selection" [wwu/img-info "../assets/images/feature_flow.png" 1020 450]] 
           (if dim
             [:div {:style {:width "500px"}} ;TODO
              ;; Turned this off, it flashes distractingly, and we always have a feature selected
