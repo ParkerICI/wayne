@@ -20,7 +20,6 @@
     :title "Principle Investigator, Associate Professor, Stanford University"
     :twitter "https://x.com/mikeangelolab"
     }
-
    {:name "Sean Bendall, PhD"
     :image "https://bendall-lab.stanford.edu/people/profiles/_bendall.jpg"
     :link "https://bendall-lab.stanford.edu/"
@@ -28,7 +27,6 @@
     :twitter "https://x.com/bendall_lab"
     :title "Principle Investigator, Associate Professor, Stanford University"
     }
-
    {:name "Hadeesha Piyadasa, PhD"
     :image "https://bendall-lab.stanford.edu/people/profiles/_piyadasa.jpg"
     :link "https://profiles.stanford.edu/hadeesha-piyadasa"
@@ -36,7 +34,6 @@
     :twitter "https://x.com/hadeeshap"
     :linkedin "www.linkedin.com/in/hpiyadasa"
     }
-
    {:name "Benjamin Oberlton"
     :image "https://med.stanford.edu/immunol/news/2020/Stanford-Immunology-Welcomes-New-PhD-Students/_jcr_content/main/panel_builder/panel_2/image.img.476.high.jpg/Ben-Oberlton_photo.JPG"
     :link "https://profiles.stanford.edu/benjamin-oberlton"
@@ -51,22 +48,17 @@
     :title "Professor, Department of Stem Cell Biology and Regenerative Medicine, City of Hope"
     :image "https://media.istockphoto.com/vectors/male-default-avatar-profile-icon-man-face-silhouette-person-vector-vector-id1223477625?k=20&m=1223477625&s=612x612&w=0&h=g4kpwsrDHQdRW8K-wBj_JwPl0YnP8k6PPQO1OGjS2oU="
     }
-
-
-
    {:name "Christine Brown",
     :image "https://www.cityofhope.org/sites/www/files/styles/small_bio_portrait_315x450_/public/image/christine-brown.jpg"
     :link "https://www.cityofhope.org/research/beckman-research-institute/immuno-oncology/christine-brown-lab"
     :link2 "https://www.cityofhope.org/christine-brown"
     :title "Professor, City of Hope"
     }
-
    {:name "Kristina Cole",
     :image "https://www.chop.edu/sites/default/files/styles/crop_and_center_300x375/public/providers-new-cole-kristina.jpg"
     :link "https://www.chop.edu/doctors/cole-kristina-a"
     :title "Associate Professor, Children's Hospital of Philadelphia"
     }
-
    {:name "Crystal Mackall",
     :image "https://med.stanford.edu/services/api/cap/profiles/photocache.73276.jpg"
     :link "https://med.stanford.edu/mackalllab/People.html"
@@ -74,7 +66,6 @@
     :title "Professor, Stanford University"
     :twitter "https://x.com/mackalllab/"
     }
-
    {:name "Hideho Okada",
     :image "https://braintumorcenter.ucsf.edu/sites/default/files/styles/person/public/2018-04/okada_hideho_740x864.jpg"
     :link "https://okadalab.ucsf.edu/"
@@ -82,10 +73,6 @@
     :twitter "https://twitter.com/okadalabucsf1"
     :title "Professor, University of California, San Francisco"
     }
-
-
-
-
    {:name "Derek Oldridge",
     :image "https://pathology.med.upenn.edu/sites/default/files/styles/person/public/oldridge_derek_20232.jpg"
     :link "https://www.theoldridgelab.com/"
@@ -93,13 +80,11 @@
     :title "Assistant Professor, Children's Hospital of Philadelphia"
     :twitter "https://twitter.com/oldridgederek"
     }
-
    {:name "Joanna J. Phillips"
     :title "Professor, Brain Tumor Center, UCSF"
     :link "https://phillipslab.ucsf.edu/"
     :image "https://phillipslab.ucsf.edu/sites/default/files/styles/person/public/2020-01/PhillipsJ_Headshot_20160921_0072_740x864.jpg"
     }
-
    {:name "Robert M. Prins"
     :title "Professor, Neurosurgery and Pharmacology, David Geffen School of Medicine at UCLA"
     :link "https://robertprinslab.healthsciences.ucla.edu/"
@@ -108,10 +93,6 @@
     :twitter "https://x.com/UCLANsgy/"
     :link2 "https://bri.ucla.edu/people/robert-prins/"
     }
-
-
-
-
    ]
   )
 

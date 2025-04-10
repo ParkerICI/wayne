@@ -72,7 +72,7 @@
         (map #(-> %
                   bean
                   u/clean-map
-                  ((u/swapped u/map-values) str)
+                  (u/fsbl u/map-values str)
                   (dissoc :class)))))
 
 (defn table-schema-max

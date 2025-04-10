@@ -53,9 +53,10 @@
 (defn reinit
   []
   (team/generate)
-  (expand-pages)  )
+  (expand-pages))
 
 ;;; Important: Causes expansion to happen at uberjar build time, for deployment
+
 (init)
 
 
