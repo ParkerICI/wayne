@@ -180,8 +180,9 @@
         (when subtitle [:div {:style {:color "gray" :font-size "10pt"}} subtitle])]
        [:div.flex.gap-16
         [:img#toggleSelectForm {:src (if collapsed?
-                                       "../assets/icons/show-info.svg"                                       
-                                       "../assets/icons/merge-horizontal.svg")}]
+                                       "../assets/icons/new-munson-plus.png"
+                                       "../assets/icons/new-munson-minus.png"
+                                       )}]
         ]]
       [:div.mt-24 {:class (when collapsed? "collapsed")}
        content
