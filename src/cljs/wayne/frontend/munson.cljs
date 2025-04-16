@@ -170,12 +170,14 @@
    (assoc-in db [:collapse-panel id] true)))
 
 (defn collapse-panel
-  [id title content]
+  [id title content & [subtitle]]
   (let [collapsed? (not @(rf/subscribe [:collapse-panel-open? id]))]
     [:div.featured-view.relative
      [:div.features-view
       [:div.features-view-header {:on-click #(rf/dispatch [:toggle-collapse-panel id])}
-       [:div.flex.align-center.flex-row.gap-8 [:h3 title]]
+       [:div.flex.align-left.flex-column
+        [:h3 title]
+        (when subtitle [:div {:style {:color "gray" :font-size "10pt"}} subtitle])]
        [:div.flex.gap-16
         [:img#toggleSelectForm {:src (if collapsed?
                                        "../assets/icons/show-info.svg"                                       
@@ -239,8 +241,9 @@
          "Explore multiomic features of glioma tumor microenvironment."]
         [:div.selected-filter-wrapper
 
-         [collapse-panel :examples "Examples"
+         [collapse-panel :examples "Ask a question"
           [examples/example-chooser]
+          "Common examples"
           ]
 
          ;; Compare dim panel

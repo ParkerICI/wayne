@@ -118,7 +118,7 @@
   (let [template (slurp (io/resource "templates/components/team-member-card.html"))]
     (spit (str "resources/templates/components/" output)
           (apply str
-           (map (partial u/expand-template template)
+           (map #(u/expand-template template % :allow-missing? true)
                 list)))))
 
 (defn generate
