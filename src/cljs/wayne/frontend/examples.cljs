@@ -180,7 +180,7 @@
     (map :text examples)
     "Choose an example"
     false
-    {:width "680px"}
+    {:width "680px" :padding "5px"}
     )
    [nlp/nlp-ui]]
   )

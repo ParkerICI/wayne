@@ -28,12 +28,14 @@
 (defn nlp-ui
   []
   [:div {:style {:margin-top "7px"}}
-   "or try asking in natural language (experimental):"
+   [:span {:style {:color "#6c727a" :font-size "10pt"}}
+    "or try asking in natural language (experimental)"]
    [:br]
    [:div {:style {:display :flex}}
     [form/form-field {:type :textarea
                       :path [:qgen :query-text]
                       :style {:width 600
+                              :padding "5px"
                               :margin-right "5px"
                               :font-family "sans-serif"
                               }
