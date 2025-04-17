@@ -35,6 +35,7 @@
   []
   [v/vega-view (spec @(rf/subscribe [:data :dist-matrix {:fake :it}])) []])
 
+#_
 (defn sample-matrix-with-popout
   []
   [:div

@@ -213,6 +213,19 @@
      text]))
 
 
+(defn sample-matrix-link
+  []
+  [:span#matrixbutton
+   {:on-click #(wwu/open-popout "/sm-popout" :width 700 :height 800 :id "samplematrix")
+    :style {:float :right
+            :padding-right "8px"}}
+   [:style "#matrixbutton:hover {background: #ccc;}" ] ;crappy hover
+   [:img {:src "../assets/icons/sample-matrix-icon.png"
+          :width 24
+          :style {:vertical-align "middle"}}]
+   "Sample distribution matrix"
+   ])
+
 (defn munson-new
   []
   (let [dim @(rf/subscribe [:param :universal :dim])
@@ -238,6 +251,7 @@
 
        ;; Main section
        [:div.pt-6
+        [sample-matrix-link]
         [:p.query-builder-section-subheadline
          "Explore multiomic features of glioma tumor microenvironment."]
         [:div.selected-filter-wrapper
@@ -260,6 +274,7 @@
             ]
 
          ;; Heatmap
+         #_
          [collapse-panel :heatmap "Sample Distribution Matrix"
           [smatrix/sample-matrix-with-popout]
           ]
