@@ -206,10 +206,9 @@ nav ul li a::after {
   transition: background-color 0.3s; 
 }
 
-/* TODO needs design */
-nav ul li a:hover {
-  padding: 2px;
-  border: 2px solid gray;
+/* TODO this works but should have color */
+nav ul li a:hover::after {
+  background-color: lightgray; 
 }
 
 

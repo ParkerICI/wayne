@@ -228,7 +228,7 @@ GROUP BY Tumor_Diagnosis, {{dim}}"
          (rest rows))))
 
 (u/def-lazy vitessce-data
-  (read-csv-maps (io/resource "data/20241213_vitesscesamples.txt")))
+  (read-csv-maps (io/resource "data/20241213_vitesscesamples.csv")))
 
 (defmethod wd/data :vitessce
   [_]
