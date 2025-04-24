@@ -882,11 +882,14 @@ button:hover {
   background-repeat: no-repeat;
   width: 100%;
   background-size: cover;
-  background-image: url("../assets/images/cell-background.png"); 
+  background: linear-gradient(180deg, #100B11 14.31%, rgba(21, 12, 23, 0.00) 97.87%),
+	      url("../assets/images/cell-background.png"); 
 }
 
 .page-title-query {
-  background-image: url("../assets/images/cell-background.png"); 
+  background: linear-gradient(180deg, #100B11 14.31%, rgba(21, 12, 23, 0.00) 97.87%),
+	   
+	      url("../assets/images/cell-background.png"); 
 }
 
 .page-headline {
