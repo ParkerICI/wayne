@@ -123,7 +123,13 @@
 
 
 :root {
-  --primary-blue-60: #685CC6;
+  --page-color-qb:  #685CC6;
+  --page-color-samples: #F65157; 
+  --page-color-viz: #4586FF;
+  --page-color-about: #02B192;
+  --page-color-rda: #FF6C30;
+
+
   --primary-blue-90: #001d6c;
   --cool-grey-20: #dde1e6;
   --cool-grey-40: #a2a9b0;
@@ -180,7 +186,7 @@ nav ul {
   gap: 40px;
 }
 
-nav ul li a {
+.mmitem {
   text-decoration: none;
   color: #fff;
   transition: color 0.3s;
@@ -195,7 +201,7 @@ nav ul li a {
   text-transform: uppercase;
 }
 
-nav ul li a::after {
+.mmitem::after {
   content: ''; 
   position: absolute;
   left: 0;
@@ -206,26 +212,37 @@ nav ul li a::after {
   transition: background-color 0.3s; 
 }
 
-/* TODO this works but should have color */
-nav ul li a:hover::after {
-  background-color: lightgray; 
+.mmitem.qb:hover::after {
+  background-color: var(--page-color-qb); 
+}
+.mmitem.samples:hover::after {
+  background-color: var(--page-color-samples); 
+}
+.mmitem.viz:hover::after {
+  background-color: var(--page-color-viz); 
+}
+.mmitem.about:hover::after {
+  background-color: var(--page-color-about); 
+}
+.mmitem.rda:hover::after {
+  background-color: var(--page-color-rda); 
 }
 
 
-nav ul li a.active-about::after {
-  background-color: #02B192; 
+nav ul li a.active-qb::after {
+  background-color: var(--page-color-qb); 
+}
+nav ul li a.active-samples::after {
+  background-color: var(--page-color-samples); 
 }
 nav ul li a.active-viz::after {
-  background-color: #4586FF; 
+  background-color: var(--page-color-viz); 
+}
+nav ul li a.active-about::after {
+  background-color:var(--page-color-about); 
 }
 nav ul li a.active-rda::after {
-  background-color: #FF6C30; 
-}
-nav ul li a.active-sampleInfo::after {
-  background-color: #F65157; 
-}
-nav ul li a.active-qb::after {
-  background-color: #974AFC; 
+  background-color: var(--page-color-rda); 
 }
 
 .hero {
@@ -265,7 +282,7 @@ nav ul li a.active-qb::after {
 }
 
 .headline-blue {
-  color: #685CC6
+  color: var(--page-color-qb);
 }
 
 .sub-headline {
@@ -438,7 +455,7 @@ button:hover {
 }
 
 .query-builder-content-headline{
-  border-bottom: 20px solid #685CC6;
+  border-bottom: 20px solid var(--page-color-qb);
   margin-bottom: 0;
   margin-top: 0;
 }
@@ -482,8 +499,8 @@ button:hover {
 
 .dataset-tag-active {
   color: white;
-  border-color: var(--primary-blue-60);
-  background-color:var(--primary-blue-60);
+  border-color: var(--page-color-qb);
+  background-color:var(--page-color-qb);
 }
 
 .filters {
@@ -1143,7 +1160,7 @@ button:hover {
 .line-qb {
   width: 43px;
   height: 13px;
-  background-color: #685CC6
+  background-color: var(--page-color-qb);
 }
 
 .subheadline-filter-selected {

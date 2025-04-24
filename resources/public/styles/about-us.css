@@ -67,7 +67,7 @@
 
 #team h2 {
   font-size: 20px;
-  color: #02B192;
+  color: var(--page-color-about);
   font-weight: 400;
   text-transform: uppercase;
 }
