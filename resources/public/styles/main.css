@@ -848,15 +848,18 @@ button:hover {
   padding: 48px 0;
 }
 
+.footer img {
+  vertical-align: middle;
+}
+
 .footer p,
 .footer a {
   color: #fff;
   font-size: 14px;
-  text-transform: uppercase;
 }
 
-.footer a {
-  text-transform: uppercase;
+.footer a:hover {
+  color: #FF6C30;
 }
 
 .footer-images {
