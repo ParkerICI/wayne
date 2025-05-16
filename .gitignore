@@ -15,6 +15,7 @@ resources/public/cljs-out
 resources/public/pages
 resources/templates/components/team-cards.html
 resources/templates/components/collaborator-cards.html
+resources/templates/components/nav-*.html
 node_modules
 shadow-cljs.edn
 .shadow-cljs/
