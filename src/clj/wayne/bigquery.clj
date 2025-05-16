@@ -17,9 +17,7 @@
             ])
   )
 
-;;; TODO decide if this really wants to be in Way or not. Right thing is to have modules.
-
-;;; Authentication is via ~/.config/gcloud/application_default_credentials.json , set by gcloud cli:
+;;; Local authentication is via ~/.config/gcloud/application_default_credentials.json , set by gcloud cli:
 ;;;   gcloud auth application-default login
 ;;; See https://cloud.google.com/docs/authentication/provide-credentials-adc
 
@@ -186,8 +184,6 @@
        (.addRow builder (str (gensym "row")) (clean-row row)))
      (.build builder))))  
 
-
-;;; TODO probably wants to be a sql hacking library
 (defn sql-lit-list
   [l]
   (str "("

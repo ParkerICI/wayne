@@ -4,9 +4,6 @@
 
 ;;; Hard to get a hook into form completion, this might do it
 ;;; https://docs.google.com/forms/d/1UN9R0kCr59UQNNV3XuX6nrs9kvwHTm7O3ZuxBzLcPVI/edit#settings
-
-;;; Idea: copy the actual HTML of the form and serve it up, then all the iframe security shit goes away.
-
 ;;; Note: page has to have modal included.
 
 (defn signup
@@ -23,13 +20,6 @@
 (defn expose
   []
   (rf/dispatch [:modal {:show? true :contents signup}])) ;TODO modal adjust header 
-
-;;; Not used, testing the modal thing. But no way to detect when form is submitted? TODO
-(defn button
-  []
-  [:button.btn.btn-outline-primary
-   {:on-click expose}
-   "Signup"])
 
 ;;; Should be a simple way to say, here's a state variable but I want it backed in localStorage (or elsewhere)
 (rf/reg-sub

@@ -15,6 +15,8 @@
    [wayne.frontend.utils :as wwu]
    ))
 
+;;; This is the query builder or main page. "Munson" because visual design was reworked by Munson design consultancy.
+
 (def dims dd/dims)
 
 (defn dim-selector
@@ -106,7 +108,7 @@
       "FILTER"
       [wwu/info "Select molecular and clinical criteria to filter the data for visualization"]
       [clear-all-filters-button]
-      ;; temp
+      ;; These are useful for generating new examples
       #_
       [:button.btn.btn-sm.btn-secondary.mx-2
        {:on-click #(rf/dispatch [:remember-example])}
@@ -273,12 +275,6 @@
             " ← Select a category in the left panel ")
             ]
 
-         ;; Heatmap
-         #_
-         [collapse-panel :heatmap "Sample Distribution Matrix"
-          [smatrix/sample-matrix-with-popout]
-          ]
-
          ;; Feature selection
          ;; Native size 5575 × 2805
          [collapse-panel :feature [:span "Feature Selection" [wwu/img-info "../assets/images/feature_flow.png" 1020 450]] 
@@ -299,36 +295,8 @@
           [:div#visualization.visualization-container
            [:div
             [viz/visualization dim feature data]
-            #_
-            [:div.no-data.text-center
-             [:img {:src "../assets/icons/empty-box.svg"}]
-             [:h3 "No Data Found"]
-             [:p "Enter or adjust your filters to see data."]]]]]]]]]])
+            ]]]]]]]])
   )
-
-;;; Omit zeros on marker_intensity (as per Hadeesha 5/28/2024).
-;;; Might make more sense to do this on server, but easier here.
-;;; TODO Obsolete in new feature scheme, ask Hadeesha if still needed
-#_
-(defn trim-zeros?
-  ([]
-   (= "marker_intensity" @(rf/subscribe [:param :features :feature-type])))
-  ;; this version can be called in more places
-  ([db]
-   (= "marker_intensity" (get-in db [:params :features :feature-type])))
-   )
-
-#_
-(defmethod feeds/postload :universal
-  [db _ data]
-  (if (trim-zeros? db)
-    (update-in db
-               [:data [:universal]]
-               (fn [rows]
-                 (remove (fn [row] (= 0 (:feature_value row)))
-                         rows)))
-    db))
-
 
 (defn app-ui
   []

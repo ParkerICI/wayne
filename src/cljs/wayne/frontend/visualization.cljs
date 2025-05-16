@@ -46,11 +46,8 @@
       {:name "blobWidth" :update "parseInt(blobWidthx)"}             ;necessary because ext binding come in as string, bleah
       {:name "blobSpace" :bind {:element "#blobSpace"}}
       {:name "height" :value 700}
-      {:name "width" :value 800 :update "blobSpace*1"} ; #_  "blobSpace * length(scale('dscale').domain)"}
-      
-      ;; TODO this didn't work, so going out of Vega. Note, see https://vega.github.io/vega/docs/signals/#bind-external
-      #_ {"name" "vscales", "value" "linear" "bind"  {"input" "select" "options" ["linear" "log10" "log2" "sqrt"]}}
-      {:name "bandwidth" :value 0 #_ :bind #_ {:input "range" :min 0 :max 1.0E-4 :step 1.0E-6}}]
+      {:name "width" :value 800 :update "blobSpace*1"} 
+      {:name "bandwidth" :value 0}]
      :data
      [{:name "source" :values data}
       {:name "density"
@@ -224,8 +221,7 @@
          :from {:data "pointx"},
 
          :encode
-         {:enter {;; :y #_ {:value 0} {:field dim}
-                  ;; Not very interesting
+         {:enter {;; Not very interesting
                   :tooltip {:signal "datum"}  
                   },
           :update
@@ -285,15 +281,6 @@
             }] ;Step?
    [:output v]]))
 
-#_
-(defn checkbox
-  [& {:keys [id default]}]
-  [:span
-   [:label (str id)]
-   ;; No :value, breaks interaction
-   [:input {:id id :type "checkbox" :name id :defaultChecked default}]
-   ])
-
 (defn control-panel
   []
   [:table.table
@@ -320,7 +307,7 @@
      (if (empty? data)
        "No data"
        [:div.m-1
-        [:span.mx-2 (str (count data) " rows")]     ;; TODO pluralize
+        [:span.mx-2 (str (count data) " rows")]     ;; TODO inflect
         (when (trim-zeros?)
           [:span.badge.text-bg-info "Zeros omitted"])   ; could do this but it is  wrong, and hides the actual 0-data case (if (empty? data) "No data" (str (count data) " rows")
         [:span.m-2 (signup/with-signup (download/button data (str "bruce-export-" feature ".tsv")))]])

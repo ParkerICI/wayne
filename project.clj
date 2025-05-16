@@ -4,7 +4,7 @@
   :plugins [[lein-shadow "0.4.1"]]
   :dependencies [[org.clojure/clojure "1.12.0"]
                  [org.candelbio/multitool "0.1.10"]
-                 [com.hyperphor/way "0.1.11"] ;TODO not yet publically deployed
+                 [com.hyperphor/way "0.1.13"] ;TODO not yet publically deployed
                  [org.clojure/data.json "2.5.0"]
                  [environ "1.2.0"]
                  [com.taoensso/timbre "6.3.1"]

@@ -9,8 +9,6 @@
             )
   )
 
-;;; TODO :sample should link to something?
-
 (def col-defs
   [:sampleID :sample :panel :FOV])
 
@@ -19,7 +17,7 @@
   [base params]
   (.withParams base (clj->js params)))
 
-;;; TODO → way, somehow
+;;; → way, somehow
 (defmethod ag/ag-col-def :FOV 
   [col {:keys [url-template label-template] :as col-def}]
   {:headerName "FOV (Vitessce)"
@@ -35,7 +33,6 @@
    }
   )
 
-;;; TODO Column autosizing not working 
 (defn table
   []
   [:div
@@ -44,6 +41,7 @@
       fovs
       :columns col-defs
       :class "sample-table"
+      :autosize? true
       :col-defs {:FOV {:url-template "{{vitessce_link}}"
                        :label-template "{{FOV}}"
                        }}

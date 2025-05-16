@@ -1,21 +1,16 @@
-Prototyping for BRUCE website
+BRUCE data sharing portal website: https://bruce.parkerici.org/
 
-* Run locally
+* Design
 
-=bin/smoke-test.sh=
+Design doc: https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit#h
+UI Design: https://www.figma.com/design/JIUFETHOkJPffJBLY72kFi/Bruce-Data-Portal---Hero?node-id=2042-4854
 
-* Specs
 
-See https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit#h
-
-* Deploy
+* Deployment
 
 Hosted on Heroku: https://dashboard.heroku.com/apps/nameless-plains-89326
 
 =bin/deploy.sh=
-
-Site: https://bruce.parkerici.org/
-Alternatively: https://nameless-plains-89326-4086253ce8be.herokuapp.com/
 
 Credentials are supplied through Heroku config vars:
 
@@ -40,12 +35,13 @@ https://docs.google.com/spreadsheets/d/1EXgxXCceEEgFiss6jpdxZFxeh5aQZKE7s0vrzhTy
 
 ** Bigquery
 
-pici-internal.bruce_external.feature_table_20240810_metadata_oct1
-pici-internal.bruce_external.metadata_complete
+    pici-internal.bruce_external.feature_table_20240810_metadata_oct1
+    pici-internal.bruce_external.metadata_complete
 
-gcloud alpha bq tables list --dataset bruce_external
+    gcloud alpha bq tables list --dataset bruce_external
 
-In data.clj
+In =data.clj=
+
 (def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240810_metadata_oct1"))
 
 
@@ -53,5 +49,10 @@ In data.clj
 
 gs://pici-bruce-vitessce-public
 gs://bruce-external-data/
+
+
+* Run locally
+
+=bin/smoke-test.sh=
 
 

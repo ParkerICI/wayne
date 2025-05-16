@@ -96,10 +96,7 @@
                                                                                          ;; too many to enumerate unfortunately
                                                                                          :description "The variable to be plotted"}
                                                               }}
-                                      ;; No real point to asking for these
-                                      #_ :violin #_ {:type :object
-                                               :properties {:blobWidth {:type :number :description "blob width, default 100"}
-                                                            :blobSpace {:type :number :description "blob spacing, default 500"}}}
+                                      ;; skipping the visual paramaters like blobWidth
                                       
                                       }}}}}}))
 

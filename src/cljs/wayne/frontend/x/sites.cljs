@@ -55,9 +55,8 @@
    ;; Debug
    (let [sites @(rf/subscribe [:data :sites {:fake :it}])]
      [:div
-      ;; TODO pick one of these
       [v/vega-lite-view (bar-spec sites) sites]
-      [v/vega-lite-view (pie-spec sites) sites]
+      [v/vega-lite-view (pie-spec sites) sites] ;TODO labels don't show due to Vega issue
       [ag/ag-table 
        sites
        ]

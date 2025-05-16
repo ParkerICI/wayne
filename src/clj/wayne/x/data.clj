@@ -26,8 +26,6 @@ count(distinct(feature_variable)) as features
   [_]
   (select "patient_id, sample_id, who_grade, final_diagnosis_simple, immunotherapy, site {{from}}" {:table metadata-table}))
 
-
-
 ;;; Full metadata
 (defmethod wd/data :metadata
   [_]
@@ -53,7 +51,6 @@ count(distinct(sample_id)) as samples
                (update :dim1 #(str (name dim1) ": " %))
                (update :dim2 #(str (name dim2) ": " %))
                ))
-         #_ (select (format "%s as dim1, %s as dim2, count(distinct(patient_id)) as count {from} group by %s, %s" (name dim1) (name dim2)(name dim1) (name dim2)))
          (select "{{dim1}} as dim1, {{dim2}} as dim2, count(distinct(patient_id)) as count {{from}} group by {{dim1}}, {{dim2}}" {:dim1 (name dim1) :dim2 (name dim2)})
 
          )))

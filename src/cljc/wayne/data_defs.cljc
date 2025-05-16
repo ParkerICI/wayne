@@ -58,9 +58,7 @@
 
 ;;; Feature stuff (was in cljs/feature_select)
 
-
 ;;; To generate these, see scrap/data-curation.
-;;; TODO might want to move to wayne.data-defs
 
 ;;; Feature tree generation (select widget hierarchy etc) 
 

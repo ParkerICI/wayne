@@ -17,15 +17,13 @@
 ;;;   gcloud storage cp ... gs://pici-bruce-vitessce-public/other
 (def data
   [
-
-   ;; TEMP removed due to possible HIPAA issues?
+   ;; removed due to possible HIPAA issues
    #_
    {
     :Description "Master Feature Table",
     :File "20240810_master_feature_table_na_removed_metadata.rds",
     :Size "35M"
-    },
-
+    }
 
    ;; Not on GDrive so removing for now
    #_
@@ -33,13 +31,14 @@
     :Description "Cell Table (immune)",
     :File "cell_table_immune_thresholded.parquet",
     :Size "1G"
-    },
+    }
    #_
    {
     :Description "Cell Table (tumor)",
     :File "cell_table_tumor_thresholded.parquet",
     :Size "1G"
     }
+
    {:File "cell_table_all_merged_thresholded.parquet"
     :Size "2.0G"
     :Description "Cell Table (merged)"
@@ -103,7 +102,9 @@
   )
 
 (def cols
-  [:Description :File :Size :Format :download])
+  ;; :Description removed until scientists decide to provide text
+  ;; Or see https://www.perplexity.ai/search/please-write-short-description-LoiOlcsITSe2GI2oMJdTNQ
+  [#_ :Description :File :Size :Format :download])
 
 (defmethod ag/ag-col-def :Format
   [_ _]
@@ -170,6 +171,7 @@
    [ag/ag-table 
     data
     :columns cols
+    :autosize? true
     :class "data-table"
     :ag-grid-options {:theme (ag-grid-theme agx/themeQuartz
                                             {:headerBackgroundColor "#020000",

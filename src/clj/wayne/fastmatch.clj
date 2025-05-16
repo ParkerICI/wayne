@@ -2,6 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.set :as set]))
 
+;;; Used by qgen to find variables
 ;;; This code mostly from Claude, I apologize
 
 ;; Normalize name for better matching

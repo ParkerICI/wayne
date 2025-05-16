@@ -17,13 +17,11 @@
 ;;; or
 ;;; ⪢ gcloud alpha bq tables list --dataset bruce_external
 
-#_
-(def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240409"))
-
 ;;; New data table 
 (def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240810_metadata_oct1"))
 
-(def metadata-table  "pici-internal.bruce_external.metadata_complete_feb_25_2025")
+;;; Used for sample table and some x pages
+(def metadata-table "pici-internal.bruce_external.metadata_complete_feb_25_2025")
 
 (defn query
   [q]
@@ -246,7 +244,7 @@ any_value(immunotherapy) as immunotherapy,
 any_value(site) as site,
 any_value(sex) as sex,
 {{from}} group by patient_id"
-          {:table   "pici-internal.bruce_external.metadata_complete" #_ metadata-table})
+          {:table   metadata-table })
   )
 
 (u/def-lazy feature-variables (map :feature_variable (select "distinct(feature_variable) {{from}} " )))

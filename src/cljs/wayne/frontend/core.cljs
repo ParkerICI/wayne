@@ -38,7 +38,6 @@
 (defn app-ui
   []
   [:div
-   ;; TODO not used (but maybe for "login")
    [modal/modal]
    [app/header]
    [flash/flash]

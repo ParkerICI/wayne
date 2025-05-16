@@ -17,7 +17,7 @@
     (map (fn [row xformed] (assoc row field xformed))
          ds xvalues)))
 
-;;; TODO belongs in way
+;;; TODO →  way
 (defn z-transform-columns
   [ds field column-field]
   (mapcat #(z-transform % field)
