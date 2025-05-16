@@ -1,5 +1,9 @@
 BRUCE data sharing portal website: https://bruce.parkerici.org/
 
+* License
+
+Released under the Apache 2.0 open source license.
+
 * Design
 
 Design doc: https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit#h

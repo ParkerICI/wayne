@@ -1,4 +1,4 @@
-(defproject wayne "0.1.0-SNAPSHOT"
+(defproject org.parkerici.wayne "0.1.0-SNAPSHOT"
   :description "Prototyping BRUCE website"
   :min-lein-version "2.0.0"
   :plugins [[lein-shadow "0.4.1"]]
@@ -17,14 +17,13 @@
                  ;; This should get inherited from way, but is necessary for some reason
                  [thheller/shadow-cljs "2.28.18"] ;TODO maybe only in dev profile
 
-                 ;;; Wayne specific
                  [com.google.cloud/google-cloud-bigquery "2.27.0"]
                  ]
-  :main ^:skip-aot wayne.core
+  :main ^:skip-aot org.parkerici.wayne.core
   :target-path "target/%s"
   :source-paths ["src/cljc" "src/clj" "src/cljs"] 
   :clean-targets ^{:protect false} [".shadow-cljs" "resources/public/cljs-out" "target" "resources/public/pages"]
-  :repl-options {:init-ns wayne.core}
+  :repl-options {:init-ns org.parkerici.wayne.core}
   :profiles {:uberjar {:aot :all
                        :omit-source true
                        :prep-tasks [["shadow" "release" "app"] "javac" "compile"] ;NOTE if you omit the javac compile items, :aot stops working!
@@ -36,12 +35,12 @@
                        :compiler-options {:infer-externs true}
                        :output-dir "resources/public/cljs-out"
                        :asset-path "/cljs-out"         ;webserver path
-                       :modules {:dev-main {:entries [wayne.frontend.core
-                                                      wayne.frontend.munson
-                                                      wayne.frontend.samples
-                                                      wayne.frontend.vitessce
-                                                      wayne.frontend.access
-                                                      wayne.frontend.sample-dist ;for popout
+                       :modules {:dev-main {:entries [org.parkerici.wayne.frontend.core
+                                                      org.parkerici.wayne.frontend.munson
+                                                      org.parkerici.wayne.frontend.samples
+                                                      org.parkerici.wayne.frontend.vitessce
+                                                      org.parkerici.wayne.frontend.access
+                                                      org.parkerici.wayne.frontend.sample-dist ;for popout
                                                       ]}}
                        :devtools {:preloads [day8.re-frame-10x.preload.react-18]}
                        :dev {:compiler-options
