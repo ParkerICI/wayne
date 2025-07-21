@@ -1,9 +1,10 @@
 (ns org.parkerici.wayne.frontend.vitessce
   (:require [re-frame.core :as rf]
-            [com.hyperphor.way.aggrid :as ag]
+            [org.parkerici.wayne.frontend.way.aggrid :as ag]
             [com.hyperphor.way.ui.init :as init]
             com.hyperphor.way.feeds
             [reagent.dom]
+            [reagent.core :as reagent]
             ["ag-grid-community" :as agx]
             [org.candelbio.multitool.core :as u]
             )
@@ -24,12 +25,11 @@
    :field col
    :cellRenderer (fn [params]
                    (let [values (js->clj (.-data params) :keywordize-keys true)]
-                     (reagent.dom/render ;TODO this is not approved for React 18, but I couldn't figure a better way.
-                       [:span.ag-cell-wrap-text   ;; .ag-cell-auto-height doesn't work, unfortunately.
+                     (reagent.core/as-element 
+                      [:span.ag-cell-wrap-text   ;; .ag-cell-auto-height doesn't work, unfortunately.
                         [:a.ent
                          {:href (u/expand-template url-template values) :target "_ext"}
-                         (u/expand-template label-template values)]]
-                       (.-eGridCell params))))
+                         (u/expand-template label-template values)]])))
    }
   )
 
