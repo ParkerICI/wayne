@@ -3,8 +3,9 @@
   :min-lein-version "2.0.0"
   :plugins [[lein-shadow "0.4.1"]]
   :dependencies [[org.clojure/clojure "1.12.0"]
-                 [org.candelbio/multitool "0.1.10"]
-                 [com.hyperphor/way "0.1.13"] ;TODO not yet publically deployed
+                 [org.candelbio/multitool "0.1.12"]
+                 [com.hyperphor/way "0.1.16"] 
+                 [cheshire "5.13.0"]    ;TODO fixes a dependency problem, but there are serious version conflicts with this that should be fixed properly
                  [org.clojure/data.json "2.5.0"]
                  [environ "1.2.0"]
                  [com.taoensso/timbre "6.3.1"]
@@ -16,6 +17,9 @@
                  
                  ;; This should get inherited from way, but is necessary for some reason
                  [thheller/shadow-cljs "2.28.18"] ;TODO maybe only in dev profile
+                 [day8.re-frame/tracing "0.6.2"]     ; These were in qay, now not, causing problems, argh
+                 [day8.re-frame/re-frame-10x "1.9.9"]
+
 
                  [com.google.cloud/google-cloud-bigquery "2.27.0"]
                  ]
