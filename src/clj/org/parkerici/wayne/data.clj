@@ -21,7 +21,7 @@
 (def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240810_metadata_oct1"))
 
 ;;; Used for sample table and some x pages
-(def metadata-table "pici-internal.bruce_external.metadata_complete_feb_25_2025")
+(def metadata-table "pici-internal.bruce_external.metadata_complete_jul_21_2025")
 
 (defn query
   [q]

@@ -46,6 +46,23 @@
    }
   )
 
+;;; TODO belongs elsewhere
+(defmethod ag-col-def :samples
+  [col {:keys []:as col-def}]
+  {:headerName col
+   :field col
+   :cellRenderer (fn [params]
+                   (let [value (get (js->clj (.-data params) :keywordize-keys true) col)]
+                     (reagent.core/as-element 
+                      [:span.ag-cell-wrap-text   ;; .ag-cell-auto-height doesn't work, unfortunately.
+                       [:span
+                           (when (> (count value) 1)
+                             [:span.count (count value)])
+                        (str/join ", " value)
+                        ]]
+                      )))
+   })
+
 ;;; :html, supoorts url-template, multiple values with count. (TODO split those out? But might want both behaviors)
 ;;; url-templates using %s format (TODO use u/expand-template)
 ;;; multiple values (with count)

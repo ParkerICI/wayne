@@ -264,3 +264,9 @@ td {
 .ag-theme-balham {
   height: 800px;
 }
+
+.count {
+  color: #685CC6;
+  padding-right: 3px;
+  font-style: italic;
+}

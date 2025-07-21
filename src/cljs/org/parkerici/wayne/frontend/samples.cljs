@@ -1,6 +1,6 @@
 (ns org.parkerici.wayne.frontend.samples
   (:require [re-frame.core :as rf]
-            [com.hyperphor.way.aggrid :as ag]
+            [org.parkerici.wayne.frontend.way.aggrid :as ag]
             [com.hyperphor.way.ui.init :as init]
             com.hyperphor.way.feeds
             [reagent.dom]
