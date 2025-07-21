@@ -1,4 +1,4 @@
-(defproject org.parkerici.wayne "0.1.0-SNAPSHOT"
+(defproject org.parkerici.wayne "1.0.0"
   :description "Prototyping BRUCE website"
   :min-lein-version "2.0.0"
   :plugins [[lein-shadow "0.4.1"]]
@@ -24,11 +24,14 @@
   :source-paths ["src/cljc" "src/clj" "src/cljs"] 
   :clean-targets ^{:protect false} [".shadow-cljs" "resources/public/cljs-out" "target" "resources/public/pages"]
   :repl-options {:init-ns org.parkerici.wayne.core}
+  :jar-name "wayne.jar"
+  :uberjar-name "wayne-standalone.jar"
   :profiles {:uberjar {:aot :all
                        :omit-source true
                        :prep-tasks [["shadow" "release" "app"] "javac" "compile"] ;NOTE if you omit the javac compile items, :aot stops working!
                        :resource-paths ["resources"]
-                       :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}}
+                       :jvm-opts ["-Dclojure.compiler.direct-linking=true"]
+                       }}
   :shadow-cljs {:lein true
                 :builds
                 {:app {:target :browser
@@ -42,11 +45,11 @@
                                                       org.parkerici.wayne.frontend.access
                                                       org.parkerici.wayne.frontend.sample-dist ;for popout
                                                       ]}}
-                       :devtools {:preloads [day8.re-frame-10x.preload.react-18]}
-                       :dev {:compiler-options
-                             {:closure-defines
+                       
+                       :dev {:devtools {:preloads [day8.re-frame-10x.preload.react-18]}
+                             :closure-defines
                               {re-frame.trace.trace-enabled?        true
                                day8.re-frame-10x.show-panel         false ;does not work, afaict
-                               day8.re-frame.tracing.trace-enabled? true}}}}}}
+                               day8.re-frame.tracing.trace-enabled? true}}}}}
 
   )

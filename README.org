@@ -1,4 +1,6 @@
-BRUCE data sharing portal website: https://bruce.parkerici.org/
+* BRUCE data sharing portal website
+
+https://bruce.parkerici.org/
 
 * License
 
@@ -7,12 +9,13 @@ Released under the Apache 2.0 open source license.
 * Design
 
 Design doc: https://docs.google.com/document/d/1W4D8Pi9S_xJDzcQkDXHmcbQRFtkT-xgQEFnWnADJWaw/edit#h
+
 UI Design: https://www.figma.com/design/JIUFETHOkJPffJBLY72kFi/Bruce-Data-Portal---Hero?node-id=2042-4854
 
 
 * Deployment
 
-Hosted on Heroku: https://dashboard.heroku.com/apps/nameless-plains-89326
+App is hosted on Heroku: https://dashboard.heroku.com/apps/nameless-plains-89326
 
 =bin/deploy.sh=
 
@@ -20,7 +23,7 @@ Credentials are supplied through Heroku config vars:
 
 =GOOGLE_APPLICATION_CREDENTIALS: google-credentials.json=
 
-=GOOGLE_CREDENTIALS:             <json string>=
+=GOOGLE_CREDENTIALS: <json string>=
 
 =OPENAI_API_KEY>: <the key>=
 
@@ -35,28 +38,42 @@ From signup form, semi-required before data downloads:
 https://docs.google.com/spreadsheets/d/1EXgxXCceEEgFiss6jpdxZFxeh5aQZKE7s0vrzhTyX20/edit?gid=2037813864#gid=2037813864
 
 
-* Data
+** Data (on Google Cloud)
 
-** Bigquery
+*** BigQuery
 
-    pici-internal.bruce_external.feature_table_20240810_metadata_oct1
-    pici-internal.bruce_external.metadata_complete
+Tables:
 
-    gcloud alpha bq tables list --dataset bruce_external
+    =pici-internal.bruce_external.feature_table_20240810_metadata_oct1=
+    =pici-internal.bruce_external.metadata_complete_feb_25_2025=
 
-In =data.clj=
-
-(def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240810_metadata_oct1"))
-
-
-** GS
-
-gs://pici-bruce-vitessce-public
-gs://bruce-external-data/
+List tables:
+    =gcloud alpha bq tables list --dataset bruce_external o--project pici-internal=
 
 
-* Run locally
+***  Storage (gs:)
+
+Bucket: =gs://pici-bruce-vitessce-public=
+
+Holds Vitessce data sets and also other files for somrloading (in =other/)
+
+* To run locally for development
 
 =bin/smoke-test.sh=
+
+** Dependencies
+
+Aside fromt he usual sorts, there are dependencies on two locally-maintained packages:
+
+=org.candelbio.multitool= General utility package
+=com.hyperphor.way=  Lightweight web framework and utilities
+
+These are both open-source and both written and maintained by Mike Travers.
+
+
+
+
+
+
 
 
