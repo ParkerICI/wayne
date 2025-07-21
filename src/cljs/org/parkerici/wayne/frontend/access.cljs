@@ -1,6 +1,6 @@
 (ns org.parkerici.wayne.frontend.access
   (:require [re-frame.core :as rf]
-            [com.hyperphor.way.aggrid :as ag]
+            [org.parkerici.wayne.frontend.way.aggrid :as ag]
             [com.hyperphor.way.ui.init :as init]
             [org.candelbio.multitool.core :as u]
             [com.hyperphor.way.modal :as modal]
@@ -42,6 +42,7 @@
    {:File "cell_table_all_merged_thresholded.parquet"
     :Size "2.0G"
     :Description "Cell Table (merged)"
+    :disabled? true
     }
    {:File "20240702_Stanford_MALDI_annotated.csv"
     :Size "400K"
@@ -144,20 +145,20 @@
      :cellRenderer
      (fn [params]
        (let [item (js->clj (.-data params) :keywordize-keys true)]
-         (reagent.dom/render ;TODO this is not approved for React 18, but I couldn't figure a better way.
-           (if registered?
-             [:span.ag-cell-wrap-text   ;; .ag-cell-auto-height doesn't work, unfortunately.
-              [:a
-               {:href (u/expand-template
-                       "https://storage.googleapis.com/pici-bruce-vitessce-public/other/{{File}}"
-                       item)
-                :download (:File item)}
-               [:img {:src "../assets/icons/download-dark.svg"}]]]
-             [signup/signup-button])
-           (.-eGridCell params)))
-       )
+         (when-not (:disabled? item)
+           (reagent.dom/render ;TODO this is not approved for React 18, but I couldn't figure a better way.
+             (if registered?
+               [:span.ag-cell-wrap-text   ;; .ag-cell-auto-height doesn't work, unfortunately.
+                [:a
+                 {:href (u/expand-template
+                         "https://storage.googleapis.com/pici-bruce-vitessce-public/other/{{File}}"
+                         item)
+                  :download (:File item)}
+                 [:img {:src "../assets/icons/download-dark.svg"}]]]
+               [signup/signup-button])
+             (.-eGridCell params)))))
      }
-    ))
+    )) 
 
 ;;; NOTE: for this to work, you need ./externs/app.txt containing at least withParams
 (defn ag-grid-theme
