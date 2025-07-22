@@ -80,9 +80,14 @@
      (when values-map
        (for [dim (keys values-map)]
          (let [vals (true-values (get values-map dim))]
-           (if (empty? vals)
-             "1 = 1"
-             (format "%s in %s" (name dim) (bq/sql-lit-list vals)))))))))
+           (cond (empty? vals) "1 = 1"
+                 ;; Special case boolean field
+                 (= dim :Immunotherapy) (cond (= vals '("true"))
+                                              "Immunotherapy"
+                                              (= vals '("false"))
+                                              "not Immunotherapy"
+                                              :else "true")
+                 :else (format "%s in %s" (name dim) (bq/sql-lit-list vals)))))))))
 
 (defn dim-type?
   [d]
@@ -93,18 +98,20 @@
   [d]
   (= :boolean (dim-type? d)))
 
+;;; TODO not sure feature_type hack is working
 (defn query1
-  [{:keys [feature dim filters] :as params}]
+  [{:keys [feature dim filters feature_type] :as params}]
   (log/info :query1 params)
   (when (and feature dim)
     (select "feature_value, {{dim}} {{from}} 
 where feature_variable = '{{feature}}'
-AND feature_type = '{{feature_type}}'
 AND NOT {{dim}} {{na1}}
 AND NOT {{dim}} {{na2}}
+{{feature-type-clause}}
 AND {{where}}" 
             (assoc params
                    :where (str (joint-where-clause (dissoc filters (keyword feature))))
+                   :feature-type-clause (if feature_type (u/expand-template "AND feature_type = '{{feature_type}}'" params) "")
                    :na1 (if (dim-boolean? dim) "IS NULL" "= 'NA'")
                    :na2 (if (dim-boolean? dim) "IS NULL" "= 'Unknown'"))
             )

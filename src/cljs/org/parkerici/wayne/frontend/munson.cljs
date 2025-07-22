@@ -42,7 +42,7 @@
         filters @(rf/subscribe [:param :universal [:filters]])
         ;; TODO this ends up accumulating a lot in the db, I don't think its fatal but
         ;; TODO also filter needs to be cleaned/regularized for matching
-        in-values @(rf/subscribe [:data [:populate dim] {:dim dim :feature feature :filters filters}])
+        in-values @(rf/subscribe [:datax [:populate dim] {:dim dim :feature feature :filters filters}])
         ] 
     [:div.accordian-panel {:class (when collapsed? "collapsed")}
      (for [value-spec all-values
@@ -235,7 +235,7 @@
         feature_type @(rf/subscribe [:param :features :feature-feature_type])
         filters @(rf/subscribe [:param :universal [:filters]])
         data (when (and feature feature_type)
-               @(rf/subscribe [:data :universal {:feature feature :feature_type feature_type  :filters filters :dim dim}]))]
+               @(rf/subscribe [:datax :universal {:feature feature :feature_type feature_type  :filters filters :dim dim}]))]
     [:section.query-builder-section
      [:div.container
       [:div.query-builder-content
@@ -312,19 +312,4 @@
   (init/init app-ui nil)
   )
 
-;;; TODO this patches a Way method, should be done there 
-#_
-(rf/reg-event-db
- :fetch
- (fn [db [_ data-id params]]
-   (api/api-get
-    "/data"
-    {:params (merge (get-in db [:params data-id]) 
-                    (assoc params :data-id data-id)) 
-     :handler #(rf/dispatch [:com.hyperphor.way.feeds/loaded data-id params %])
-     :error-handler #(rf/dispatch [:data-error data-id %1]) ;Override standard error handler
-     })
-   (-> db
-       (assoc :loading? true)
-       (assoc-in [:data-status data-id] :fetching)
-       (assoc-in [:data-params data-id] params))))
+

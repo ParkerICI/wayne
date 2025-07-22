@@ -22,7 +22,7 @@
 (defn samples
   []
   [:div
-   (let [samples @(rf/subscribe [:data :patients {:fake :it}])] ;TODO param because there's bug in data feed mech
+   (let [samples @(rf/subscribe [:data :patients #_ {:fake :it}])] ;TODO param because there's bug in data feed mech
      [ag/ag-table 
       samples
       :columns col-defs
@@ -39,6 +39,7 @@
                         :statusBar nil
                         }
       ])])
+
 
 (defn ^:export init
   []
