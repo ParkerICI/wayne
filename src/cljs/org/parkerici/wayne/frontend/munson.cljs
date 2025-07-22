@@ -6,10 +6,8 @@
    [com.hyperphor.way.modal :as modal]
    [com.hyperphor.way.ui.init :as init]
    [org.parkerici.wayne.frontend.visualization :as viz]
-   [org.parkerici.wayne.frontend.sample-dist :as smatrix]
    [org.parkerici.wayne.frontend.feature-select :as fui]
    [org.candelbio.multitool.core :as u]
-   [com.hyperphor.way.api :as api]
    [org.parkerici.wayne.data-defs :as dd]
    [org.parkerici.wayne.frontend.examples :as examples]
    [org.parkerici.wayne.frontend.utils :as wwu]
@@ -54,6 +52,7 @@
                  checked? (get-in filters [dim value])
                  disabled? (not (contains? in-values value))
                  ]]
+       ^{:key id}
        [:label.custom-checkbox
         [:input {:type "checkbox",
                  :hidden "hidden",
@@ -120,6 +119,7 @@
       ]
      [:div.filter-list
       (for [dim (keys dims)]
+        ^{:key dim}
         [:div.accordian.accordian-collapsed 
          [:div.accordian-title {:on-click #(rf/dispatch [:toggle-filter-pane dim])}
           [:h3 (get-in dims [dim :label])
@@ -234,7 +234,8 @@
         feature @(rf/subscribe [:param :universal :feature])
         feature_type @(rf/subscribe [:param :features :feature-feature_type])
         filters @(rf/subscribe [:param :universal [:filters]])
-        data @(rf/subscribe [:data :universal {:feature feature :feature_type feature_type  :filters filters :dim dim}])]
+        data (when (and feature feature_type)
+               @(rf/subscribe [:data :universal {:feature feature :feature_type feature_type  :filters filters :dim dim}]))]
     [:section.query-builder-section
      [:div.container
       [:div.query-builder-content
@@ -246,6 +247,7 @@
          [:h3.mb-30.font-bold "Compare across"]
          [:div.dataset-tags
           (for [odim (keys dims)]
+            ^{:key odim}
             [dim-selector odim dim])
           ]]
         [:div.divider.mt-30.mb-30]
@@ -311,6 +313,7 @@
   )
 
 ;;; TODO this patches a Way method, should be done there 
+#_
 (rf/reg-event-db
  :fetch
  (fn [db [_ data-id params]]

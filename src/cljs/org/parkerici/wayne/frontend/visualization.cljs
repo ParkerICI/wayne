@@ -284,19 +284,20 @@
 (defn control-panel
   []
   [:table.table
-   [:tr
-    [:td 
-     [:fieldset [:legend "Type"] [:div#pchecks]]]
-    [:td 
-     [:fieldset [:legend "Adjust plot"]
-      [:table.table
-       [:tr
-        [:td [:span.slider "scale " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])]]
-        [:td [slider :id "blobWidth" :min 50 :max 500 :default 100]]]
-       [:tr
-        [:td [slider :id "jitter" :min 0 :max 200 :default 25]]
-        [:td [slider :id "blobSpace" :min 100 :max 2000 :default 700]] ;should be 150 and height = blobwidthh * domain, but not working
-        ]]]]]])
+   [:tbody
+    [:tr
+     [:td 
+      [:fieldset [:legend "Type"] [:div#pchecks]]]
+     [:td 
+      [:fieldset [:legend "Adjust plot"]
+       [:table.table
+        [:tr
+         [:td [:span.slider "scale " (fui/select-widget-minimal :scale ["linear" "log10" "log2" "sqrt" "symlog"])]]
+         [:td [slider :id "blobWidth" :min 50 :max 500 :default 100]]]
+        [:tr
+         [:td [slider :id "jitter" :min 0 :max 200 :default 25]]
+         [:td [slider :id "blobSpace" :min 100 :max 2000 :default 700]] ;should be 150 and height = blobwidthh * domain, but not working
+         ]]]]]]])
 
 (def saved-vega-params ["blobWidth" "blobSpace" "jitter" "scale" "box" "violin" "points"])
 
