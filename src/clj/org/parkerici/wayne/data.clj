@@ -17,11 +17,14 @@
 ;;; or
 ;;; ⪢ gcloud alpha bq tables list --dataset bruce_external
 
-;;; New data table 
-(def bq-table (env/env :bq-data-table "pici-internal.bruce_external.feature_table_20240810_metadata_oct1"))
+;;; was  "pici-internal.bruce_external.feature_table_20240810_metadata_oct1")
+
+;;; Subject IDs changed. Note. used to get this through env but that turns out to be more pain that this:  (env/env :bq-data-table ...) 
+(def bq-table "pici-internal.bruce_external.20240810_master_feature_table_na_removed_metadata")
 
 ;;; Used for sample table and some x pages
-(def metadata-table "pici-internal.bruce_external.metadata_complete_jul_21_2025")
+(def metadata-table-old "pici-internal.bruce_external.metadata_complete_feb_25_2025")
+(def metadata-table "pici-internal.bruce_external.metadata_complete_2025_07_22")
 
 (defn query
   [q]

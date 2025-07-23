@@ -1,6 +1,14 @@
 This explains how to install a new feature table when that is released by Stanford. The path is:
 
- .rds file  → R → .csv → gs: → BigQuery
+ .rds file  → R → .csv →  BigQuery
+
+> r
+ds = readRDS("<file")
+write.csv(ds, "~/Downloads/20240810_master_feature_table_na_removed_metadata.csv")
+
+> shell
+bq load --project_id=pici-internal --autodetect  bruce_external.20240810_master_feature_table_na_removed_metadata ~/Downloads/20240810_master_feature_table_na_removed_metadata.csv
+
 
 * New data from Stanford
 
@@ -32,3 +40,8 @@ Create from GCS
 Set env variable BQ_DATA_TABLE to eg pici-internal.bruce_external.feature_table_20240409
 OR edit the code in https://github.com/ParkerICI/wayne/blob/main/src/clj/wayne/data.clj#L13
 
+
+
+* New upload 
+
+bq load --project_id=pici-internal --autodetect  bruce_external.metadata_complete_2025_07_22 ~/Downloads/metadata_complete\ \(1\).csv  
