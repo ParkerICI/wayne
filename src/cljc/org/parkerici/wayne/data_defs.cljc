@@ -32,10 +32,12 @@
                         "Treatment_Naive"]}
    :recurrence {:label "Recurrence"
                 :info "Recurrent tumor"
+                :type :boolean
                 :icon "recurrence-icon.svg"
                 :values ["No" "Yes"]}
    :Longitudinal {:label "Longitudinal"
                   :icon "time_b.png"
+                  :type :boolean
                   :info "Patient samples with paired primary and recurrent events"
                   :values ["Yes" "No"]}
    :Progression {:label "Progression"

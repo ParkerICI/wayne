@@ -16,7 +16,6 @@
 (rf/reg-sub
  :datax
  (fn [db [_ data-id params]]
-   (prn :fuckme data-id)
    (let [data (get-in db [:data data-id])
          status (get-in db [:data-status data-id])
          last-params (get-in db [:data-params data-id])

@@ -85,21 +85,22 @@
          (let [vals (true-values (get values-map dim))]
            (cond (empty? vals) "1 = 1"
                  ;; Special case boolean field
-                 (= dim :Immunotherapy) (cond (= vals '("true"))
-                                              "Immunotherapy"
-                                              (= vals '("false"))
-                                              "not Immunotherapy"
-                                              :else "true")
+                 (dim-boolean? dim)
+                 (cond (= vals '("true"))
+                       (name dim)
+                       (= vals '("false"))
+                       (str "not " (name dim))
+                       :else "true")
                  :else (format "%s in %s" (name dim) (bq/sql-lit-list vals)))))))))
 
-(defn dim-type?
+(defn dim-type
   [d]
   (get-in dd/dims [(keyword d) :type] :string))
 
 ;;; A kludge, we have one boolean field and it needs different handling
 (defn dim-boolean?
   [d]
-  (= :boolean (dim-type? d)))
+  (= :boolean (dim-type d)))
 
 ;;; TODO not sure feature_type hack is working
 (defn query1
@@ -216,13 +217,13 @@ and feature_variable like '{{prefix}}%%' order by feature_variable limit 20"
   (mapcat (fn [d]
             (select "Tumor_Diagnosis, {{dim}} as value, '{{dim}}' as dim, count(distinct(sample_id)) as samples
 {{from}}
-WHERE NOT ({{dim}} {{na1}} OR {{dim}} {{na2}})
+WHERE {{na}}
 GROUP BY Tumor_Diagnosis, {{dim}}"
                     {:dim (name d)
-                     :na1 (if (dim-boolean? d) "IS NULL" "= 'NA'")
-                     :na2 (if (dim-boolean? d) "IS NULL" "= 'Unknown'")
+                     ;; I believe scientists asked to exclude Unknown/NA values
+                     :na (if (dim-boolean? d) "TRUE" "NOT ({{dim}} = 'NA'  OR {{dim}} = 'Unknown')")
                      }))
-          (rest (keys dd/dims))))
+          (rest (keys dd/dims))))       ;rest because y dim is always :Tumor_Diagnosis
 
 (defmethod wd/data :dist-matrix
   [_]
