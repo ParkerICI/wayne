@@ -71,6 +71,15 @@
   (u/forf [[k v] map]
     (when (= v "true") (name k))))
 
+(defn dim-type
+  [d]
+  (get-in dd/dims [(keyword d) :type] :string))
+
+;;; A kludge, we have one boolean field and it needs different handling
+(defn dim-boolean?
+  [d]
+  (= :boolean (dim-type d)))
+
 ;;; Generate a where clause from a field/value map:
 ;; {:Tumor_Diagnosis {:GBM "true", :Astrocytoma "true"}, :recurrence {:yes "true"}})
 ;;; => "Tumor_Diagnosis in ('GBM', 'Astrocytoma') AND recurrence in ('yes')"
@@ -93,14 +102,7 @@
                        :else "true")
                  :else (format "%s in %s" (name dim) (bq/sql-lit-list vals)))))))))
 
-(defn dim-type
-  [d]
-  (get-in dd/dims [(keyword d) :type] :string))
 
-;;; A kludge, we have one boolean field and it needs different handling
-(defn dim-boolean?
-  [d]
-  (= :boolean (dim-type d)))
 
 ;;; TODO not sure feature_type hack is working
 (defn query1
