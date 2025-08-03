@@ -10,21 +10,18 @@
             )
   )
 
-;;; Was in raw-data-access.js, moved here for signup
 ;;; Source: https://drive.google.com/drive/u/0/folders/1dfcMJYpDQ_PmvacR39z-dYHl-G8KpmeB
 ;;;         https://drive.google.com/drive/u/1/folders/10UmqEQriNVxd4QZM328vwMhVaS_vace4
 ;;; Served from: gs://pici-bruce-vitessce-public/other
 ;;;   gcloud storage cp ... gs://pici-bruce-vitessce-public/other
+
 (def data
   [
-   ;; removed due to possible HIPAA issues
-   #_
    {
     :Description "Master Feature Table",
     :File "20240810_master_feature_table_na_removed_metadata.rds",
     :Size "35M"
     }
-
    ;; Not on GDrive so removing for now
    #_
    {
@@ -38,11 +35,9 @@
     :File "cell_table_tumor_thresholded.parquet",
     :Size "1G"
     }
-
    {:File "cell_table_all_merged_thresholded.parquet"
     :Size "2.0G"
     :Description "Cell Table (merged)"
-    :disabled? true
     }
    {:File "20240702_Stanford_MALDI_annotated.csv"
     :Size "400K"
@@ -59,7 +54,6 @@
    {:File "auc_data_who_grade.csv"
     :Size "309"
     }
-
    {:File "gbm_mean_by_stage_table_norm_gly_enz_new.csv"
     :Size "3.8K"
     }
